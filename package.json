@@ -1,0 +1,15 @@
+{
+  "name": "bibliograph",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "kotatsu serve --typescript index.ts"
+  },
+  "author": "",
+  "license": "",
+  "devDependencies": {
+    "kotatsu": "^0.21.0",
+    "typescript": "^4.0.5"
+  }
+}
