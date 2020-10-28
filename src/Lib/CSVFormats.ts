@@ -1,4 +1,4 @@
-import { CSVFormat } from "../../types";
+import { CSVFormat } from "./types";
 import { zip } from "lodash";
 
 export const CSVFormats: { [key: string]: CSVFormat } = {
@@ -54,11 +54,11 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     ],
     generatedFields: [
       {
-        maker: (line) =>
+        maker: (line: any) =>
           zip(
-            line.authors,
-            line.authorsID.filter((id) => id !== "")
-          ).map(([name, id]: string[]) => ({ name, id })),
+            line.authors as string[],
+            line.authorsID.filter((id: any) => id !== "") as string[]
+          ).map(([name, id]: any) => ({ name, id })),
         variableName: "authors",
       },
     ],
