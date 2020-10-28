@@ -11,5 +11,8 @@
   "devDependencies": {
     "kotatsu": "^0.21.0",
     "typescript": "^4.0.5"
+  },
+  "dependencies": {
+    "lodash": "^4.17.20"
   }
 }
