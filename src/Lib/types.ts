@@ -1,12 +1,14 @@
 export interface Field {
   key: string;
   variableName: string;
+  variableLabel: string;
   separator?: string; // multivalue separator
   hidden?: boolean;
 }
 export interface GeneratedField {
   maker: ({}) => { key: string; label: string };
   variableName: string;
+  variableLabel: string;
 }
 
 export interface CSVFormat {

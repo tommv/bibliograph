@@ -8,18 +8,17 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     url: "",
     separator: "\t",
     references: {
-        variableName: "references",
-        variableLabel: "references",
-        key: "CR",
-        separator: ";",
-      },
-    year:
-      {
-        variableName: "year",
-        variableLabel: "year",
-        key: "PY",
-        hidden: TRUE,
-      },
+      variableName: "references",
+      variableLabel: "references",
+      key: "CR",
+      separator: ";",
+    },
+    year: {
+      variableName: "year",
+      variableLabel: "year",
+      key: "PY",
+      hidden: true,
+    },
     metadataFields: [
       {
         variableName: "authors",
@@ -55,22 +54,21 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "affiliations",
         key: "C1",
         separator: ";",
-        hidden: TRUE,
+        hidden: true,
       },
       {
         variableName: "funding",
         variableLabel: "funding",
         key: "FU",
         separator: ";",
-        hidden: TRUE,
+        hidden: true,
       },
       {
         variableName: "type",
         variableLabel: "record types",
         key: "DT",
-        hidden: TRUE,
+        hidden: true,
       },
-
     ],
 
     generatedFields: [
@@ -120,21 +118,18 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     label: "Scopus",
     url: "",
     separator: ",",
-    mandatoryFields: [
-      {
-        variableName: "references",
-        variableLabel: "references",
-        key: "References",
-        separator: ";",
-      },
-      {
-        variableName: "year",
-        variableLabel: "year",
-        key: "Year",
-        hidden: TRUE,
-      },
-    ],
-
+    references: {
+      variableName: "references",
+      variableLabel: "references",
+      key: "References",
+      separator: ";",
+    },
+    year: {
+      variableName: "year",
+      variableLabel: "year",
+      key: "Year",
+      hidden: true,
+    },
     metadataFields: [
       {
         variableName: "_authors",
@@ -170,22 +165,21 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "affiliations",
         key: "Affiliations",
         separator: ";",
-        hidden: TRUE,
+        hidden: true,
       },
       {
         variableName: "funding",
         variableLabel: "funding",
         key: "Funding Details",
         separator: ";",
-        hidden: TRUE,
+        hidden: true,
       },
       {
         variableName: "type",
         variableLabel: "record types",
         key: "Document Type",
-        hidden: TRUE,
+        hidden: true,
       },
-
     ],
 
     generatedFields: [
@@ -197,7 +191,6 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
             line.authors as string[],
             line.authorsID.filter((id: any) => id !== "") as string[]
           ).map(([name, id]: any) => ({ label: name, key: id })),
-
       },
       {
         // generate from "affiliations"
