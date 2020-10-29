@@ -7,6 +7,7 @@ import Filters from "./Filters";
 import { prepareGraph } from "../Lib/prepareGraph";
 import { loadFullGraph } from "../Lib/loadFullGraph";
 import { CSVFormat, FiltersType } from "../Lib/types";
+import { getRandomGraph } from "../Lib/getRandomGraph";
 
 import "./App.css";
 
@@ -14,7 +15,7 @@ const App: FC<{}> = () => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
   const [filters, setFilters] = useState<FiltersType | null>(null);
-  const [fullGraph, setFullGraph] = useState<Graph | null>(null);
+  const [fullGraph, setFullGraph] = useState<Graph | null>(getRandomGraph());
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -56,7 +57,7 @@ const App: FC<{}> = () => {
       <Viz graph={filteredGraph} onGoBack={() => setFilteredGraph(null)} />
     );
 
-  return <div className="App">{Component}</div>;
+  return <div className="App c">{Component}</div>;
 };
 
 export default App;

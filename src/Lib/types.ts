@@ -25,3 +25,18 @@ export interface CSVFormat {
 export interface FiltersType {
   // TODO
 }
+
+export interface FieldDefinition {
+  key: string;
+  label?: string;
+  type: "string" | "number";
+}
+
+export type Aggregation = {
+  min: number;
+  max: number;
+  values: {
+    label: string;
+    count: number;
+  }[];
+};

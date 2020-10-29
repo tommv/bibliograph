@@ -1,9 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import "./base.css";
 import App from "./Components/App";
 import reportWebVitals from "./reportWebVitals";
+
+import "@ajusa/lit/src/lit.css";
+import "./base.css";
 
 ReactDOM.render(
   <React.StrictMode>

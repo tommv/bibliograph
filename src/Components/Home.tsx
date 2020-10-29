@@ -24,6 +24,9 @@ const Home: FC<{ onSubmit(files: File[], format: CSVFormat): void }> = ({
 
   return (
     <section className="Home">
+      <h1 className="center">
+        <span className="hg">Bibliograph</span>
+      </h1>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer id
         turpis aliquam, imperdiet ante ac, tincidunt neque. Integer gravida est
@@ -44,6 +47,7 @@ const Home: FC<{ onSubmit(files: File[], format: CSVFormat): void }> = ({
       </div>
       <div className="center">
         <select
+          className="card"
           value={selectedFormat}
           onChange={(e) => setSelectedFormat(e.target.value)}
         >
@@ -57,6 +61,7 @@ const Home: FC<{ onSubmit(files: File[], format: CSVFormat): void }> = ({
       </div>
       <div className="center">
         <button
+          className="btn primary"
           disabled={!csvFiles.length || !CSVFormats[selectedFormat]}
           onClick={() => {
             if (csvFiles.length && CSVFormats[selectedFormat])

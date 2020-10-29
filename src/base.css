@@ -1,7 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap");
+
 body {
   margin: 0;
+  font-family: Nunito, sans-serif;
+}
+
+input, select {
+  font-family: Nunito, sans-serif;
 }
 
 .center {
   text-align: center;
+}
+
+.btn[disabled] {
+  background: grey;
+  border-color: grey;
+  opacity: 1 !important;
+}
+
+.hg {
+  box-shadow: inset 0 -.4em #fa0;
 }
