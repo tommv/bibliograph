@@ -15,7 +15,7 @@ const App: FC<{}> = () => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
   const [filters, setFilters] = useState<FiltersType | null>(null);
-  const [fullGraph, setFullGraph] = useState<Graph | null>(getRandomGraph());
+  const [fullGraph, setFullGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
