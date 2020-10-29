@@ -34,18 +34,24 @@ const Home: FC<{
         <span className="hg">Bibliograph</span>
       </h1>
       <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer id
-        turpis aliquam, imperdiet ante ac, tincidunt neque. Integer gravida est
-        justo, quis mattis magna mattis sed. Nunc convallis vestibulum nisl id
-        cursus. Nunc eget faucibus felis, non feugiat quam. Sed finibus sem vel
-        elit eleifend iaculis. Phasellus venenatis sollicitudin lacus, vel
-        ultricies est ullamcorper nec. Nunc maximus euismod libero, quis iaculis
-        ligula dapibus et. Sed eget tincidunt sapien, in eleifend odio. Nam
-        viverra risus quis viverra tincidunt. Proin magna dolor, vehicula ut
-        luctus eu, viverra id massa. Sed molestie purus vel arcu venenatis,
-        dictum sagittis libero viverra. Cras sit amet justo mauris. Fusce sed
-        mauris gravida, eleifend lectus non, rhoncus nulla. Maecenas eget cursus
-        dui, iaculis aliquam erat. Maecenas at iaculis risus.
+        Bibliograph allows you turn a corpus of scientometrics records from ISI
+        Web of Science or Scopus into a landscape of bibliographic coupling.
+        Such a landscape consists in:
+      </p>
+      <ol>
+        <li>
+          A base map network of references co-occurring in the records of the
+          corpus - weighted by the frequency of their co-occurrence;
+        </li>
+        <li>
+          A layer of metadata extracted from the records (e.g. authors, subject
+          areas, keywords) and positioned in the graph according to their
+          co-occurrence with the references of the base map.
+        </li>
+      </ol>
+      <p>
+        Upload your corpus, choose the period you want to investigate, select
+        the filtering thresholds and explore your bibliographic landscape.
       </p>
 
       <br />
