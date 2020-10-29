@@ -7,12 +7,12 @@ import Filters from "./Filters";
 import { prepareGraph } from "../Lib/prepareGraph";
 import { loadFullGraph } from "../Lib/loadFullGraph";
 import { CSVFormat, FiltersType } from "../Lib/types";
-import { getRandomGraph } from "../Lib/getRandomGraph";
 
 import "./App.css";
 
 const App: FC<{}> = () => {
   const [files, setFiles] = useState<File[] | null>(null);
+  const [range, setRange] = useState<{ min?: Date; max?: Date }>({});
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
   const [filters, setFilters] = useState<FiltersType | null>(null);
   const [fullGraph, setFullGraph] = useState<Graph | null>(null);
@@ -23,7 +23,7 @@ const App: FC<{}> = () => {
     // Load CSVs on submit Home component:
     if (files && files.length && format && !fullGraph && !isLoading) {
       setIsLoading(true);
-      loadFullGraph(files, format).then((graph) => {
+      loadFullGraph(files, format, range).then((graph) => {
         setFullGraph(graph);
         setIsLoading(false);
       });
@@ -37,15 +37,20 @@ const App: FC<{}> = () => {
         setIsLoading(false);
       });
     }
-  }, [files]);
+  }, [files, filteredGraph, filters, format, fullGraph, isLoading, range]);
 
   let Component = <div>Woops, something went wrong...</div>;
 
   if (!fullGraph)
     Component = (
       <Home
-        onSubmit={(files: File[], format: CSVFormat) => {
+        onSubmit={(
+          files: File[],
+          format: CSVFormat,
+          range: { min?: Date; max?: Date }
+        ) => {
           setFiles(files);
+          setRange(range);
           setCSVFormat(format);
         }}
       />

@@ -14,3 +14,12 @@
   outline: none;
   transition: border 0.24s ease-in-out;
 }
+
+.Home .flex-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+}
+.Home .flex-row > * {
+  margin: 0 0.4em;
+}

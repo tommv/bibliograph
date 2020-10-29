@@ -9,13 +9,19 @@ import "./Home.css";
 
 const FORMAT_PLACEHOLDER = "SELECT_A_FORMAT";
 
-const Home: FC<{ onSubmit(files: File[], format: CSVFormat): void }> = ({
-  onSubmit,
-}) => {
+const Home: FC<{
+  onSubmit(
+    files: File[],
+    format: CSVFormat,
+    range: { min?: Date; max?: Date }
+  ): void;
+}> = ({ onSubmit }) => {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   const [selectedFormat, setSelectedFormat] = useState<string>(
     FORMAT_PLACEHOLDER
   );
+  const [minDate, setMinDate] = useState<string>("");
+  const [maxDate, setMaxDate] = useState<string>("");
 
   const csvFiles = (acceptedFiles || []).filter(
     (file: FileWithPath) =>
@@ -41,17 +47,40 @@ const Home: FC<{ onSubmit(files: File[], format: CSVFormat): void }> = ({
         mauris gravida, eleifend lectus non, rhoncus nulla. Maecenas eget cursus
         dui, iaculis aliquam erat. Maecenas at iaculis risus.
       </p>
+
+      <br />
+
       <div {...getRootProps({ className: "dropzone" })}>
         <input {...getInputProps()} />
         <p>Drag and drop here your CSV files or their folder</p>
       </div>
-      <div className="center">
+
+      <br />
+
+      <div className="flex-row">
+        <span>Only parse papers published between</span>{" "}
+        <input
+          value={minDate}
+          onChange={(e) => setMinDate(e.target.value)}
+          className="card"
+          type="date"
+        />{" "}
+        <span>and</span>{" "}
+        <input
+          value={maxDate}
+          onChange={(e) => setMaxDate(e.target.value)}
+          className="card"
+          type="date"
+        />
+      </div>
+      <div className="flex-row">
+        <span>These CSVs come from</span>
         <select
           className="card"
           value={selectedFormat}
           onChange={(e) => setSelectedFormat(e.target.value)}
         >
-          <option value={FORMAT_PLACEHOLDER}>Please select a format</option>
+          <option value={FORMAT_PLACEHOLDER}>(please select a source)</option>
           {toPairs(CSVFormats).map(([key, format]) => (
             <option key={key} value={key}>
               {format.label}
@@ -59,13 +88,16 @@ const Home: FC<{ onSubmit(files: File[], format: CSVFormat): void }> = ({
           ))}
         </select>
       </div>
-      <div className="center">
+      <div className="flex-row">
         <button
           className="btn primary"
           disabled={!csvFiles.length || !CSVFormats[selectedFormat]}
           onClick={() => {
             if (csvFiles.length && CSVFormats[selectedFormat])
-              onSubmit(csvFiles, CSVFormats[selectedFormat]);
+              onSubmit(csvFiles, CSVFormats[selectedFormat], {
+                min: minDate ? new Date(minDate) : undefined,
+                max: maxDate ? new Date(maxDate) : undefined,
+              });
           }}
         >
           Parse and index {csvFiles.length} CSV file

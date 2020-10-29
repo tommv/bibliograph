@@ -73,7 +73,8 @@ const csvRowToGraph = (
 
 export function loadFullGraph(
   files: File[],
-  format: CSVFormat
+  format: CSVFormat,
+  datesRange: { min?: Date; max?: Date }
 ): Promise<UndirectedGraph> {
   const fullGraph = new UndirectedGraph();
   return Promise.all(
