@@ -7,21 +7,19 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     label: "Web of Science",
     url: "",
     separator: "\t",
-    mandatoryFields: [
-      {
+    references: {
         variableName: "references",
         variableLabel: "references",
         key: "CR",
         separator: ";",
       },
+    year:
       {
         variableName: "year",
         variableLabel: "year",
         key: "PY",
         hidden: TRUE,
       },
-    ],
-
     metadataFields: [
       {
         variableName: "authors",
