@@ -15,7 +15,14 @@ const csvRowToGraph = (
     const references: string[] = (csvRow[refsField.key].split(
       refsField.separator || ","
     ) as string[]).map((ref) => {
-      return graph.mergeNode(ref, { label: ref, type: "reference" });
+      const n = graph.mergeNode(ref, {
+        label: ref,
+        type: "references",
+      });
+      graph.mergeNodeAttributes(n, {
+        nbArticles: (graph.getNodeAttribute(ref, "nbArticles") || 0) + 1,
+      });
+      return n;
     });
     // metadata factory
     const metadataNodes: string[] = [];
@@ -28,14 +35,20 @@ const csvRowToGraph = (
         else values.push(csvRow[f.key]);
         // generate node if not hidden field
         if (!f.hidden)
-          values.forEach((value: string) =>
-            metadataNodes.push(
-              graph.mergeNode(`${value}_${f.variableName}`, {
-                label: value,
-                type: f.variableName,
-              })
-            )
-          );
+          values.forEach((value: string) => {
+            const n = graph.mergeNode(`${value}_${f.variableName}`, {
+              label: value,
+              type: f.variableName,
+            });
+            graph.mergeNodeAttributes(n, {
+              nbArticles:
+                (graph.getNodeAttribute(
+                  `${value}_${f.variableName}`,
+                  "nbArticles"
+                ) || 0) + 1,
+            });
+            metadataNodes.push(n);
+          });
         // craft a parsed line for generated fields
         return { ...meta, [f.variableName]: values };
       } else {
@@ -47,13 +60,20 @@ const csvRowToGraph = (
     if (format.generatedFields)
       format.generatedFields?.forEach((f: GeneratedField) => {
         const node = f.maker(metadata);
-        if (node)
-          metadataNodes.push(
-            graph.mergeNode(`${node.key}_${f.variableName}`, {
-              ...node,
-              type: f.variableName,
-            })
-          );
+        if (node) {
+          const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
+            ...node,
+            type: f.variableName,
+          });
+          graph.mergeNodeAttributes(n, {
+            nbArticles:
+              (graph.getNodeAttribute(
+                `${node.key}_${f.variableName}`,
+                "nbArticles"
+              ) || 0) + 1,
+          });
+          metadataNodes.push(n);
+        }
       });
 
     // add edges between refs and metadata
