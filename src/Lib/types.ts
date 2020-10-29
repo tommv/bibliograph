@@ -17,3 +17,7 @@ export interface CSVFormat {
   // fields to be generated from previously parsed fields (mandatory and metadata)
   generatedFields?: GeneratedField[];
 }
+
+export interface FiltersType {
+  // TODO
+}
