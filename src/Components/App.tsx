@@ -11,7 +11,7 @@ import { CSVFormat, FiltersType } from "../Lib/types";
 import "./App.css";
 
 const App: FC<{}> = () => {
-  const [paths, setPaths] = useState<string[] | null>(null);
+  const [files, setFiles] = useState<File[] | null>(null);
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
   const [filters, setFilters] = useState<FiltersType | null>(null);
   const [fullGraph, setFullGraph] = useState<Graph | null>(null);
@@ -20,9 +20,9 @@ const App: FC<{}> = () => {
 
   useEffect(() => {
     // Load CSVs on submit Home component:
-    if (paths && paths.length && format && !fullGraph && !isLoading) {
+    if (files && files.length && format && !fullGraph && !isLoading) {
       setIsLoading(true);
-      loadFullGraph(paths, format).then((graph) => {
+      loadFullGraph(files, format).then((graph) => {
         setFullGraph(graph);
         setIsLoading(false);
       });
@@ -36,15 +36,15 @@ const App: FC<{}> = () => {
         setIsLoading(false);
       });
     }
-  }, [paths]);
+  }, [files]);
 
   let Component = <div>Woops, something went wrong...</div>;
 
   if (!fullGraph)
     Component = (
       <Home
-        onSubmit={(paths: string[], format: CSVFormat) => {
-          setPaths(paths);
+        onSubmit={(files: File[], format: CSVFormat) => {
+          setFiles(files);
           setCSVFormat(format);
         }}
       />

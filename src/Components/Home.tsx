@@ -9,7 +9,7 @@ import "./Home.css";
 
 const FORMAT_PLACEHOLDER = "SELECT_A_FORMAT";
 
-const Home: FC<{ onSubmit(paths: string[], format: CSVFormat): void }> = ({
+const Home: FC<{ onSubmit(files: File[], format: CSVFormat): void }> = ({
   onSubmit,
 }) => {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
@@ -17,12 +17,10 @@ const Home: FC<{ onSubmit(paths: string[], format: CSVFormat): void }> = ({
     FORMAT_PLACEHOLDER
   );
 
-  const csvPaths = (acceptedFiles || [])
-    .filter(
-      (file: FileWithPath) =>
-        file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv"
-    )
-    .map((file: FileWithPath) => file.path as string);
+  const csvFiles = (acceptedFiles || []).filter(
+    (file: FileWithPath) =>
+      file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv"
+  );
 
   return (
     <section className="Home">
@@ -59,14 +57,14 @@ const Home: FC<{ onSubmit(paths: string[], format: CSVFormat): void }> = ({
       </div>
       <div className="center">
         <button
-          disabled={!csvPaths.length || !CSVFormats[selectedFormat]}
+          disabled={!csvFiles.length || !CSVFormats[selectedFormat]}
           onClick={() => {
-            if (csvPaths.length && CSVFormats[selectedFormat])
-              onSubmit(csvPaths, CSVFormats[selectedFormat]);
+            if (csvFiles.length && CSVFormats[selectedFormat])
+              onSubmit(csvFiles, CSVFormats[selectedFormat]);
           }}
         >
-          Parse and index {csvPaths.length} CSV file
-          {csvPaths.length > 1 ? "s" : ""}
+          Parse and index {csvFiles.length} CSV file
+          {csvFiles.length > 1 ? "s" : ""}
         </button>
       </div>
     </section>

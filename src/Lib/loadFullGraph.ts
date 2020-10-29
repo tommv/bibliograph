@@ -59,15 +59,15 @@ const csvRowToGraph = (
 };
 
 export function loadFullGraph(
-  paths: string[],
+  files: File[],
   format: CSVFormat
 ): Promise<UndirectedGraph> {
   const fullGraph = new UndirectedGraph();
   return Promise.all(
-    paths.map(
-      (path: string) =>
+    files.map(
+      (file: File) =>
         new Promise((resolve) => {
-          papa.parse(path, {
+          papa.parse(file, {
             // add separator
             delimiter: format.separator,
             header: true,
