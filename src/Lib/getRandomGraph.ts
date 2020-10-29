@@ -7,8 +7,8 @@ import clusters from "graphology-generators/random/clusters";
 
 export function getRandomGraph(): Graph {
   const graph = clusters(UndirectedGraph, {
-    order: 3000,
-    size: 10000,
+    order: 1000,
+    size: 3000,
     clusters: 5,
   });
 

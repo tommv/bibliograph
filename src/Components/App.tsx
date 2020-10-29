@@ -62,7 +62,7 @@ const App: FC<{}> = () => {
       <Viz graph={filteredGraph} onGoBack={() => setFilteredGraph(null)} />
     );
 
-  return <div className="App c">{Component}</div>;
+  return <div className="App">{Component}</div>;
 };
 
 export default App;

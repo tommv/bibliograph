@@ -23,14 +23,14 @@ const Filters: FC<{
   const aggregations = getAggregations(fullGraph, FIELDS);
 
   return (
-    <section className="Filters">
+    <section className="Filters c">
       {FIELDS.map((field) => (
-        <>
+        <div key={field.label}>
           <h3>
             <span className="hg">{field.label || field.key}</span>
           </h3>
           <BarChart agg={aggregations[field.key]} />
-        </>
+        </div>
       ))}
     </section>
   );

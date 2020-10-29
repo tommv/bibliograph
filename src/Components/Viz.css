@@ -1,3 +1,26 @@
 .Viz {
-  /* TODO */
+  width: 100vw;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.Viz .controls {
+  margin: 30px 30px 0;
+}
+.Viz .controls > *:not(:last-child) {
+  margin-right: 0.5em;
+}
+
+.Viz .sigma-container {
+  flex-grow: 1;
+  margin: 30px;
+  border: 1px solid #bdbdbd;
+  box-sizing: border-box;
+}
+.Viz .sigma-container canvas {
+  margin: 0;
 }

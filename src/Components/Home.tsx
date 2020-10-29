@@ -29,7 +29,7 @@ const Home: FC<{
   );
 
   return (
-    <section className="Home">
+    <section className="Home c">
       <h1 className="center">
         <span className="hg">Bibliograph</span>
       </h1>
