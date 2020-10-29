@@ -2,6 +2,7 @@ export interface Field {
   key: string;
   variableName: string;
   variableLabel: string;
+  variableColor?: string;
   separator?: string; // multivalue separator
   hidden?: boolean;
 }
@@ -9,6 +10,7 @@ export interface GeneratedField {
   maker: ({}) => { key: string; label: string };
   variableName: string;
   variableLabel: string;
+  variableColor?: string;
 }
 
 export interface CSVFormat {

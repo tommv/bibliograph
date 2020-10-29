@@ -83,29 +83,29 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "institutions",
         variableLabel: "affiliation institutions",
         variableColor: "#E22521",
-        maker: (line: any) => {
-          if (line.affiliations) {
-            const institutions = line.affiliations.split("] ");
+        maker: (line: any) =>
+          line.affiliations.map((aff: string) => {
+            const institutions = aff.split("] ");
             const institution = (institutions.length > 1
               ? institutions[1]
               : institutions[0]
             ).split(",")[0];
             return { key: institution, label: institution };
-          }
-        },
+          }),
       },
       {
         // generate from "affiliations"
         variableName: "countries",
         variableLabel: "affiliation countries",
         variableColor: "#DF60BF",
-        maker: (line: any) => {
-          if (line.affiliations && line.affiliations.includes(", ")) {
-            const institutions = line.affiliations.split(", ");
-            const country = institutions[institutions.length - 1];
-            return { key: country, label: country };
-          }
-        },
+        maker: (line: any) =>
+          line.affiliations
+            .filter((aff: string) => aff.includes(", "))
+            .map((aff: string) => {
+              const infos = aff.split(", ");
+              const country = infos[infos.length - 1];
+              return { key: country, label: country };
+            }),
       },
       {
         // generate from "funding"
@@ -157,7 +157,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "source",
         variableLabel: "sources",
         variableColor: "#A7D30D",
-        key: "SO",
+        key: "Source title",
       },
       {
         variableName: "authorKeywords",
@@ -199,7 +199,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         variableName: "authors",
         variableLabel: "authors",
-        variableColor: "#FFE915", 
+        variableColor: "#FFE915",
         maker: (line: any) =>
           zip(
             line.authors as string[],
@@ -212,8 +212,13 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "affiliation institutions",
         variableColor: "#E22521",
         maker: (line: any) => {
-          const institution = line.affiliations?.split(",")[0];
-          return { key: institution, label: institution };
+          const institutions = line.affiliations?.map(
+            (aff: string) => aff.split(",")[0]
+          );
+          return institutions.map((institution: string) => ({
+            key: institution,
+            label: institution,
+          }));
         },
       },
       {
@@ -222,11 +227,13 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "affiliation countries",
         variableColor: "#DF60BF",
         maker: (line: any) => {
-          if (line.affiliations && line.affiliations.includes(", ")) {
-            const institutions = line.affiliations.split(", ");
-            const institution = institutions[institutions.length - 1];
-            return { key: institution, label: institution };
-          }
+          line.affiliations
+            .filter((aff: string) => aff.includes(", "))
+            .map((aff: string) => {
+              const infos = aff.split(", ");
+              const country = infos[infos.length - 1];
+              return { key: country, label: country };
+            });
         },
       },
       {
