@@ -139,7 +139,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
 
     metadataFields: [
       {
-        variableName: "authors",
+        variableName: "_authors",
         variableLabel: "author names",
         key: "Authors",
         separator: ",",
