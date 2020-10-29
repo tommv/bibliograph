@@ -1,5 +1,10 @@
 import Graph from "graphology";
 
-export function loadFullGraph(paths: string[]): Promise<Graph> {
+import { CSVFormat } from "./types";
+
+export function loadFullGraph(
+  paths: string[],
+  format: CSVFormat
+): Promise<Graph> {
   return Promise.resolve(new Graph());
 }

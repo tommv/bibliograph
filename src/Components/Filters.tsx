@@ -1,8 +1,9 @@
 import React, { FC } from "react";
 import Graph from "graphology";
 
-import "./Filters.css";
 import { FiltersType } from "../Lib/types";
+
+import "./Filters.css";
 
 const Filters: FC<{
   fullGraph: Graph;

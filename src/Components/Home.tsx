@@ -1,15 +1,28 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { useDropzone, FileWithPath } from "react-dropzone";
+import { toPairs } from "lodash";
+
+import { CSVFormats } from "../Lib/CSVFormats";
+import { CSVFormat } from "../Lib/types";
 
 import "./Home.css";
 
-const Home: FC<{ onSubmit(paths: string[]): void }> = ({ onSubmit }) => {
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+const FORMAT_PLACEHOLDER = "SELECT_A_FORMAT";
 
-  const csvFiles = acceptedFiles.filter(
-    (file: FileWithPath) =>
-      file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv"
+const Home: FC<{ onSubmit(paths: string[], format: CSVFormat): void }> = ({
+  onSubmit,
+}) => {
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+  const [selectedFormat, setSelectedFormat] = useState<string>(
+    FORMAT_PLACEHOLDER
   );
+
+  const csvPaths = (acceptedFiles || [])
+    .filter(
+      (file: FileWithPath) =>
+        file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv"
+    )
+    .map((file: FileWithPath) => file.path as string);
 
   return (
     <section className="Home">
@@ -31,12 +44,31 @@ const Home: FC<{ onSubmit(paths: string[]): void }> = ({ onSubmit }) => {
         <input {...getInputProps()} />
         <p>Drag and drop here your CSV files or their folder</p>
       </div>
-      <aside>
-        <button disabled={!csvFiles.length}>
-          Parse and index {csvFiles.length} CSV file
-          {csvFiles.length > 1 ? "s" : ""}
+      <div className="center">
+        <select
+          value={selectedFormat}
+          onChange={(e) => setSelectedFormat(e.target.value)}
+        >
+          <option value={FORMAT_PLACEHOLDER}>Please select a format</option>
+          {toPairs(CSVFormats).map(([key, format]) => (
+            <option key={key} value={key}>
+              {format.label}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="center">
+        <button
+          disabled={!csvPaths.length || !CSVFormats[selectedFormat]}
+          onClick={() => {
+            if (csvPaths.length && CSVFormats[selectedFormat])
+              onSubmit(csvPaths, CSVFormats[selectedFormat]);
+          }}
+        >
+          Parse and index {csvPaths.length} CSV file
+          {csvPaths.length > 1 ? "s" : ""}
         </button>
-      </aside>
+      </div>
     </section>
   );
 };

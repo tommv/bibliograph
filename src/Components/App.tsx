@@ -1,17 +1,18 @@
 import React, { FC, useEffect, useState } from "react";
 import Graph from "graphology";
 
+import Viz from "./Viz";
 import Home from "./Home";
 import Filters from "./Filters";
-import { FiltersType } from "../Lib/types";
+import { prepareGraph } from "../Lib/prepareGraph";
 import { loadFullGraph } from "../Lib/loadFullGraph";
+import { CSVFormat, FiltersType } from "../Lib/types";
 
 import "./App.css";
-import Viz from "./Viz";
-import { prepareGraph } from "../Lib/prepareGraph";
 
 const App: FC<{}> = () => {
   const [paths, setPaths] = useState<string[] | null>(null);
+  const [format, setCSVFormat] = useState<CSVFormat | null>(null);
   const [filters, setFilters] = useState<FiltersType | null>(null);
   const [fullGraph, setFullGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
@@ -19,9 +20,9 @@ const App: FC<{}> = () => {
 
   useEffect(() => {
     // Load CSVs on submit Home component:
-    if (paths && paths.length && !fullGraph && !isLoading) {
+    if (paths && paths.length && format && !fullGraph && !isLoading) {
       setIsLoading(true);
-      loadFullGraph(paths).then((graph) => {
+      loadFullGraph(paths, format).then((graph) => {
         setFullGraph(graph);
         setIsLoading(false);
       });
@@ -39,7 +40,15 @@ const App: FC<{}> = () => {
 
   let Component = <div>Woops, something went wrong...</div>;
 
-  if (!fullGraph) Component = <Home onSubmit={setPaths} />;
+  if (!fullGraph)
+    Component = (
+      <Home
+        onSubmit={(paths: string[], format: CSVFormat) => {
+          setPaths(paths);
+          setCSVFormat(format);
+        }}
+      />
+    );
   if (fullGraph && !filteredGraph)
     Component = <Filters fullGraph={fullGraph} onSubmit={setFilters} />;
   if (filteredGraph)

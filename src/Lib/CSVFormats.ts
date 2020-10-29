@@ -1,5 +1,6 @@
-import { CSVFormat } from "./types";
 import { zip } from "lodash";
+
+import { CSVFormat } from "./types";
 
 export const CSVFormats: { [key: string]: CSVFormat } = {
   webOfScience: {

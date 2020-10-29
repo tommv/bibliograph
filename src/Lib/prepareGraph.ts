@@ -1,4 +1,5 @@
 import Graph from "graphology";
+
 import { FiltersType } from "./types";
 
 export function prepareGraph(
