@@ -63,8 +63,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         hidden: true,
       },
       {
-        variableName: "funding",
-        variableLabel: "funding",
+        variableName: "fundings",
+        variableLabel: "fundings",
         key: "FU",
         separator: ";",
         hidden: true,
@@ -84,6 +84,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "affiliation institutions",
         variableColor: "#E22521",
         maker: (line: any) =>
+          line.affiliations &&
           line.affiliations.map((aff: string) => {
             const institutions = aff.split("] ");
             const institution = (institutions.length > 1
@@ -99,6 +100,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "affiliation countries",
         variableColor: "#DF60BF",
         maker: (line: any) =>
+          line.affiliations &&
           line.affiliations
             .filter((aff: string) => aff.includes(", "))
             .map((aff: string) => {
@@ -113,6 +115,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "funders",
         variableColor: "#FF8F2E",
         maker: (line: any) =>
+          line.fundings &&
           line.fundings.map((funding: string) => {
             let funder;
             if (funding.includes(" [")) funder = funding.split(" [")[0];
@@ -146,12 +149,14 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "author names",
         key: "Authors",
         separator: ",",
+        hidden: true,
       },
       {
-        variableName: "authorsID",
+        variableName: "_authorsID",
         variableLabel: "authors Scopus ID",
         key: "Author(s) ID",
         separator: ";",
+        hidden: true,
       },
       {
         variableName: "source",
@@ -181,8 +186,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         hidden: true,
       },
       {
-        variableName: "funding",
-        variableLabel: "funding",
+        variableName: "fundings",
+        variableLabel: "fundings",
         key: "Funding Details",
         separator: ";",
         hidden: true,
@@ -202,8 +207,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableColor: "#FFE915",
         maker: (line: any) =>
           zip(
-            line.authors as string[],
-            line.authorsID.filter((id: any) => id !== "") as string[]
+            line._authors as string[],
+            line._authorsID.filter((id: any) => id !== "") as string[]
           ).map(([name, id]: any) => ({ label: name, key: id })),
       },
       {
@@ -215,7 +220,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
           const institutions = line.affiliations?.map(
             (aff: string) => aff.split(",")[0]
           );
-          return institutions.map((institution: string) => ({
+          return institutions?.map((institution: string) => ({
             key: institution,
             label: institution,
           }));
@@ -226,15 +231,15 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "countries",
         variableLabel: "affiliation countries",
         variableColor: "#DF60BF",
-        maker: (line: any) => {
+        maker: (line: any) =>
+          line.affiliations &&
           line.affiliations
             .filter((aff: string) => aff.includes(", "))
             .map((aff: string) => {
               const infos = aff.split(", ");
               const country = infos[infos.length - 1];
               return { key: country, label: country };
-            });
-        },
+            }),
       },
       {
         // generate from "funding"
@@ -242,6 +247,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "funders",
         variableColor: "#FF8F2E",
         maker: (line: any) =>
+          line.fundings &&
           line.fundings.map((funding: string) => {
             const f = funding.split(":")[0];
             return { key: f, label: f };
