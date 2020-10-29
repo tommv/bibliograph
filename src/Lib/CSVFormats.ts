@@ -10,11 +10,13 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     mandatoryFields: [
       {
         variableName: "references",
+        variableLabel: "references",
         key: "CR",
         separator: ";",
       },
       {
         variableName: "year",
+        variableLabel: "year",
         key: "PY",
         hidden: TRUE,
       },
@@ -23,42 +25,50 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     metadataFields: [
       {
         variableName: "authors",
+        variableLabel: "authors",
         key: "AF",
         separator: ";",
       },
       {
         variableName: "source",
+        variableLabel: "sources",
         key: "SO",
       },
       {
         variableName: "authorKeywords",
+        variableLabel: "author keywords",
         key: "DE",
         separator: ";",
       },
       {
         variableName: "indexKeywords",
+        variableLabel: "index keywords",
         key: "ID",
         separator: ";",
       },
       {
         variableName: "subjects",
+        variableLabel: "subject areas",
         key: "WC",
         separator: ";",
       },
       {
         variableName: "affiliations",
+        variableLabel: "affiliations",
         key: "C1",
         separator: ";",
         hidden: TRUE,
       },
       {
         variableName: "funding",
+        variableLabel: "funding",
         key: "FU",
         separator: ";",
         hidden: TRUE,
       },
       {
         variableName: "type",
+        variableLabel: "record types",
         key: "DT",
         hidden: TRUE,
       },
@@ -69,6 +79,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "affiliations"
         variableName: "institutions",
+        variableLabel: "affiliation institutions",
         maker: (line: any) => {
           if (line.affiliations) {
             const institutions = line.affiliations.split("] ");
@@ -83,6 +94,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "affiliations"
         variableName: "countries",
+        variableLabel: "affiliation countries",
         maker: (line: any) => {
           if (line.affiliations && line.affiliations.includes(", ")) {
             const institutions = line.affiliations.split(", ");
@@ -94,6 +106,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "funding"
         variableName: "funders",
+        variableLabel: "funders",
         maker: (line: any) =>
           line.fundings.map((funding: string) => {
             let funder;
@@ -112,11 +125,13 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     mandatoryFields: [
       {
         variableName: "references",
+        variableLabel: "references",
         key: "References",
         separator: ";",
       },
       {
         variableName: "year",
+        variableLabel: "year",
         key: "Year",
         hidden: TRUE,
       },
@@ -125,42 +140,50 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     metadataFields: [
       {
         variableName: "authors",
+        variableLabel: "author names",
         key: "Authors",
         separator: ",",
       },
       {
         variableName: "authorsID",
+        variableLabel: "authors Scopus ID",
         key: "Author(s) ID",
         separator: ";",
       },
       {
         variableName: "source",
+        variableLabel: "sources",
         key: "SO",
       },
       {
-        variableName: "author_keywords",
+        variableName: "authorKeywords",
+        variableLabel: "author keywords",
         key: "Author Keywords",
         separator: ";",
       },
       {
-        variableName: "index_keywords",
+        variableName: "indexKeywords",
+        variableLabel: "index keywords",
         key: "Index Keywords",
         separator: ";",
       },
       {
         variableName: "affiliations",
+        variableLabel: "affiliations",
         key: "Affiliations",
         separator: ";",
         hidden: TRUE,
       },
       {
         variableName: "funding",
+        variableLabel: "funding",
         key: "Funding Details",
         separator: ";",
         hidden: TRUE,
       },
       {
         variableName: "type",
+        variableLabel: "record types",
         key: "Document Type",
         hidden: TRUE,
       },
@@ -169,16 +192,19 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
 
     generatedFields: [
       {
+        variableName: "authors",
+        variableLabel: "authors",
         maker: (line: any) =>
           zip(
             line.authors as string[],
             line.authorsID.filter((id: any) => id !== "") as string[]
           ).map(([name, id]: any) => ({ label: name, key: id })),
-        variableName: "authors",
+
       },
       {
         // generate from "affiliations"
         variableName: "institutions",
+        variableLabel: "affiliation institutions",
         maker: (line: any) => {
           const institution = line.affiliations?.split(",")[0];
           return { key: institution, label: institution };
@@ -187,6 +213,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "affiliations"
         variableName: "countries",
+        variableLabel: "affiliation countries",
         maker: (line: any) => {
           if (line.affiliations && line.affiliations.includes(", ")) {
             const institutions = line.affiliations.split(", ");
@@ -198,6 +225,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "funding"
         variableName: "funders",
+        variableLabel: "funders",
         maker: (line: any) =>
           line.fundings.map((funding: string) => {
             const f = funding.split(":")[0];
