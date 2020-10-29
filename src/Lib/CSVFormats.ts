@@ -63,10 +63,11 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         maker: (line: any) => {
           if (line.affiliations) {
             const institutions = line.affiliations.split("] ");
-            return (institutions.length > 1
+            const institution = (institutions.length > 1
               ? institutions[1]
               : institutions[0]
             ).split(",")[0];
+            return { key: institution, label: institution };
           }
         },
       },
@@ -76,7 +77,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         maker: (line: any) => {
           if (line.affiliations && line.affiliations.includes(", ")) {
             const institutions = line.affiliations.split(", ");
-            return institutions[institutions.length - 1];
+            const country = institutions[institutions.length - 1];
+            return { key: country, label: country };
           }
         },
       },
@@ -85,8 +87,10 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "funders",
         maker: (line: any) =>
           line.fundings.map((funding: string) => {
-            if (funding.includes(" [")) return funding.split(" [")[0];
-            else return funding;
+            let funder;
+            if (funding.includes(" [")) funder = funding.split(" [")[0];
+            else funder = funding;
+            return { key: funder, label: funder };
           }),
       },
     ],
@@ -151,13 +155,16 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
           zip(
             line.authors as string[],
             line.authorsID.filter((id: any) => id !== "") as string[]
-          ).map(([name, id]: any) => ({ name, id })),
+          ).map(([name, id]: any) => ({ label: name, key: id })),
         variableName: "authors",
       },
       {
         // generate from "affiliations"
         variableName: "institutions",
-        maker: (line: any) => line.affiliations?.split(",")[0],
+        maker: (line: any) => {
+          const institution = line.affiliations?.split(",")[0];
+          return { key: institution, label: institution };
+        },
       },
       {
         // generate from "affiliations"
@@ -165,7 +172,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         maker: (line: any) => {
           if (line.affiliations && line.affiliations.includes(", ")) {
             const institutions = line.affiliations.split(", ");
-            return institutions[institutions.length - 1];
+            const institution = institutions[institutions.length - 1];
+            return { key: institution, label: institution };
           }
         },
       },
@@ -173,7 +181,10 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         // generate from "funding"
         variableName: "funders",
         maker: (line: any) =>
-          line.fundings.map((funding: string) => funding.split(":")[0]),
+          line.fundings.map((funding: string) => {
+            const f = funding.split(":")[0];
+            return { key: f, label: f };
+          }),
       },
     ],
   },

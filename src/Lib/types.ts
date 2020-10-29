@@ -4,7 +4,7 @@ export interface Field {
   separator?: string; // multivalue separator
 }
 export interface GeneratedField {
-  maker?: Function;
+  maker?: ({}) => { key: string; label: string };
   variableName: string;
 }
 
