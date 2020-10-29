@@ -16,6 +16,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         variableName: "year",
         key: "PY",
+        hidden: TRUE,
       },
     ],
 
@@ -40,20 +41,28 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         separator: ";",
       },
       {
+        variableName: "subjects",
+        key: "WC",
+        separator: ";",
+      },
+      {
         variableName: "affiliations",
         key: "C1",
         separator: ";",
+        hidden: TRUE,
       },
       {
         variableName: "funding",
         key: "FU",
         separator: ";",
+        hidden: TRUE,
       },
       {
-        variableName: "subjects",
-        key: "WC",
-        separator: ";",
+        variableName: "type",
+        key: "DT",
+        hidden: TRUE,
       },
+
     ],
 
     generatedFields: [
@@ -109,6 +118,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         variableName: "year",
         key: "Year",
+        hidden: TRUE,
       },
     ],
 
@@ -141,12 +151,20 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "affiliations",
         key: "Affiliations",
         separator: ";",
+        hidden: TRUE,
       },
       {
         variableName: "funding",
         key: "Funding Details",
         separator: ";",
+        hidden: TRUE,
       },
+      {
+        variableName: "type",
+        key: "Document Type",
+        hidden: TRUE,
+      },
+
     ],
 
     generatedFields: [
