@@ -11,8 +11,6 @@ import { CSVFormat, FieldIndices, FiltersType } from "../Lib/types";
 import { indexCSVs } from "../Lib/indexCSVs";
 
 import "./App.css";
-import { indexCSVs } from "../Lib/indexCSVs";
-import { isEmpty, pickBy, toPairs } from "lodash";
 
 const App: FC<{}> = () => {
   const [files, setFiles] = useState<File[] | null>(null);
