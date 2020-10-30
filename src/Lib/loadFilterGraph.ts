@@ -86,29 +86,28 @@ const csvRowToGraph = (
     // generated fields
     if (format.generatedFields)
       format.generatedFields?.forEach((f: GeneratedField) => {
-        const node = f.maker(metadata);
+        const nodes = f.maker(metadata);
         // apply filters
-        if (
-          node &&
-          filteredTypes[f.variableName] &&
-          !!filteredTypes[f.variableName][node.key]
-        ) {
-          const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
-            ...node,
-            dataType: f.variableName,
-            color: f.variableColor,
-          });
-          const nbArticles =
-            (graph.getNodeAttribute(
-              `${node.key}_${f.variableName}`,
-              "nbArticles"
-            ) || 0) + 1;
-          graph.mergeNodeAttributes(n, {
-            nbArticles,
-            size: nbArticles,
-          });
-          metadataNodes.push(n);
-        }
+        if (nodes && nodes.length > 0 && filteredTypes[f.variableName])
+          nodes
+            .filter((node) => !!filteredTypes[f.variableName][node.key])
+            .forEach((node) => {
+              const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
+                ...node,
+                type: f.variableName,
+                color: f.variableColor,
+              });
+              const nbArticles =
+                (graph.getNodeAttribute(
+                  `${node.key}_${f.variableName}`,
+                  "nbArticles"
+                ) || 0) + 1;
+              graph.mergeNodeAttributes(n, {
+                nbArticles,
+                size: nbArticles,
+              });
+              metadataNodes.push(n);
+            });
       });
     // add edges refs click
     if (references.length > 1) {

@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { last, mapValues } from "lodash";
+import { last, mapValues, max } from "lodash";
 
 import {
   FiltersType,
@@ -20,10 +20,6 @@ const Filters: FC<{
   const { aggregations, fields } = aggregateFieldIndices(fieldIndices, format);
   // Default filters:
   const [filters, setFilters] = useState<FiltersType>({
-    ...mapValues(
-      aggregations,
-      (agg: Aggregation) => last(agg.values)!.lowerBound + 1
-    ),
     references: 2,
   });
 
@@ -43,17 +39,23 @@ const Filters: FC<{
         {fields.map((field) => {
           const agg = aggregations[field.key];
           const maxValue = last(agg.values)!.lowerBound || 0;
-          const value = filters[field.key] || 0;
+          const value = filters[field.key] || maxValue + 1;
           const aggValue = agg.values.find((agg) => agg.lowerBound >= value);
+          const maxCount = max(agg.values.map((v) => v.count));
           const count = aggValue ? aggValue.count : 0;
 
           return (
             <div key={field.label}>
               <h4>{field.label || field.key}</h4>
               <div>
-                Keep the <strong>{count}</strong> item{count > 1 ? "s" : ""}{" "}
-                occurring in at least <strong>{value}</strong> record
+                Keep the <strong>{count}</strong> {field.label}
+                {count > 1 ? "s" : ""} occurring in at least{" "}
+                <strong>{value}</strong> record
                 {value > 1 ? "s" : ""}
+              </div>
+              <div>
+                <span style={{ float: "left" }}>0</span>
+                <span style={{ float: "right" }}>{maxCount}</span>
               </div>
               <input
                 list={field.key + "-tickmarks"}
@@ -69,10 +71,6 @@ const Filters: FC<{
                   })
                 }
               />
-              <datalist id={field.key + "-tickmarks"}>
-                <option value={0} label={agg.values[0].lowerBound + ""} />
-                <option value={maxValue + 1} label="0" />
-              </datalist>
             </div>
           );
         })}

@@ -49,9 +49,11 @@ const indexRow = (
     // generated fields
     if (format.generatedFields)
       format.generatedFields?.forEach((f: GeneratedField) => {
-        const node = f.maker(metadata);
-        if (node) {
-          incrementTypeIndex(indices, f.variableName, node.key);
+        const nodes = f.maker(metadata);
+        if (nodes && nodes.length > 0) {
+          nodes.forEach((node) =>
+            incrementTypeIndex(indices, f.variableName, node.key)
+          );
         }
       });
     return indices;
