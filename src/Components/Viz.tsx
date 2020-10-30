@@ -139,6 +139,10 @@ class Viz extends Component<PropsType, StateType> {
             <i className="fa fa-download" /> Download <strong>Heatmap</strong>{" "}
             image
           </button>
+          <button className="btn right" onClick={this.props.onGoBack}>
+            <i className="fa fa-undo" /> Go back to <strong>filters</strong>{" "}
+            view
+          </button>
         </div>
         <div className="sigma-wrapper">
           <div className="sigma-container" ref={this.domRoot} />

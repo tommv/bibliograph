@@ -85,7 +85,13 @@ const App: FC<{}> = () => {
     );
   if (filteredGraph)
     Component = (
-      <Viz graph={filteredGraph} onGoBack={() => setFilteredGraph(null)} />
+      <Viz
+        graph={filteredGraph}
+        onGoBack={() => {
+          setFilteredGraph(null);
+          setFilters(null);
+        }}
+      />
     );
 
   return <div className="App">{Component}</div>;

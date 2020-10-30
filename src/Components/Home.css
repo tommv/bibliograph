@@ -19,6 +19,7 @@
   display: flex;
   align-items: baseline;
   justify-content: center;
+  margin: 0.5em 0;
 }
 .Home .flex-row > * {
   margin: 0 0.4em;

@@ -10,9 +10,13 @@
 
 .Viz .features {
   margin: 30px 30px 0;
+  display: flex;
 }
 .Viz .features > *:not(:last-child) {
   margin-right: 0.5em;
+}
+.Viz .features .right {
+  margin-left: auto
 }
 
 .Viz .sigma-wrapper {

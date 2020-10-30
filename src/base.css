@@ -6,6 +6,12 @@ body {
   font-family: Nunito, sans-serif;
 }
 
+/* Cancel some weird rule from the framework */
+* + * {
+  box-sizing: unset;
+  margin: unset;
+}
+
 #root {
   margin: 0;
 }
