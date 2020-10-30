@@ -12,7 +12,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
   const refsNodes: string[] = [];
   const noneRefsNodes: string[] = [];
   mainGraph.forEachNode((node) => {
-    if (mainGraph.getNodeAttribute(node, "type") === "references")
+    if (mainGraph.getNodeAttribute(node, "dataType") === "references")
       refsNodes.push(node);
     else noneRefsNodes.push(node);
   });
@@ -20,7 +20,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
   const refsGraph = subGraph(mainGraph, refsNodes) as any;
   circular.assign(refsGraph);
   const positions = forceAtlas2(refsGraph, {
-    iterations: 500,
+    iterations: 1000,
     settings: forceAtlas2.inferSettings(refsGraph),
   });
 

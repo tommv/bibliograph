@@ -34,7 +34,7 @@ const csvRowToGraph = (
       .map((ref) => {
         const n = graph.mergeNode(ref, {
           label: ref,
-          type: "references",
+          dataType: "references",
           color: refsField.variableColor,
         });
         const nbArticles = (graph.getNodeAttribute(ref, "nbArticles") || 0) + 1;
@@ -63,7 +63,7 @@ const csvRowToGraph = (
             // meta node
             const n = graph.mergeNode(`${value}_${f.variableName}`, {
               label: value,
-              type: f.variableName,
+              dataType: f.variableName,
               color: f.variableColor,
             });
             const nbArticles =
@@ -95,7 +95,7 @@ const csvRowToGraph = (
         ) {
           const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
             ...node,
-            type: f.variableName,
+            dataType: f.variableName,
             color: f.variableColor,
           });
           const nbArticles =

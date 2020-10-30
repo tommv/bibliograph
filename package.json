@@ -24,7 +24,7 @@
     "graphology-generators": "^0.10.1",
     "graphology-gexf": "^0.6.0",
     "graphology-layout": "^0.3.2",
-    "graphology-layout-forceatlas2": "^0.5.2",
+    "graphology-layout-forceatlas2": "^0.5.3",
     "graphology-svg": "^0.1.1",
     "graphology-types": "^0.18.0",
     "graphology-utils": "^1.7.0",

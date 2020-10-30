@@ -39,6 +39,7 @@ export function saveHeatmap(graph: Graph, fileName: string): void {
     spreading: (SETTINGS.width + SETTINGS.height) / 2 / 20, // arbitrary
   });
 
+  // Temporarily rotate the graph:
   let svgString = renderSVG(graphWithNoEdge, { ...DEFAULTS, ...SETTINGS });
 
   // Ugly trick to put the generated heatmap image into the SVG file:
