@@ -35,9 +35,12 @@ const csvRowToGraph = (
         const n = graph.mergeNode(ref, {
           label: ref,
           type: "references",
+          color: refsField.variableColor,
         });
+        const nbArticles = (graph.getNodeAttribute(ref, "nbArticles") || 0) + 1;
         graph.mergeNodeAttributes(n, {
-          nbArticles: (graph.getNodeAttribute(ref, "nbArticles") || 0) + 1,
+          nbArticles,
+          size: Math.sqrt(nbArticles),
         });
         return n;
       });
@@ -57,16 +60,20 @@ const csvRowToGraph = (
         // no filter => no nodes
         if (!f.hidden && filteredTypes[f.variableName])
           values.forEach((value: string) => {
+            // meta node
             const n = graph.mergeNode(`${value}_${f.variableName}`, {
               label: value,
               type: f.variableName,
+              color: f.variableColor,
             });
+            const nbArticles =
+              (graph.getNodeAttribute(
+                `${value}_${f.variableName}`,
+                "nbArticles"
+              ) || 0) + 1;
             graph.mergeNodeAttributes(n, {
-              nbArticles:
-                (graph.getNodeAttribute(
-                  `${value}_${f.variableName}`,
-                  "nbArticles"
-                ) || 0) + 1,
+              nbArticles,
+              size: Math.sqrt(nbArticles),
             });
             metadataNodes.push(n);
           });
@@ -89,13 +96,16 @@ const csvRowToGraph = (
           const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
             ...node,
             type: f.variableName,
+            color: f.variableColor,
           });
+          const nbArticles =
+            (graph.getNodeAttribute(
+              `${node.key}_${f.variableName}`,
+              "nbArticles"
+            ) || 0) + 1;
           graph.mergeNodeAttributes(n, {
-            nbArticles:
-              (graph.getNodeAttribute(
-                `${node.key}_${f.variableName}`,
-                "nbArticles"
-              ) || 0) + 1,
+            nbArticles,
+            size: nbArticles,
           });
           metadataNodes.push(n);
         }
