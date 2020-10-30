@@ -114,10 +114,13 @@ const csvRowToGraph = (
     if (references.length > 1) {
       const refEdges = combinations(references, 2);
       for (let [source, target] of refEdges) {
-        graph.mergeEdge(source, target);
-        graph.mergeEdgeAttributes(source, target, {
-          weight: (graph.getEdgeAttribute(source, target, "weight") || 0) + 1,
-        });
+        //discard selfloop
+        if (source != target) {
+          graph.mergeEdge(source, target);
+          graph.mergeEdgeAttributes(source, target, {
+            weight: (graph.getEdgeAttribute(source, target, "weight") || 0) + 1,
+          });
+        }
       }
     }
     // add edges between refs and metadata
@@ -140,7 +143,7 @@ export function loadFilterGraph(
   filteredTypes: FieldIndices,
   range: { min?: number; max?: number }
 ): Promise<UndirectedGraph> {
-  const fullGraph = new UndirectedGraph();
+  const fullGraph = new UndirectedGraph({ allowSelfLoops: false });
   return Promise.all(
     files.map(
       (file: File) =>
@@ -166,6 +169,13 @@ export function loadFilterGraph(
         })
     )
   ).then(() => {
+    // finally remove orphans
+    // To map degree information to node attributes
+
+    const nodesToDelete: string[] = fullGraph
+      .nodes()
+      .filter((n) => fullGraph.degree(n) == 0);
+    nodesToDelete.forEach((n) => fullGraph.dropNode(n));
     return fullGraph;
   });
 }

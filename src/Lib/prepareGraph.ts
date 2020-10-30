@@ -25,8 +25,5 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     await new Promise(requestAnimationFrame);
   }
 
-  // 3. Apply some more changes to prepare for sigma (colors, sizes?)
-  // TODO:
-
   return Promise.resolve(graph);
 }
