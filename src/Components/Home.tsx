@@ -59,7 +59,7 @@ const Home: FC<{
       <div {...getRootProps({ className: "dropzone" })}>
         <input {...getInputProps()} />
         <p>Drag and drop here your CSV files or their folder</p>
-        {csvFiles.length && (
+        {csvFiles.length > 0 && (
           <p>
             (currently {csvFiles.length} selected file
             {csvFiles.length > 1 ? "s" : ""})

@@ -1,10 +1,6 @@
 import React, { FC, useState } from "react";
 
-import {
-  FiltersType,
-  CSVFormat,
-  FieldIndices,
-} from "../Lib/types";
+import { FiltersType, CSVFormat, FieldIndices } from "../Lib/types";
 import { aggregateFieldIndices } from "../Lib/getAggregations";
 
 import "./Filters.css";
@@ -15,11 +11,10 @@ const Filters: FC<{
   format: CSVFormat;
   onSubmit(filters: FiltersType): void;
 }> = ({ fieldIndices, format, onSubmit }) => {
-
   // Aggregate data:
   const { aggregations, fields } = aggregateFieldIndices(fieldIndices, format);
   // default filters
-  const [filters, setFilters] = useState<FiltersType>({references:2});
+  const [filters, setFilters] = useState<FiltersType>({ references: 2 });
 
   return (
     <section className="Filters c">
