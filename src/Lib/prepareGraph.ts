@@ -1,29 +1,53 @@
-import Graph, { UndirectedGraph } from "graphology";
+import Graph from "graphology";
 import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
-
-import { FiltersType } from "./types";
-
-const MAX_TIME = 5 * 1000;
-const MAX_STEPS = 500;
+import { largestConnectedComponent } from "graphology-components";
+import { subGraph } from "graphology-utils";
 
 export async function prepareGraph(graph: Graph): Promise<Graph> {
-  // 2. Apply FA2
-  circular.assign(graph);
+  const largest = largestConnectedComponent(graph as any);
+  const mainGraph = subGraph(graph as any, largest);
 
-  let stepsPerBatch = 1;
-  if (graph.order < 10000) stepsPerBatch = 10;
-  if (graph.order < 1000) stepsPerBatch = 20;
+  // 1. Spatialize "ref" nodes:
+  const refsNodes: string[] = [];
+  const noneRefsNodes: string[] = [];
+  mainGraph.forEachNode((node) => {
+    if (mainGraph.getNodeAttribute(node, "type") === "references")
+      refsNodes.push(node);
+    else noneRefsNodes.push(node);
+  });
 
-  let steps = 0;
-  const startTime = Date.now();
-  while (steps < MAX_STEPS && Date.now() - startTime < MAX_TIME) {
-    forceAtlas2.assign(graph, {
-      iterations: stepsPerBatch,
+  const refsGraph = subGraph(mainGraph, refsNodes) as any;
+  circular.assign(refsGraph);
+  const positions = forceAtlas2(refsGraph, {
+    iterations: 500,
+    settings: forceAtlas2.inferSettings(refsGraph),
+  });
+
+  // Apply newly found positions into the *input* graph (and fix those nodes):
+  refsGraph.forEachNode((refNode: string) =>
+    mainGraph.mergeNodeAttributes(refNode, {
+      ...positions[refNode],
+      fixed: true,
+    })
+  );
+
+  // 2. Put each none-ref node to the barycenter of its neighbors:
+  noneRefsNodes.forEach((noneRefNode) => {
+    const neighborsCount = mainGraph.neighbors(noneRefNode).length;
+    let x = 0;
+    let y = 0;
+
+    mainGraph.forEachNeighbor(noneRefNode, (neighbor) => {
+      x += positions[neighbor].x;
+      y += positions[neighbor].y;
     });
 
-    await new Promise(requestAnimationFrame);
-  }
+    mainGraph.mergeNodeAttributes(noneRefNode, {
+      x: x / neighborsCount,
+      y: y / neighborsCount,
+    });
+  });
 
-  return Promise.resolve(graph);
+  return Promise.resolve((mainGraph as unknown) as Graph);
 }
