@@ -24,12 +24,12 @@ const Filters: FC<{
           <h3>
             <span className="hg">{field.label || field.key}</span>
           </h3>
-          <BarChart
+          {<BarChart
             agg={aggregations[field.key]}
             field={field}
             filters={filters}
             setFilters={setFilters}
-          />
+          />}
         </div>
       ))}
     </section>

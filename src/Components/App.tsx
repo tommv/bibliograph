@@ -23,14 +23,16 @@ const App: FC<{}> = () => {
 
   useEffect(() => {
     // Load CSVs on submit Home component:
-    if (files && files.length && format && !filteredGraph && !isLoading) {
+    if (files && files.length && format && isEmpty(indices) && !isLoading) {
       setIsLoading(true);
       indexCSVs(files, format, range).then((indices) => {
         setIndices(indices);
         setIsLoading(false);
       });
     }
+  }, [files, format, indices, isLoading, range]);
 
+  useEffect(() => {
     // Prepare graph when filters are submitted:
     if (
       files &&
