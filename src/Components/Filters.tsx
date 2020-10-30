@@ -1,9 +1,13 @@
 import React, { FC, useState } from "react";
-import { last } from "lodash";
+import { last, mapValues } from "lodash";
 
-import { FiltersType, CSVFormat, FieldIndices } from "../Lib/types";
+import {
+  FiltersType,
+  CSVFormat,
+  FieldIndices,
+  Aggregation,
+} from "../Lib/types";
 import { aggregateFieldIndices } from "../Lib/getAggregations";
-import BarChart from "./BarChart";
 
 import "./Filters.css";
 
@@ -14,8 +18,14 @@ const Filters: FC<{
 }> = ({ fieldIndices, format, onSubmit }) => {
   // Aggregate data:
   const { aggregations, fields } = aggregateFieldIndices(fieldIndices, format);
-  // default filters
-  const [filters, setFilters] = useState<FiltersType>({ references: 2 });
+  // Default filters:
+  const [filters, setFilters] = useState<FiltersType>({
+    ...mapValues(
+      aggregations,
+      (agg: Aggregation) => last(agg.values)!.lowerBound + 1
+    ),
+    references: 2,
+  });
 
   return (
     <section className="Filters c">
@@ -28,44 +38,53 @@ const Filters: FC<{
         is strongly recommended NOT to include the references occurring in one
         record only.
       </p>
-      {fields.map((field) => {
-        const maxValue = last(aggregations[field.key].values)!.lowerBound || 0;
-        const value = filters[field.key] || 0;
-        const aggValue = aggregations[field.key].values.find(
-          (agg) => agg.lowerBound >= value
-        );
-        const count = aggValue ? aggValue.count : 0;
 
-        return (
-          <div key={field.label}>
-            <h4>
-              <span className="hg">{field.label || field.key}</span>
-            </h4>
-            {/*<BarChart*/}
-            {/*  agg={aggregations[field.key]}*/}
-            {/*  field={field}*/}
-            {/*  filters={filters}*/}
-            {/*  setFilters={setFilters}*/}
-            {/*/>*/}
-            <div>
-              Keep the <strong>{count}</strong> item{count > 1 ? "s" : ""}{" "}
-              occurring in at least <strong>{value}</strong> record
-              {value > 1 ? "s" : ""}
+      <div className="fields">
+        {fields.map((field) => {
+          const agg = aggregations[field.key];
+          const maxValue = last(agg.values)!.lowerBound || 0;
+          const value = filters[field.key] || 0;
+          const aggValue = agg.values.find((agg) => agg.lowerBound >= value);
+          const count = aggValue ? aggValue.count : 0;
+
+          return (
+            <div key={field.label}>
+              <h4>{field.label || field.key}</h4>
+              <div>
+                Keep the <strong>{count}</strong> item{count > 1 ? "s" : ""}{" "}
+                occurring in at least <strong>{value}</strong> record
+                {value > 1 ? "s" : ""}
+              </div>
+              <input
+                list={field.key + "-tickmarks"}
+                type="range"
+                name="vol"
+                min={0}
+                max={maxValue + 1}
+                value={maxValue + 1 - value}
+                onChange={(e) =>
+                  setFilters({
+                    ...filters,
+                    [field.key]: maxValue + 1 - +e.target.value,
+                  })
+                }
+              />
+              <datalist id={field.key + "-tickmarks"}>
+                <option value={0} label={agg.values[0].lowerBound + ""} />
+                <option value={maxValue + 1} label="0" />
+              </datalist>
             </div>
-            <input
-              type="range"
-              name="vol"
-              min={0}
-              max={maxValue}
-              value={value}
-              onChange={(e) =>
-                setFilters({ ...filters, [field.key]: +e.target.value })
-              }
-            />
-          </div>
-        );
-      })}
-      <button onClick={() => onSubmit(filters)}>Filter and visualise</button>
+          );
+        })}
+      </div>
+
+      <br />
+
+      <div className="center">
+        <button className="btn primary" onClick={() => onSubmit(filters)}>
+          Filter and visualise
+        </button>
+      </div>
     </section>
   );
 };

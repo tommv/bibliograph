@@ -80,7 +80,7 @@ const App: FC<{}> = () => {
         }}
       />
     );
-  if (format && indices && !filteredGraph)
+  if (format && !isEmpty(indices) && !filteredGraph)
     Component = (
       <Filters fieldIndices={indices} format={format} onSubmit={setFilters} />
     );

@@ -5,8 +5,6 @@ import {
   range,
   groupBy,
   keys as objectKeys,
-  min,
-  max,
   mapValues,
   keys,
   values,

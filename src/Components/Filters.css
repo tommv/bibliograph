@@ -1,3 +1,15 @@
-.Filters {
-  /* TODO */
+.Filters .fields {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.Filters .fields > div {
+  width: calc(50% - 1em);
+}
+.Filters .fields > div:nth-child(2n + 1) {
+  margin-right: 2em;
+}
+.Filters .fields input[type="range"] {
+  width: 100%;
 }
