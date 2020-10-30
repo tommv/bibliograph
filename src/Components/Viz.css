@@ -8,14 +8,15 @@
   justify-content: stretch;
 }
 
-.Viz .controls {
+.Viz .features {
   margin: 30px 30px 0;
 }
-.Viz .controls > *:not(:last-child) {
+.Viz .features > *:not(:last-child) {
   margin-right: 0.5em;
 }
 
 .Viz .sigma-container {
+  position: relative;
   flex-grow: 1;
   margin: 30px;
   border: 1px solid #bdbdbd;
@@ -23,4 +24,22 @@
 }
 .Viz .sigma-container canvas {
   margin: 0;
+}
+.Viz .sigma-container .controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.Viz .sigma-container .controls > * {
+  margin: 0 0 10px;
+  z-index: 1;
+}
+.Viz .sigma-container .controls .btn-wrapper {
+  background: white;
+  font-size: 1.6em;
+}
+.Viz .sigma-container .controls .btn {
+  padding: 0.8em;
 }
