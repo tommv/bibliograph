@@ -9,69 +9,69 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     separator: "\t",
     references: {
       variableName: "references",
-      variableLabel: "references",
+      variableLabel: "References",
       variableColor: "#EBEBEB",
       key: "CR",
       separator: ";",
     },
     year: {
       variableName: "year",
-      variableLabel: "year",
+      variableLabel: "Year",
       key: "PY",
       hidden: true,
     },
     metadataFields: [
       {
         variableName: "authors",
-        variableLabel: "authors",
+        variableLabel: "Authors",
         variableColor: "#FFE915",
         key: "AF",
         separator: ";",
       },
       {
         variableName: "source",
-        variableLabel: "sources",
+        variableLabel: "Sources",
         variableColor: "#A7D30D",
         key: "SO",
       },
       {
         variableName: "authorKeywords",
-        variableLabel: "author keywords",
+        variableLabel: "Author keywords",
         variableColor: "#2883E5",
         key: "DE",
         separator: ";",
       },
       {
         variableName: "indexKeywords",
-        variableLabel: "index keywords",
+        variableLabel: "Index keywords",
         variableColor: "#37CAC0",
         key: "ID",
         separator: ";",
       },
       {
         variableName: "subjects",
-        variableLabel: "subject areas",
+        variableLabel: "Subject areas",
         variableColor: "#9DABF5",
         key: "WC",
         separator: ";",
       },
       {
         variableName: "affiliations",
-        variableLabel: "affiliations",
+        variableLabel: "Affiliations",
         key: "C1",
         separator: ";",
         hidden: true,
       },
       {
         variableName: "fundings",
-        variableLabel: "fundings",
+        variableLabel: "Fundings",
         key: "FU",
         separator: ";",
         hidden: true,
       },
       {
         variableName: "type",
-        variableLabel: "record types",
+        variableLabel: "Record types",
         key: "DT",
         hidden: true,
       },
@@ -81,7 +81,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "affiliations"
         variableName: "institutions",
-        variableLabel: "affiliation institutions",
+        variableLabel: "Affiliation institutions",
         variableColor: "#E22521",
         maker: (line: any) =>
           line.affiliations &&
@@ -97,7 +97,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "affiliations"
         variableName: "countries",
-        variableLabel: "affiliation countries",
+        variableLabel: "Affiliation countries",
         variableColor: "#DF60BF",
         maker: (line: any) =>
           line.affiliations &&
@@ -112,7 +112,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "funding"
         variableName: "funders",
-        variableLabel: "funders",
+        variableLabel: "Funders",
         variableColor: "#FF8F2E",
         maker: (line: any) =>
           line.fundings &&
@@ -132,69 +132,69 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     separator: ",",
     references: {
       variableName: "references",
-      variableLabel: "references",
+      variableLabel: "References",
       variableColor: "#EBEBEB",
       key: "References",
       separator: ";",
     },
     year: {
       variableName: "year",
-      variableLabel: "year",
+      variableLabel: "Year",
       key: "Year",
       hidden: true,
     },
     metadataFields: [
       {
         variableName: "_authors",
-        variableLabel: "author names",
+        variableLabel: "Author names",
         key: "Authors",
         separator: ",",
         hidden: true,
       },
       {
         variableName: "_authorsID",
-        variableLabel: "authors Scopus ID",
+        variableLabel: "Authors Scopus ID",
         key: "Author(s) ID",
         separator: ";",
         hidden: true,
       },
       {
         variableName: "source",
-        variableLabel: "sources",
+        variableLabel: "Sources",
         variableColor: "#A7D30D",
         key: "Source title",
       },
       {
         variableName: "authorKeywords",
-        variableLabel: "author keywords",
+        variableLabel: "Author keywords",
         variableColor: "#2883E5",
         key: "Author Keywords",
         separator: ";",
       },
       {
         variableName: "indexKeywords",
-        variableLabel: "index keywords",
+        variableLabel: "Index keywords",
         variableColor: "#37CAC0",
         key: "Index Keywords",
         separator: ";",
       },
       {
         variableName: "affiliations",
-        variableLabel: "affiliations",
+        variableLabel: "Affiliations",
         key: "Affiliations",
         separator: ";",
         hidden: true,
       },
       {
         variableName: "fundings",
-        variableLabel: "fundings",
+        variableLabel: "Fundings",
         key: "Funding Details",
         separator: ";",
         hidden: true,
       },
       {
         variableName: "type",
-        variableLabel: "record types",
+        variableLabel: "Record types",
         key: "Document Type",
         hidden: true,
       },
@@ -203,7 +203,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
     generatedFields: [
       {
         variableName: "authors",
-        variableLabel: "authors",
+        variableLabel: "Authors",
         variableColor: "#FFE915",
         maker: (line: any) =>
           zip(
@@ -214,7 +214,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "affiliations"
         variableName: "institutions",
-        variableLabel: "affiliation institutions",
+        variableLabel: "Affiliation institutions",
         variableColor: "#E22521",
         maker: (line: any) => {
           const institutions = line.affiliations?.map(
@@ -229,7 +229,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "affiliations"
         variableName: "countries",
-        variableLabel: "affiliation countries",
+        variableLabel: "Affiliation countries",
         variableColor: "#DF60BF",
         maker: (line: any) =>
           line.affiliations &&
@@ -244,7 +244,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       {
         // generate from "funding"
         variableName: "funders",
-        variableLabel: "funders",
+        variableLabel: "Funders",
         variableColor: "#FF8F2E",
         maker: (line: any) =>
           line.fundings &&

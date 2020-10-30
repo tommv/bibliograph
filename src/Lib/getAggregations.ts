@@ -10,6 +10,7 @@ import {
   mapValues,
   keys,
   values,
+  last,
 } from "lodash";
 
 import {
@@ -27,22 +28,21 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
   const occValues = objectKeys(groupedValues)
     .map((o) => +o)
     .sort();
-  const maxOcc = occValues[occValues.length - 1];
+  const maxOcc = last(occValues) as number;
   // iterate on number of occurrences
   const occCumulIndex: { [key: number]: number } = range(
     occValues[0],
     maxOcc + 1
   ).reduce((index, occVal) => {
-    // for each occ sum number of occurences greater than current
+    // for each occ sum number of occurrences greater than current
     return {
       [occVal]: range(occVal, maxOcc + 1).reduce(
-        (sum, o) => sum + groupedValues[o],
+        (sum, o) => sum + groupedValues[o] || 0,
         0
       ),
       ...index,
     };
   }, {});
-
   return {
     min: Math.min(...objectValues(occCumulIndex)),
     max: Math.max(...objectValues(occCumulIndex)),
@@ -62,7 +62,6 @@ export function aggregateGraphNbArticles(
 } {
   const aggregations: { [field: string]: Aggregation } = {};
   const numberIndices: { [field: string]: number[] } = {};
-  const stringIndices: { [field: string]: { [str: string]: number } } = {};
 
   const fields: FieldDefinition[] = [];
   // Index data
