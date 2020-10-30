@@ -42,4 +42,6 @@
 }
 .Viz .sigma-container .controls .btn {
   padding: 0.8em;
+  width: 3em;
+  text-align: center;
 }

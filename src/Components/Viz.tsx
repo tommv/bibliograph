@@ -2,7 +2,7 @@ import React, { Component, createRef, RefObject } from "react";
 import { WebGLRenderer } from "sigma";
 import Graph from "graphology";
 
-import { saveGEXF, saveSVG } from "../Lib/saveHelpers";
+import { saveGEXF, saveHeatmap, saveSVG } from "../Lib/saveHelpers";
 
 import "./Viz.css";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
@@ -129,6 +129,15 @@ class Viz extends Component<PropsType, StateType> {
             onClick={() => saveSVG(this.props.graph, "graph-export.svg")}
           >
             <i className="fa fa-download" /> Download <strong>.SVG</strong> file
+          </button>
+          <button
+            className="btn"
+            onClick={() =>
+              saveHeatmap(this.props.graph, "graph-heatmap-export.svg")
+            }
+          >
+            <i className="fa fa-download" /> Download <strong>Heatmap</strong>{" "}
+            image
           </button>
         </div>
         <div className="sigma-container" ref={this.domRoot}>
