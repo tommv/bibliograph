@@ -2,7 +2,7 @@ import { UndirectedGraph } from "graphology";
 import papa, { ParseResult } from "papaparse";
 import { Field, GeneratedField, CSVFormat } from "./types";
 import { flattenDeep } from "lodash";
-import { isMetaProperty } from "typescript";
+import { combinations } from "obliterator";
 
 const csvRowToGraph = (
   csvRow: { [key: string]: string },
@@ -63,7 +63,6 @@ const csvRowToGraph = (
         // craft a parsed line for generated fields
         return { ...meta, [f.variableName]: values };
       } else {
-        console.warn(`${f.key} not found`);
         return meta;
       }
     }, {});
@@ -86,7 +85,16 @@ const csvRowToGraph = (
           metadataNodes.push(n);
         }
       });
-
+    // add edges refs click
+    if (references.length > 1) {
+      const refEdges = combinations(references, 2);
+      for (let [source, target] of refEdges) {
+        graph.mergeEdge(source, target);
+        graph.mergeEdgeAttributes(source, target, {
+          weight: (graph.getEdgeAttribute(source, target, "weight") || 0) + 1,
+        });
+      }
+    }
     // add edges between refs and metadata
     references.forEach((ref) =>
       metadataNodes.forEach((m) => {
