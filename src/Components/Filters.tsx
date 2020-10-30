@@ -1,8 +1,6 @@
 import React, { FC, useState } from "react";
-import Graph from "graphology";
 
 import {
-  FieldDefinition,
   FiltersType,
   CSVFormat,
   FieldIndices,
@@ -17,10 +15,11 @@ const Filters: FC<{
   format: CSVFormat;
   onSubmit(filters: FiltersType): void;
 }> = ({ fieldIndices, format, onSubmit }) => {
-  const [filters, setFilters] = useState<FiltersType>({});
 
   // Aggregate data:
   const { aggregations, fields } = aggregateFieldIndices(fieldIndices, format);
+  // default filters
+  const [filters, setFilters] = useState<FiltersType>({references:2});
 
   return (
     <section className="Filters c">

@@ -29,7 +29,7 @@ const csvRowToGraph = (
     ) as string[])
       // apply filter
       .filter(
-        (ref) => !filteredTypes.references || !!filteredTypes.references[ref]
+        (ref) => filteredTypes.references && filteredTypes.references[ref]
       )
       .map((ref) => {
         const n = graph.mergeNode(ref, {
@@ -54,7 +54,8 @@ const csvRowToGraph = (
         if (filteredTypes[f.variableName])
           values = values.filter((v) => filteredTypes[f.variableName][v]);
         // generate node if not hidden field
-        if (!f.hidden)
+        // no filter => no nodes
+        if (!f.hidden && filteredTypes[f.variableName])
           values.forEach((value: string) => {
             const n = graph.mergeNode(`${value}_${f.variableName}`, {
               label: value,
@@ -82,8 +83,8 @@ const csvRowToGraph = (
         // apply filters
         if (
           node &&
-          (!filteredTypes[f.variableName] ||
-            filteredTypes[f.variableName][node.key])
+          filteredTypes[f.variableName] &&
+          filteredTypes[f.variableName][node.key]
         ) {
           const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
             ...node,
@@ -154,5 +155,7 @@ export function loadFilterGraph(
           });
         })
     )
-  ).then(() => fullGraph);
+  ).then(() => {
+    return fullGraph;
+  });
 }
