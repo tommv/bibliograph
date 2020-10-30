@@ -15,32 +15,38 @@
   margin-right: 0.5em;
 }
 
-.Viz .sigma-container {
+.Viz .sigma-wrapper {
   position: relative;
   flex-grow: 1;
   margin: 30px;
   border: 1px solid #bdbdbd;
   box-sizing: border-box;
 }
+.Viz .sigma-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
 .Viz .sigma-container canvas {
   margin: 0;
 }
-.Viz .sigma-container .controls {
+.Viz .controls {
   position: absolute;
   top: 10px;
   right: 10px;
   display: flex;
   flex-direction: column;
+  margin: 0;
 }
-.Viz .sigma-container .controls > * {
+.Viz .controls > * {
   margin: 0 0 10px;
   z-index: 1;
 }
-.Viz .sigma-container .controls .btn-wrapper {
+.Viz .controls .btn-wrapper {
   background: white;
   font-size: 1.6em;
 }
-.Viz .sigma-container .controls .btn {
+.Viz .controls .btn {
   padding: 0.8em;
   width: 3em;
   text-align: center;

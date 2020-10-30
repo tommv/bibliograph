@@ -1,7 +1,12 @@
 import React, { FC, useState } from "react";
 import Graph from "graphology";
 
-import { FieldDefinition, FiltersType, CSVFormat, FieldIndices } from "../Lib/types";
+import {
+  FieldDefinition,
+  FiltersType,
+  CSVFormat,
+  FieldIndices,
+} from "../Lib/types";
 import { aggregateFieldIndices } from "../Lib/getAggregations";
 
 import "./Filters.css";
@@ -25,7 +30,12 @@ const Filters: FC<{
           <h3>
             <span className="hg">{field.label || field.key}</span>
           </h3>
-          <BarChart agg={aggregations[field.key]} field={field} filters={filters} setFilters={setFilters}/>
+          <BarChart
+            agg={aggregations[field.key]}
+            field={field}
+            filters={filters}
+            setFilters={setFilters}
+          />
         </div>
       ))}
     </section>

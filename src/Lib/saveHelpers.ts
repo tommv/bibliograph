@@ -26,8 +26,7 @@ export function saveSVG(graph: Graph, fileName: string): void {
 }
 
 export function saveHeatmap(graph: Graph, fileName: string): void {
-  const graphWithNoEdge = graph.copy();
-  graphWithNoEdge.clearEdges();
+  const graphWithNoEdge = graph.emptyCopy();
 
   const dataURL = getHeatmap(graphWithNoEdge, {
     width: SETTINGS.width,

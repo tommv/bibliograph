@@ -140,7 +140,9 @@ class Viz extends Component<PropsType, StateType> {
             image
           </button>
         </div>
-        <div className="sigma-container" ref={this.domRoot}>
+        <div className="sigma-wrapper">
+          <div className="sigma-container" ref={this.domRoot} />
+
           <div className="controls">
             <span className="btn-wrapper">
               <button
@@ -148,8 +150,8 @@ class Viz extends Component<PropsType, StateType> {
                 onClick={() => this.toggleFA2()}
                 title={
                   this.state.isFA2Running
-                    ? "Stopper l'animation"
-                    : "Démarer l'animation"
+                    ? "Stop the layout animation"
+                    : "Start the layout animation"
                 }
               >
                 {this.state.isFA2Running ? (
@@ -172,17 +174,13 @@ class Viz extends Component<PropsType, StateType> {
               <button
                 className="btn"
                 onClick={() => this.zoom(-1)}
-                title="Dézoomer"
+                title="Unzoom"
               >
                 <i className="fas fa-search-minus" />
               </button>
             </span>
             <span className="btn-wrapper">
-              <button
-                className="btn"
-                onClick={() => this.zoom()}
-                title="Recentrer"
-              >
+              <button className="btn" onClick={() => this.zoom()} title="Zoom">
                 <i className="far fa-dot-circle" />
               </button>
             </span>

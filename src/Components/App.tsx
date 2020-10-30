@@ -1,5 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
 import Graph, { UndirectedGraph } from "graphology";
+import { isEmpty, pickBy, toPairs } from "lodash";
 
 import Viz from "./Viz";
 import Home from "./Home";
@@ -7,10 +8,9 @@ import Filters from "./Filters";
 import { prepareGraph } from "../Lib/prepareGraph";
 import { loadFilterGraph } from "../Lib/loadFilterGraph";
 import { CSVFormat, FieldIndices, FiltersType } from "../Lib/types";
+import { indexCSVs } from "../Lib/indexCSVs";
 
 import "./App.css";
-import { indexCSVs } from "../Lib/indexCSVs";
-import { isEmpty, map, mapValues, pickBy, toPairs } from "lodash";
 
 const App: FC<{}> = () => {
   const [files, setFiles] = useState<File[] | null>(null);
@@ -18,7 +18,6 @@ const App: FC<{}> = () => {
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
   const [filters, setFilters] = useState<FiltersType | null>(null);
   const [indices, setIndices] = useState<FieldIndices>({});
-  //const [fullGraph, setFullGraph] = useState<Graph | null>(null);
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -26,37 +25,47 @@ const App: FC<{}> = () => {
     // Load CSVs on submit Home component:
     if (files && files.length && format && !filteredGraph && !isLoading) {
       setIsLoading(true);
-      indexCSVs(files, format, range ).then((indices) => {
+      indexCSVs(files, format, range).then((indices) => {
         setIndices(indices);
         setIsLoading(false);
       });
     }
 
     // Prepare graph when filters are submitted:
-    if (files && files.length && format && indices && filters && !filteredGraph && !isLoading) {
+    if (
+      files &&
+      files.length &&
+      format &&
+      indices &&
+      filters &&
+      !filteredGraph &&
+      !isLoading
+    ) {
       setIsLoading(true);
       // filter fieldIndices
-      const filteredFieldIndices:FieldIndices = {};
+      const filteredFieldIndices: FieldIndices = {};
       // keep the occ index entries only if occ counts >= filters
       toPairs(indices).forEach(([fieldType, valuesOccs]) => {
         if (filters[fieldType])
-          filteredFieldIndices[fieldType] = pickBy(valuesOccs, (occ,type) => occ >= filters[fieldType]);
-        else
-          filteredFieldIndices[fieldType] = valuesOccs;
-      })
-      loadFilterGraph(files, format, filteredFieldIndices, range).then((graph:UndirectedGraph) =>
-        prepareGraph(graph).then((spacialisedGraph) => {
-          setFilteredGraph(spacialisedGraph);
-          setIsLoading(false);
-        })
+          filteredFieldIndices[fieldType] = pickBy(
+            valuesOccs,
+            (occ, type) => occ >= filters[fieldType]
+          );
+        else filteredFieldIndices[fieldType] = valuesOccs;
+      });
+      loadFilterGraph(files, format, filteredFieldIndices, range).then(
+        (graph: UndirectedGraph) =>
+          prepareGraph(graph).then((spacialisedGraph) => {
+            setFilteredGraph(spacialisedGraph);
+            setIsLoading(false);
+          })
       );
-     
     }
   }, [files, filteredGraph, filters, format, indices, isLoading, range]);
 
   let Component = <div>Woops, something went wrong...</div>;
-  
-  if ( isEmpty(indices))
+
+  if (isEmpty(indices))
     Component = (
       <Home
         onSubmit={(

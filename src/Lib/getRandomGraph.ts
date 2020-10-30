@@ -14,6 +14,9 @@ export function getRandomGraph(): Graph {
 
   graph.forEachNode((node: string) => {
     graph.replaceNodeAttributes(node, {
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+
       label: faker.name.firstName() + " " + faker.name.lastName(),
       jobTitle: faker.name.jobTitle(),
       age: Math.floor(Math.random() * 70 + 20),
