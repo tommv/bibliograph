@@ -25,7 +25,7 @@ export interface CSVFormat {
 }
 
 export interface FiltersType {
-  // TODO
+  [key: string]: Number; // type of node : minimal number of occ
 }
 
 export interface FieldDefinition {
@@ -38,7 +38,7 @@ export type Aggregation = {
   min: number;
   max: number;
   values: {
-    label: string;
+    lowerBound: number;
     count: number;
   }[];
 };

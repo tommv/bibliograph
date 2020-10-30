@@ -17,56 +17,6 @@ import {
   FieldDefinition,
   GeneratedField,
 } from "./types";
-import { CSVFormats } from "../Lib/CSVFormats";
-
-function aggregateNumbers(values: number[]): Aggregation {
-  // Sort values:
-  const sortedValues = values.sort();
-  let min = Infinity,
-    max = -Infinity;
-  for (let i = 0, l = sortedValues.length; i < l; i++) {
-    const v = sortedValues[i];
-    min = Math.min(min, v);
-    max = Math.max(max, v);
-  }
-
-  // Early exit on weird cases:
-  if (!sortedValues.length) return { min: NaN, max: NaN, values: [] };
-  if (max === min)
-    return {
-      min,
-      max,
-      values: [{ label: min + "", count: sortedValues.length }],
-    };
-
-  // Select step:
-  const scale = Math.floor(Math.log10(max - min));
-  const pow = Math.pow(10, scale);
-  const width = 800; // (arbitrary choice)
-  const step =
-    ([1, 2, 5].find((n) => {
-      const barWidth = (width / (max + 1 - min)) * n * pow;
-      return barWidth >= 8;
-    }) || 10) * pow;
-
-  // Aggregate by step:
-  const index: { [key: number]: number } = {};
-  for (let i = 0, l = sortedValues.length; i < l; i++) {
-    const v = sortedValues[i];
-    const lowerBound = v - (((v % step) + step) % step);
-    index[lowerBound] = (index[lowerBound] || 0) + 1;
-  }
-  const vals = objectValues(index);
-
-  return {
-    min: Math.min(...vals),
-    max: Math.max(...vals),
-    values: toPairs(index).map(([lowerBound, value]) => ({
-      label: `${lowerBound} - ${+lowerBound + step}`,
-      count: value,
-    })),
-  };
-}
 
 function aggregateCumulativeNumbers(values: number[]): Aggregation {
   // count cumulative number of occurrences
@@ -94,18 +44,9 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
     min: Math.min(...objectValues(occCumulIndex)),
     max: Math.max(...objectValues(occCumulIndex)),
     values: toPairs(occCumulIndex).map(([lowerBound, value]) => ({
-      label: `> ${+lowerBound - 1} records`,
+      lowerBound: +lowerBound,
       count: value,
     })),
-  };
-}
-
-function aggregateStrings(index: { [val: string]: number }): Aggregation {
-  const values = objectValues(index);
-  return {
-    min: Math.min(...values),
-    max: Math.max(...values),
-    values: toPairs(index).map(([label, value]) => ({ label, count: value })),
   };
 }
 
@@ -154,8 +95,6 @@ export function getAggregations(
       aggregations[field.key] = aggregateCumulativeNumbers(
         numberIndices[field.key]
       );
-    } else if (field.type === "string") {
-      aggregations[field.key] = aggregateStrings(stringIndices[field.key]);
     }
   });
 

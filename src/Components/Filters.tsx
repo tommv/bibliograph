@@ -11,7 +11,7 @@ const Filters: FC<{
   fullGraph: Graph;
   format: CSVFormat;
   onSubmit(filters: FiltersType): void;
-}> = ({ fullGraph, format }) => {
+}> = ({ fullGraph, format, onSubmit }) => {
   const [filters, setFilters] = useState<FiltersType>({});
 
   // Aggregate data:
@@ -19,15 +19,13 @@ const Filters: FC<{
 
   return (
     <section className="Filters c">
+      <button onClick={() => onSubmit(filters)}>Filter and visualise</button>
       {fields.map((field) => (
         <div key={field.label}>
           <h3>
             <span className="hg">{field.label || field.key}</span>
           </h3>
-          <BarChart
-            agg={aggregations[field.key]}
-            fieldLabel={field.label || field.key}
-          />
+          <BarChart agg={aggregations[field.key]} field={field} filters={filters} setFilters={setFilters}/>
         </div>
       ))}
     </section>

@@ -37,6 +37,11 @@
   display: block;
 }
 
+.BarChart .bar.selected:hover,
+.BarChart .bar.selected {
+  background: #fa0;
+}
+
 .BarChart .y-caption {
   position: absolute;
   width: 100%;
