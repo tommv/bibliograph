@@ -53,7 +53,6 @@ const App: FC<{}> = () => {
             valuesOccs,
             (occ, type) => occ >= filters[fieldType]
           );
-        else filteredFieldIndices[fieldType] = valuesOccs;
       });
       loadFilterGraph(files, format, filteredFieldIndices, range).then(
         (graph: UndirectedGraph) =>
