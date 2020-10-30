@@ -56,7 +56,9 @@ const App: FC<{}> = () => {
       />
     );
   if (format && fullGraph && !filteredGraph)
-    Component = <Filters fullGraph={fullGraph} format={format} onSubmit={setFilters} />;
+    Component = (
+      <Filters fullGraph={fullGraph} format={format} onSubmit={setFilters} />
+    );
   if (filteredGraph)
     Component = (
       <Viz graph={filteredGraph} onGoBack={() => setFilteredGraph(null)} />

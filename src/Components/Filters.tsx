@@ -7,7 +7,6 @@ import { getAggregations } from "../Lib/getAggregations";
 import "./Filters.css";
 import BarChart from "./BarChart";
 
-
 const Filters: FC<{
   fullGraph: Graph;
   format: CSVFormat;
@@ -16,7 +15,7 @@ const Filters: FC<{
   const [filters, setFilters] = useState<FiltersType>({});
 
   // Aggregate data:
-  const {aggregations, fields} = getAggregations(fullGraph, format);
+  const { aggregations, fields } = getAggregations(fullGraph, format);
 
   return (
     <section className="Filters c">
@@ -25,7 +24,10 @@ const Filters: FC<{
           <h3>
             <span className="hg">{field.label || field.key}</span>
           </h3>
-          <BarChart agg={aggregations[field.key]} fieldLabel={field.label|| field.key} />
+          <BarChart
+            agg={aggregations[field.key]}
+            fieldLabel={field.label || field.key}
+          />
         </div>
       ))}
     </section>

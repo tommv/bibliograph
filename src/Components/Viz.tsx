@@ -2,8 +2,9 @@ import React, { Component, createRef, RefObject } from "react";
 import { WebGLRenderer } from "sigma";
 import Graph from "graphology";
 
+import { saveGEXF, saveSVG } from "../Lib/saveHelpers";
+
 import "./Viz.css";
-import {saveGEXF} from "../Lib/saveHelpers";
 
 interface PropsType {
   graph: Graph;
@@ -55,13 +56,22 @@ class Viz extends Component<PropsType, StateType> {
     });
   }
 
-
   render() {
     return (
       <section className="Viz">
         <div className="controls">
-          <button className="btn" onClick={() => saveGEXF(this.props.graph, "export.gexf")}>Download .GEXF file</button>
-          <button className="btn">Download .SVG file</button>
+          <button
+            className="btn"
+            onClick={() => saveGEXF(this.props.graph, "graph-export.gexf")}
+          >
+            Download .GEXF file
+          </button>
+          <button
+            className="btn"
+            onClick={() => saveSVG(this.props.graph, "graph-export.svg")}
+          >
+            Download .SVG file
+          </button>
         </div>
         <div className="sigma-container" ref={this.domRoot} />
       </section>

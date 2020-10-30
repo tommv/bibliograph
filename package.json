@@ -23,6 +23,7 @@
     "graphology-gexf": "^0.6.0",
     "graphology-layout": "^0.3.2",
     "graphology-layout-forceatlas2": "^0.5.2",
+    "graphology-svg": "^0.1.1",
     "graphology-types": "^0.18.0",
     "lodash": "^4.17.20",
     "papaparse": "^5.3.0",
