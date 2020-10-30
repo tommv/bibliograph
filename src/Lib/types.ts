@@ -25,7 +25,11 @@ export interface CSVFormat {
 }
 
 export interface FiltersType {
-  [key: string]: Number; // type of node : minimal number of occ
+  [key: string]: number; // type of node : minimal number of occ
+}
+
+export interface FieldIndices {
+  [field: string]: { [field: string]: number };
 }
 
 export interface FieldDefinition {

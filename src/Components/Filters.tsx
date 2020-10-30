@@ -1,21 +1,21 @@
 import React, { FC, useState } from "react";
 import Graph from "graphology";
 
-import { FieldDefinition, FiltersType, CSVFormat } from "../Lib/types";
-import { getAggregations } from "../Lib/getAggregations";
+import { FieldDefinition, FiltersType, CSVFormat, FieldIndices } from "../Lib/types";
+import { aggregateFieldIndices } from "../Lib/getAggregations";
 
 import "./Filters.css";
 import BarChart from "./BarChart";
 
 const Filters: FC<{
-  fullGraph: Graph;
+  fieldIndices: FieldIndices;
   format: CSVFormat;
   onSubmit(filters: FiltersType): void;
-}> = ({ fullGraph, format, onSubmit }) => {
+}> = ({ fieldIndices, format, onSubmit }) => {
   const [filters, setFilters] = useState<FiltersType>({});
 
   // Aggregate data:
-  const { aggregations, fields } = getAggregations(fullGraph, format);
+  const { aggregations, fields } = aggregateFieldIndices(fieldIndices, format);
 
   return (
     <section className="Filters c">

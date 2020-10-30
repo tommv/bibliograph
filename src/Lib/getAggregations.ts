@@ -8,6 +8,8 @@ import {
   min,
   max,
   mapValues,
+  keys,
+  values,
 } from "lodash";
 
 import {
@@ -15,6 +17,7 @@ import {
   CSVFormat,
   Field,
   FieldDefinition,
+  FieldIndices,
   GeneratedField,
 } from "./types";
 
@@ -50,7 +53,7 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
   };
 }
 
-export function getAggregations(
+export function aggregateGraphNbArticles(
   graph: Graph,
   format: CSVFormat
 ): {
@@ -96,6 +99,46 @@ export function getAggregations(
         numberIndices[field.key]
       );
     }
+  });
+
+  return { aggregations, fields };
+}
+
+export function aggregateFieldIndices(
+  fieldIndices: FieldIndices,
+  format: CSVFormat
+): {
+  aggregations: { [field: string]: Aggregation };
+  fields: FieldDefinition[];
+} {
+  const aggregations: { [field: string]: Aggregation } = {};
+
+  const fields: FieldDefinition[] = [];
+
+  // Aggregate the indices:
+  keys(fieldIndices).forEach((fieldType) => {
+    // populate fields
+    let fieldDef: Field | GeneratedField | undefined;
+    if (fieldType === "references") fieldDef = format.references;
+    else {
+      fieldDef = format.metadataFields.find(
+        (f) => f.variableName === fieldType
+      );
+      if (!fieldDef && format.generatedFields)
+        fieldDef = format.generatedFields.find(
+          (f) => f.variableName === fieldType
+        );
+    }
+    if (fieldDef)
+      fields.push({
+        label: fieldDef.variableLabel,
+        key: fieldDef.variableName,
+        type: "number",
+      });
+    // calculate cumulative buckets
+    aggregations[fieldType] = aggregateCumulativeNumbers(
+      values(fieldIndices[fieldType])
+    );
   });
 
   return { aggregations, fields };

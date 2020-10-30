@@ -13,7 +13,7 @@ const Home: FC<{
   onSubmit(
     files: File[],
     format: CSVFormat,
-    range: { min?: Number; max?: Number }
+    range: { min?: number; max?: number }
   ): void;
 }> = ({ onSubmit }) => {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();

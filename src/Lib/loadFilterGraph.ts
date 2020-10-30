@@ -1,6 +1,6 @@
 import { UndirectedGraph } from "graphology";
 import papa, { ParseResult } from "papaparse";
-import { Field, GeneratedField, CSVFormat } from "./types";
+import { Field, GeneratedField, CSVFormat, FieldIndices } from "./types";
 import { flattenDeep } from "lodash";
 import { combinations } from "obliterator";
 
@@ -8,7 +8,8 @@ const csvRowToGraph = (
   csvRow: { [key: string]: string },
   format: CSVFormat,
   graph: UndirectedGraph,
-  yearRange: { min?: Number; max?: Number }
+  filteredTypes: FieldIndices,
+  yearRange: { min?: number; max?: number }
 ) => {
   // year filter
   if (yearRange && (yearRange.min || yearRange.max) && format.year) {
@@ -25,16 +26,21 @@ const csvRowToGraph = (
   if (refsField && csvRow[refsField.key]) {
     const references: string[] = (csvRow[refsField.key].split(
       refsField.separator || ","
-    ) as string[]).map((ref) => {
-      const n = graph.mergeNode(ref, {
-        label: ref,
-        type: "references",
+    ) as string[])
+      // apply filter
+      .filter(
+        (ref) => !filteredTypes.references || !!filteredTypes.references[ref]
+      )
+      .map((ref) => {
+        const n = graph.mergeNode(ref, {
+          label: ref,
+          type: "references",
+        });
+        graph.mergeNodeAttributes(n, {
+          nbArticles: (graph.getNodeAttribute(ref, "nbArticles") || 0) + 1,
+        });
+        return n;
       });
-      graph.mergeNodeAttributes(n, {
-        nbArticles: (graph.getNodeAttribute(ref, "nbArticles") || 0) + 1,
-      });
-      return n;
-    });
     // metadata factory
     const metadataNodes: string[] = [];
     const metadata = format.metadataFields.reduce((meta: {}, f: Field) => {
@@ -44,6 +50,9 @@ const csvRowToGraph = (
       if (csvRow[f.key]) {
         if (f.separator) values = csvRow[f.key].split(f.separator);
         else values.push(csvRow[f.key]);
+        // apply filters
+        if (filteredTypes[f.variableName])
+          values = values.filter((v) => filteredTypes[f.variableName][v]);
         // generate node if not hidden field
         if (!f.hidden)
           values.forEach((value: string) => {
@@ -70,7 +79,12 @@ const csvRowToGraph = (
     if (format.generatedFields)
       format.generatedFields?.forEach((f: GeneratedField) => {
         const node = f.maker(metadata);
-        if (node) {
+        // apply filters
+        if (
+          node &&
+          (!filteredTypes[f.variableName] ||
+            filteredTypes[f.variableName][node.key])
+        ) {
           const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
             ...node,
             type: f.variableName,
@@ -107,13 +121,13 @@ const csvRowToGraph = (
 
     return graph;
   }
-  // TODO: add index on not nodes
 };
 
-export function loadFullGraph(
+export function loadFilterGraph(
   files: File[],
   format: CSVFormat,
-  range: { min?: Number; max?: Number }
+  filteredTypes: FieldIndices,
+  range: { min?: number; max?: number }
 ): Promise<UndirectedGraph> {
   const fullGraph = new UndirectedGraph();
   return Promise.all(
@@ -130,6 +144,7 @@ export function loadFullGraph(
                 flattenDeep([row.data])[0],
                 format,
                 fullGraph,
+                filteredTypes,
                 range
               );
             },
