@@ -13,15 +13,15 @@ const Home: FC<{
   onSubmit(
     files: File[],
     format: CSVFormat,
-    range: { min?: Date; max?: Date }
+    range: { min?: Number; max?: Number }
   ): void;
 }> = ({ onSubmit }) => {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
   const [selectedFormat, setSelectedFormat] = useState<string>(
     FORMAT_PLACEHOLDER
   );
-  const [minDate, setMinDate] = useState<string>("");
-  const [maxDate, setMaxDate] = useState<string>("");
+  const [minYear, setMinYear] = useState<number>(1900);
+  const [maxYear, setMaxYear] = useState<number>(2100);
 
   const csvFiles = (acceptedFiles || []).filter(
     (file: FileWithPath) =>
@@ -66,17 +66,17 @@ const Home: FC<{
       <div className="flex-row">
         <span>Only parse papers published between</span>{" "}
         <input
-          value={minDate}
-          onChange={(e) => setMinDate(e.target.value)}
+          value={minYear}
+          onChange={(e) => setMinYear(+e.target.value)}
           className="card"
-          type="date"
+          type="number"
         />{" "}
         <span>and</span>{" "}
         <input
-          value={maxDate}
-          onChange={(e) => setMaxDate(e.target.value)}
+          value={maxYear}
+          onChange={(e) => setMaxYear(+e.target.value)}
           className="card"
-          type="date"
+          type="number"
         />
       </div>
       <div className="flex-row">
@@ -101,8 +101,8 @@ const Home: FC<{
           onClick={() => {
             if (csvFiles.length && CSVFormats[selectedFormat])
               onSubmit(csvFiles, CSVFormats[selectedFormat], {
-                min: minDate ? new Date(minDate) : undefined,
-                max: maxDate ? new Date(maxDate) : undefined,
+                min: minYear,
+                max: maxYear,
               });
           }}
         >

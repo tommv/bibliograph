@@ -12,7 +12,7 @@ import "./App.css";
 
 const App: FC<{}> = () => {
   const [files, setFiles] = useState<File[] | null>(null);
-  const [range, setRange] = useState<{ min?: Date; max?: Date }>({});
+  const [range, setRange] = useState<{ min?: Number; max?: Number }>({});
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
   const [filters, setFilters] = useState<FiltersType | null>(null);
   const [fullGraph, setFullGraph] = useState<Graph | null>(null);
@@ -47,7 +47,7 @@ const App: FC<{}> = () => {
         onSubmit={(
           files: File[],
           format: CSVFormat,
-          range: { min?: Date; max?: Date }
+          range: { min?: Number; max?: Number }
         ) => {
           setFiles(files);
           setRange(range);

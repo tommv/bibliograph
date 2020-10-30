@@ -7,8 +7,19 @@ import { isMetaProperty } from "typescript";
 const csvRowToGraph = (
   csvRow: { [key: string]: string },
   format: CSVFormat,
-  graph: UndirectedGraph
+  graph: UndirectedGraph,
+  yearRange: { min?: Number; max?: Number }
 ) => {
+  // year filter
+  if (yearRange && (yearRange.min || yearRange.max) && format.year) {
+    if (yearRange.min && csvRow[format.year.key] < "" + yearRange.min)
+      // don't load this row cause out of range
+      return;
+    if (yearRange.max && csvRow[format.year.key] > "" + yearRange.max)
+      // don't load this row cause out of range
+      return;
+  }
+
   // references
   const refsField = format.references;
   if (refsField && csvRow[refsField.key]) {
@@ -94,7 +105,7 @@ const csvRowToGraph = (
 export function loadFullGraph(
   files: File[],
   format: CSVFormat,
-  datesRange: { min?: Date; max?: Date }
+  range: { min?: Number; max?: Number }
 ): Promise<UndirectedGraph> {
   const fullGraph = new UndirectedGraph();
   return Promise.all(
@@ -107,7 +118,12 @@ export function loadFullGraph(
             header: true,
             step: function (row: ParseResult<{ [key: string]: string }>) {
               // transform row into graph nodes and edges
-              csvRowToGraph(flattenDeep([row.data])[0], format, fullGraph);
+              csvRowToGraph(
+                flattenDeep([row.data])[0],
+                format,
+                fullGraph,
+                range
+              );
             },
             complete: () => {
               resolve();
