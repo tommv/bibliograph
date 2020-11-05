@@ -15,13 +15,33 @@ const SETTINGS = {
   height: 2048,
 };
 
+export function renderFixedSVG(graph: Graph): string {
+  const svgString = renderSVG(graph, {
+    ...DEFAULTS,
+    ...SETTINGS,
+    nodes: {
+      ...DEFAULTS.nodes,
+      reducer: (
+        settings: unknown,
+        node: string,
+        attr: { [k: string]: unknown }
+      ): { [k: string]: unknown } => ({
+        ...attr,
+        y: -(attr.y as number),
+      }),
+    },
+  });
+
+  return svgString;
+}
+
 export function saveGEXF(graph: Graph, fileName: string): void {
   const gexfString = write(graph);
   saveAs(new Blob([gexfString]), fileName);
 }
 
 export function saveSVG(graph: Graph, fileName: string): void {
-  const svgString = renderSVG(graph, { ...DEFAULTS, ...SETTINGS });
+  const svgString = renderFixedSVG(graph);
   saveAs(new Blob([svgString]), fileName);
 }
 
@@ -40,7 +60,7 @@ export function saveHeatmap(graph: Graph, fileName: string): void {
   });
 
   // Temporarily rotate the graph:
-  let svgString = renderSVG(graphWithNoEdge, { ...DEFAULTS, ...SETTINGS });
+  let svgString = renderFixedSVG(graphWithNoEdge);
 
   // Ugly trick to put the generated heatmap image into the SVG file:
   svgString = svgString.replace(
