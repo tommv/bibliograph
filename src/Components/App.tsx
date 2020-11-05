@@ -95,6 +95,14 @@ const App: FC<{}> = () => {
       />
     );
 
+  if (isLoading) {
+    Component = (
+      <div className="loading">
+        <i className="fas fa-spinner fa-pulse fa-5x" />
+      </div>
+    );
+  }
+
   return <div className="App">{Component}</div>;
 };
 
