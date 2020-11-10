@@ -135,7 +135,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       variableLabel: "References",
       variableColor: "#EBEBEB",
       key: "References",
-      separator: ";",
+      separator: "; ",
     },
     year: {
       variableName: "year",
