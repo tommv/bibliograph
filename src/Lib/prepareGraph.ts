@@ -3,7 +3,6 @@ import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import { largestConnectedComponent } from "graphology-components";
 import { subGraph } from "graphology-utils";
-import AbstractGraph from "graphology-types";
 
 //TODO: move this to conf file
 //TODO : adpat to initial window width ?
@@ -14,20 +13,17 @@ const maxNodeSizes = {
 
 export async function prepareGraph(graph: Graph): Promise<Graph> {
   const largest = largestConnectedComponent(graph as any);
-  const mainGraph = subGraph(graph as any, graph.nodes());
+  const mainGraph = subGraph(graph as any, largest);
 
   // calculate max occs
-  const maxNbArticles = {
-    references: 0,
-    metadata: 0,
-  };
+  const maxNbArticles: { [key: string]: number } = {};
   graph.forEachNode((node, attributes) => {
     if (attributes.dataType === "references") {
-      if (attributes.nbArticles > maxNbArticles.references)
+      if (attributes.nbArticles > (maxNbArticles.references || 0))
         maxNbArticles.references = attributes.nbArticles;
     } else {
-      if (attributes.nbArticles > maxNbArticles.metadata)
-        maxNbArticles.metadata = attributes.nbArticles;
+      if (attributes.nbArticles > (maxNbArticles[attributes.dataType] || 0))
+        maxNbArticles[attributes.dataType] = attributes.nbArticles;
     }
   });
 
@@ -54,7 +50,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
         "size",
         Math.sqrt(
           (maxNodeSizes.metadata * (attributes.nbArticles || 1)) /
-            maxNbArticles.metadata
+            maxNbArticles[attributes.dataType]
         )
       );
     }
