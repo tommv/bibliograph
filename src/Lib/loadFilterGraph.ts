@@ -23,14 +23,18 @@ const csvRowToGraph = (
 
   // references
   const refsField = format.references;
-  if (refsField && csvRow[refsField.key]) {
+  if (refsField && csvRow[refsField.key] && csvRow[refsField.key] !== "") {
     const references: string[] = (csvRow[refsField.key].split(
       refsField.separator || ","
     ) as string[])
       // apply filter
       .filter(
-        (ref) => filteredTypes.references && !!filteredTypes.references[ref]
+        (ref) =>
+          ref !== "" &&
+          filteredTypes.references &&
+          !!filteredTypes.references[ref]
       )
+      .map((ref) => ref.trim())
       .map((ref) => {
         const n = graph.mergeNode(ref, {
           label: ref,
@@ -59,24 +63,26 @@ const csvRowToGraph = (
         // generate node if not hidden field
         // no filter => no nodes
         if (!f.hidden && filteredTypes[f.variableName])
-          values.forEach((value: string) => {
-            // meta node
-            const n = graph.mergeNode(`${value}_${f.variableName}`, {
-              label: value,
-              dataType: f.variableName,
-              color: f.variableColor,
+          values
+            .map((v) => v.trim())
+            .forEach((value: string) => {
+              // meta node
+              const n = graph.mergeNode(`${value}_${f.variableName}`, {
+                label: value,
+                dataType: f.variableName,
+                color: f.variableColor,
+              });
+              const nbArticles =
+                (graph.getNodeAttribute(
+                  `${value}_${f.variableName}`,
+                  "nbArticles"
+                ) || 0) + 1;
+              graph.mergeNodeAttributes(n, {
+                nbArticles,
+                size: Math.sqrt(nbArticles),
+              });
+              metadataNodes.push(n);
             });
-            const nbArticles =
-              (graph.getNodeAttribute(
-                `${value}_${f.variableName}`,
-                "nbArticles"
-              ) || 0) + 1;
-            graph.mergeNodeAttributes(n, {
-              nbArticles,
-              size: Math.sqrt(nbArticles),
-            });
-            metadataNodes.push(n);
-          });
         // craft a parsed line for generated fields
         return { ...meta, [f.variableName]: values };
       } else {
@@ -90,7 +96,10 @@ const csvRowToGraph = (
         // apply filters
         if (nodes && nodes.length > 0 && filteredTypes[f.variableName])
           nodes
-            .filter((node) => !!filteredTypes[f.variableName][node.key])
+            .filter(
+              (node) =>
+                node && node.key && !!filteredTypes[f.variableName][node.key]
+            )
             .forEach((node) => {
               const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
                 ...node,
@@ -131,7 +140,6 @@ const csvRowToGraph = (
         });
       })
     );
-
     return graph;
   }
 };

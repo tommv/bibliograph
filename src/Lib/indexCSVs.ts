@@ -22,23 +22,24 @@ const indexRow = (
   // references
   const refsField = format.references;
   if (refsField && csvRow[refsField.key]) {
-    (csvRow[refsField.key].split(
-      refsField.separator || ","
-    ) as string[]).forEach((ref) => {
-      incrementTypeIndex(indices, "references", ref);
-    });
+    (csvRow[refsField.key].split(refsField.separator || ",") as string[])
+      .filter((ref) => ref !== "")
+      .forEach((ref) => {
+        incrementTypeIndex(indices, "references", ref.trim());
+      });
     // metadata factory
     const metadata = format.metadataFields.reduce((meta: {}, f: Field) => {
       // get value
       let values = [];
       // parse multiple values
       if (csvRow[f.key]) {
-        if (f.separator) values = csvRow[f.key].split(f.separator);
+        if (f.separator)
+          values = csvRow[f.key].split(f.separator).filter((v) => v !== "");
         else values.push(csvRow[f.key]);
         // index if not hidden field
         if (!f.hidden)
           values.forEach((value: string) => {
-            incrementTypeIndex(indices, f.variableName, value);
+            incrementTypeIndex(indices, f.variableName, value.trim());
           });
         // craft a parsed line for generated fields
         return { ...meta, [f.variableName]: values };
@@ -51,9 +52,11 @@ const indexRow = (
       format.generatedFields?.forEach((f: GeneratedField) => {
         const nodes = f.maker(metadata);
         if (nodes && nodes.length > 0) {
-          nodes.forEach((node) =>
-            incrementTypeIndex(indices, f.variableName, node.key)
-          );
+          nodes
+            .filter((node) => node && node.key && node.key !== "")
+            .forEach((node) =>
+              incrementTypeIndex(indices, f.variableName, node.key)
+            );
         }
       });
     return indices;

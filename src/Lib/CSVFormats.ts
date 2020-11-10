@@ -91,7 +91,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
               ? institutions[1]
               : institutions[0]
             ).split(",")[0];
-            return { key: institution, label: institution };
+            return { key: institution?.trim(), label: institution?.trim() };
           }),
       },
       {
@@ -105,7 +105,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
             .filter((aff: string) => aff.includes(", "))
             .map((aff: string) => {
               const infos = aff.split(", ");
-              const country = infos[infos.length - 1];
+              const country = infos[infos.length - 1]?.trim();
               return { key: country, label: country };
             }),
       },
@@ -118,8 +118,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
           line.fundings &&
           line.fundings.map((funding: string) => {
             let funder;
-            if (funding.includes(" [")) funder = funding.split(" [")[0];
-            else funder = funding;
+            if (funding.includes(" [")) funder = funding.split(" [")[0]?.trim();
+            else funder = funding?.trim();
             return { key: funder, label: funder };
           }),
       },
@@ -209,7 +209,10 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
           zip(
             line._authors as string[],
             line._authorsID.filter((id: any) => id !== "") as string[]
-          ).map(([name, id]: any) => ({ label: name, key: id })),
+          ).map(([name, id]: any) => ({
+            label: name?.trim(),
+            key: id?.trim(),
+          })),
       },
       {
         // generate from "affiliations"
@@ -221,8 +224,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
             (aff: string) => aff.split(",")[0]
           );
           return institutions?.map((institution: string) => ({
-            key: institution,
-            label: institution,
+            key: institution?.trim(),
+            label: institution?.trim(),
           }));
         },
       },
@@ -237,7 +240,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
             .filter((aff: string) => aff.includes(", "))
             .map((aff: string) => {
               const infos = aff.split(", ");
-              const country = infos[infos.length - 1];
+              const country = infos[infos.length - 1]?.trim();
               return { key: country, label: country };
             }),
       },
@@ -249,7 +252,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         maker: (line: any) =>
           line.fundings &&
           line.fundings.map((funding: string) => {
-            const f = funding.split(":")[0];
+            const f = funding.split(":")[0]?.trim();
             return { key: f, label: f };
           }),
       },
