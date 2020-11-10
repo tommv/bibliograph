@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { last, mapValues, max } from "lodash";
+import { last, max } from "lodash";
 
 import {
   FiltersType,

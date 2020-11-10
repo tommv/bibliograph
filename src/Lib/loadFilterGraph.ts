@@ -123,7 +123,7 @@ const csvRowToGraph = (
       const refEdges = combinations(references, 2);
       for (let [source, target] of refEdges) {
         //discard selfloop
-        if (source != target) {
+        if (source !== target) {
           graph.mergeEdge(source, target);
           graph.mergeEdgeAttributes(source, target, {
             weight: (graph.getEdgeAttribute(source, target, "weight") || 0) + 1,
@@ -134,7 +134,7 @@ const csvRowToGraph = (
     // add edges between refs and metadata
     references.forEach((ref) =>
       metadataNodes.forEach((m) => {
-        const e = graph.mergeEdge(ref, m);
+        graph.mergeEdge(ref, m);
         graph.mergeEdgeAttributes(ref, m, {
           weight: (graph.getEdgeAttribute(ref, m, "weight") || 0) + 1,
         });
@@ -183,7 +183,7 @@ export function loadFilterGraph(
     setLoaderMessage("Filtering no connected nodes...");
     const nodesToDelete: string[] = fullGraph
       .nodes()
-      .filter((n) => fullGraph.degree(n) == 0);
+      .filter((n) => fullGraph.degree(n) === 0);
     nodesToDelete.forEach((n) => fullGraph.dropNode(n));
     return fullGraph;
   });

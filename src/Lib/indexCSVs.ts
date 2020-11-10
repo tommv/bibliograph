@@ -1,8 +1,6 @@
-import { UndirectedGraph } from "graphology";
 import papa, { ParseResult } from "papaparse";
 import { Field, GeneratedField, CSVFormat, FieldIndices } from "./types";
 import { flattenDeep } from "lodash";
-import { combinations } from "obliterator";
 
 const incrementTypeIndex = (
   indices: { [field: string]: { [field: string]: number } },

@@ -58,7 +58,7 @@ const App: FC<{}> = () => {
             (occ, type) => occ >= filters[fieldType]
           );
       });
-      console.log(filteredFieldIndices);
+      
       setLoaderMessage("Creating the graph from CSVs...");
       loadFilterGraph(files, format, filteredFieldIndices, range, setLoaderMessage).then(
         (graph: UndirectedGraph) =>{

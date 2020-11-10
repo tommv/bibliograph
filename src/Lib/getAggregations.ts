@@ -8,9 +8,7 @@ import {
   mapValues,
   keys,
   values,
-  last,
   sortBy,
-  sum,
 } from "lodash";
 
 import {
