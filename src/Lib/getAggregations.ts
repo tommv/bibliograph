@@ -9,6 +9,8 @@ import {
   keys,
   values,
   last,
+  sortBy,
+  sum,
 } from "lodash";
 
 import {
@@ -23,24 +25,25 @@ import {
 function aggregateCumulativeNumbers(values: number[]): Aggregation {
   // count cumulative number of occurrences
   const groupedValues = mapValues(groupBy(values), (v) => v.length);
-  const occValues = objectKeys(groupedValues)
-    .map((o) => +o)
-    .sort();
-  const maxOcc = last(occValues) as number;
+  const occValues = sortBy(objectKeys(groupedValues).map((o) => +o));
+  const maxOcc = occValues.length - 1;
+  const sumOcc = sum(occValues);
   // iterate on number of occurrences
   const occCumulIndex: { [key: number]: number } = range(
     occValues[0],
     maxOcc + 1
-  ).reduce((index, occVal) => {
+  ).reduce((index: { [key: number]: number }, occVal) => {
     // for each occ sum number of occurrences greater than current
     return {
-      [occVal]: range(occVal, maxOcc + 1).reduce(
-        (sum, o) => sum + groupedValues[o] || 0,
-        0
-      ),
+      [occVal]:
+      // start with the sum of occ and then substract the nb of occ of last step
+      // we therefro calculate the factorial series in reverse
+        (index[occVal - 1] !== undefined ? index[occVal - 1] : sumOcc) -
+        (occValues[occVal - 1] || 0),
       ...index,
     };
   }, {});
+
   return {
     min: Math.min(...objectValues(occCumulIndex)),
     max: Math.max(...objectValues(occCumulIndex)),
@@ -90,8 +93,10 @@ export function aggregateGraphNbArticles(
   }
 
   // Aggregate the indices:
+  console.log(fields);
   fields.forEach((field) => {
     if (field.type === "number") {
+      console.log("agg", field);
       aggregations[field.key] = aggregateCumulativeNumbers(
         numberIndices[field.key]
       );
