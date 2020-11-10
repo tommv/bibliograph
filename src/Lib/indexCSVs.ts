@@ -63,7 +63,8 @@ const indexRow = (
 export function indexCSVs(
   files: File[],
   format: CSVFormat,
-  range: { min?: number; max?: number }
+  range: { min?: number; max?: number },
+  setLoaderMessage: (message: string) => void
 ): Promise<FieldIndices> {
   const indices: FieldIndices = {};
   return Promise.all(
@@ -84,6 +85,7 @@ export function indexCSVs(
               );
             },
             complete: () => {
+              setLoaderMessage(`file "${file.name}" parsed`);
               resolve();
             },
           });

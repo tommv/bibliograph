@@ -21,13 +21,14 @@ const App: FC<{}> = () => {
   const [indices, setIndices] = useState<FieldIndices>({});
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loaderMessage, setLoaderMessage] = useState<string|null>(null);
 
   // ****************** Index uploaded CSV prepare filters *************** //
   useEffect(() => {
     // Load CSVs on submit Home component:
     if (files && files.length && format && isEmpty(indices) && !isLoading) {
       setIsLoading(true);
-      indexCSVs(files, format, range).then((indices) => {
+      indexCSVs(files, format, range, setLoaderMessage).then((indices) => {
         setIndices(indices);
         setIsLoading(false);
       });
@@ -57,12 +58,16 @@ const App: FC<{}> = () => {
             (occ, type) => occ >= filters[fieldType]
           );
       });
-      loadFilterGraph(files, format, filteredFieldIndices, range).then(
-        (graph: UndirectedGraph) =>
+      console.log(filteredFieldIndices);
+      setLoaderMessage("Creating the graph from CSVs...");
+      loadFilterGraph(files, format, filteredFieldIndices, range, setLoaderMessage).then(
+        (graph: UndirectedGraph) =>{
+          setLoaderMessage("Spacialiazing the graph...");
           prepareGraph(graph).then((spacialisedGraph) => {
             setFilteredGraph(spacialisedGraph);
             setIsLoading(false);
           })
+        }
       );
     }
   }, [files, filteredGraph, filters, format, indices, isLoading, range]);
@@ -106,7 +111,8 @@ const App: FC<{}> = () => {
   if (isLoading) {
     Component = (
       <div className="loading">
-        <i className="fas fa-spinner fa-pulse fa-5x" />
+        <div><i className="fas fa-spinner fa-pulse fa-5x" /></div>
+        <div>{loaderMessage}</div>
       </div>
     );
   }

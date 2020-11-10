@@ -140,7 +140,8 @@ export function loadFilterGraph(
   files: File[],
   format: CSVFormat,
   filteredTypes: FieldIndices,
-  range: { min?: number; max?: number }
+  range: { min?: number; max?: number },
+  setLoaderMessage: (message: string) => void
 ): Promise<UndirectedGraph> {
   const fullGraph = new UndirectedGraph({ allowSelfLoops: false });
   return Promise.all(
@@ -162,6 +163,7 @@ export function loadFilterGraph(
               );
             },
             complete: () => {
+              setLoaderMessage(`File "${file.name}" parsed and filtered.`);
               resolve();
             },
           });
@@ -170,7 +172,7 @@ export function loadFilterGraph(
   ).then(() => {
     // finally remove orphans
     // To map degree information to node attributes
-
+    setLoaderMessage("Filtering no connected nodes...");
     const nodesToDelete: string[] = fullGraph
       .nodes()
       .filter((n) => fullGraph.degree(n) == 0);
