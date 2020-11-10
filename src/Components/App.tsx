@@ -9,6 +9,7 @@ import { prepareGraph } from "../Lib/prepareGraph";
 import { loadFilterGraph } from "../Lib/loadFilterGraph";
 import { CSVFormat, FieldIndices, FiltersType } from "../Lib/types";
 import { indexCSVs } from "../Lib/indexCSVs";
+import { aggregateFieldIndices } from "../Lib/getAggregations";
 
 import "./App.css";
 
@@ -21,6 +22,7 @@ const App: FC<{}> = () => {
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // ****************** Index uploaded CSV prepare filters *************** //
   useEffect(() => {
     // Load CSVs on submit Home component:
     if (files && files.length && format && isEmpty(indices) && !isLoading) {
@@ -32,6 +34,7 @@ const App: FC<{}> = () => {
     }
   }, [files, format, indices, isLoading, range]);
 
+  // ****************** Build and display Network *********************** //
   useEffect(() => {
     // Prepare graph when filters are submitted:
     if (
@@ -64,6 +67,8 @@ const App: FC<{}> = () => {
     }
   }, [files, filteredGraph, filters, format, indices, isLoading, range]);
 
+
+  // ****************** Chose the right component *********************** //
   let Component = <div>Woops, something went wrong...</div>;
 
   if (isEmpty(indices))
@@ -80,10 +85,13 @@ const App: FC<{}> = () => {
         }}
       />
     );
-  if (format && !isEmpty(indices) && !filteredGraph)
+  if (format && !isEmpty(indices) && !filteredGraph){
+    // Aggregate data:
+    const { aggregations, fields } = aggregateFieldIndices(indices, format);
     Component = (
-      <Filters fieldIndices={indices} format={format} onSubmit={setFilters} />
+      <Filters aggregations={aggregations} fields={fields} onSubmit={setFilters} />
     );
+  }
   if (filteredGraph)
     Component = (
       <Viz

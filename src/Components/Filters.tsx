@@ -3,26 +3,23 @@ import { last, mapValues, max } from "lodash";
 
 import {
   FiltersType,
-  CSVFormat,
-  FieldIndices,
-  Aggregation,
+  FieldDefinition,
+  Aggregation
 } from "../Lib/types";
-import { aggregateFieldIndices } from "../Lib/getAggregations";
+
 
 import "./Filters.css";
 
 const Filters: FC<{
-  fieldIndices: FieldIndices;
-  format: CSVFormat;
+  aggregations: { [field: string]: Aggregation },
+  fields: FieldDefinition[],
   onSubmit(filters: FiltersType): void;
-}> = ({ fieldIndices, format, onSubmit }) => {
-  // Aggregate data:
-  const { aggregations, fields } = aggregateFieldIndices(fieldIndices, format);
+}> = ({ aggregations, fields, onSubmit }) => {
+  
   // Default filters:
   const [filters, setFilters] = useState<FiltersType>({
     references: 2,
   });
-
   return (
     <section className="Filters c">
       <h2>
