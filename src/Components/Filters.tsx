@@ -59,7 +59,7 @@ const Filters: FC<{
                 type="range"
                 name="vol"
                 min={0}
-                max={maxValue + 1}
+                max={maxValue}
                 value={maxValue + 1 - value}
                 onChange={(e) =>
                   setFilters({
