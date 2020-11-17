@@ -49,7 +49,8 @@ const App: FC<{}> = () => {
     ) {
       setIsLoading(true);
       // filter fieldIndices
-      const filteredFieldIndices: FieldIndices = {};
+      // hash with at least one dups are passed for filtering
+      const filteredFieldIndices: FieldIndices = {hash: pickBy(indices.hash,(nb, hash) => nb > 1)};
       // keep the occ index entries only if occ counts >= filters
       toPairs(indices).forEach(([fieldType, valuesOccs]) => {
         if (filters[fieldType])

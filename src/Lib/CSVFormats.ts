@@ -20,6 +20,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       key: "PY",
       hidden: true,
     },
+    // year, title, authors used as a hash for deduplication
+    hash: (line: any) => line.PY + line.TI + line.AF,
     metadataFields: [
       {
         variableName: "authors",
@@ -143,6 +145,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       key: "Year",
       hidden: true,
     },
+    hash: (line: any) => line.Year + line.Title + line.Authors,
     metadataFields: [
       {
         variableName: "_authors",

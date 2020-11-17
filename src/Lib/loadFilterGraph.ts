@@ -20,7 +20,20 @@ const csvRowToGraph = (
       // don't load this row cause out of range
       return;
   }
-
+  // duplication filter
+  const hash = format.hash(csvRow);
+  if (filteredTypes.hash && filteredTypes.hash[hash]) {
+    if (filteredTypes.hash[hash] > 1) {
+      //first article of duplicated set, keep it and edit dup flag
+      filteredTypes.hash[hash] = 1;
+      console.log(`keep dup ${hash}`);
+    }
+    // other duplicated to filter out
+    else {
+      console.log(`remove dup ${hash}`);
+      return;
+    }
+  }
   // references
   const refsField = format.references;
   if (refsField && csvRow[refsField.key] && csvRow[refsField.key] !== "") {
@@ -184,6 +197,7 @@ export function loadFilterGraph(
     const nodesToDelete: string[] = fullGraph
       .nodes()
       .filter((n) => fullGraph.degree(n) === 0);
+    console.log(`remove ${nodesToDelete.length} unconnected nodes`);
     nodesToDelete.forEach((n) => fullGraph.dropNode(n));
     return fullGraph;
   });

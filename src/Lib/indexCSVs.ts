@@ -1,6 +1,6 @@
 import papa, { ParseResult } from "papaparse";
 import { Field, GeneratedField, CSVFormat, FieldIndices } from "./types";
-import { flattenDeep } from "lodash";
+import { flattenDeep, toPairs } from "lodash";
 
 const incrementTypeIndex = (
   indices: { [field: string]: { [field: string]: number } },
@@ -20,6 +20,13 @@ const indexRow = (
   // references
   const refsField = format.references;
   if (refsField && csvRow[refsField.key]) {
+    // test duplication
+    const hash = format.hash(csvRow);
+    indices.hash = { ...indices.hash, [hash]: (indices.hash[hash] || 0) + 1 };
+    if (indices.hash[hash] > 1) {
+      return;
+    }
+
     (csvRow[refsField.key].split(refsField.separator || ",") as string[])
       .filter((ref) => ref !== "")
       .forEach((ref) => {
@@ -67,7 +74,7 @@ export function indexCSVs(
   range: { min?: number; max?: number },
   setLoaderMessage: (message: string) => void
 ): Promise<FieldIndices> {
-  const indices: FieldIndices = {};
+  const indices: FieldIndices = { hash: {} };
   return Promise.all(
     files.map(
       (file: File) =>
@@ -92,5 +99,14 @@ export function indexCSVs(
           });
         })
     )
-  ).then(() => indices);
+  ).then(() => {
+    // list duplicates
+    console.log(
+      toPairs(indices.hash)
+        .filter(([, nb]) => nb > 1)
+        .map(([h, nb]) => `${h} - ${nb}`)
+        .join("\n")
+    );
+    return indices;
+  });
 }
