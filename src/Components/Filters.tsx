@@ -45,8 +45,7 @@ const Filters: FC<{
             <div key={field.label}>
               <h4>{field.label || field.key}</h4>
               <div>
-                Keep the <strong>{count}</strong> {field.label}
-                {count > 1 ? "s" : ""} occurring in at least{" "}
+                Keep the <strong>{count}</strong> {field.label} occurring in at least{" "}
                 <strong>{value}</strong> record
                 {value > 1 ? "s" : ""}
               </div>
