@@ -21,7 +21,7 @@ const App: FC<{}> = () => {
   const [indices, setIndices] = useState<FieldIndices>({});
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [loaderMessage, setLoaderMessage] = useState<string|null>(null);
+  const [loaderMessage, setLoaderMessage] = useState<string | null>(null);
 
   // ****************** Index uploaded CSV prepare filters *************** //
   useEffect(() => {
@@ -50,7 +50,9 @@ const App: FC<{}> = () => {
       setIsLoading(true);
       // filter fieldIndices
       // hash with at least one dups are passed for filtering
-      const filteredFieldIndices: FieldIndices = {hash: pickBy(indices.hash,(nb, hash) => nb > 1)};
+      const filteredFieldIndices: FieldIndices = {
+        hash: pickBy(indices.hash, (nb, hash) => nb > 1),
+      };
       // keep the occ index entries only if occ counts >= filters
       toPairs(indices).forEach(([fieldType, valuesOccs]) => {
         if (filters[fieldType])
@@ -59,20 +61,23 @@ const App: FC<{}> = () => {
             (occ, type) => occ >= filters[fieldType]
           );
       });
-      
+
       setLoaderMessage("Creating the graph from CSVs...");
-      loadFilterGraph(files, format, filteredFieldIndices, range, setLoaderMessage).then(
-        (graph: UndirectedGraph) =>{
-          setLoaderMessage("Spacialiazing the graph...");
-          prepareGraph(graph).then((spacialisedGraph) => {
-            setFilteredGraph(spacialisedGraph);
-            setIsLoading(false);
-          })
-        }
-      );
+      loadFilterGraph(
+        files,
+        format,
+        filteredFieldIndices,
+        range,
+        setLoaderMessage
+      ).then((graph: UndirectedGraph) => {
+        setLoaderMessage("Spacialiazing the graph...");
+        prepareGraph(graph).then((spacialisedGraph) => {
+          setFilteredGraph(spacialisedGraph);
+          setIsLoading(false);
+        });
+      });
     }
   }, [files, filteredGraph, filters, format, indices, isLoading, range]);
-
 
   // ****************** Chose the right component *********************** //
   let Component = <div>Woops, something went wrong...</div>;
@@ -91,11 +96,23 @@ const App: FC<{}> = () => {
         }}
       />
     );
-  if (format && !isEmpty(indices) && !filteredGraph){
+  if (format && !isEmpty(indices) && !filteredGraph) {
     // Aggregate data:
     const { aggregations, fields } = aggregateFieldIndices(indices, format);
+    const articlesMetadata = toPairs(indices.hash).reduce(
+      (r, [hash, nb]) => ({
+        nbArticles: r.nbArticles + nb,
+        nbDuplicates: r.nbDuplicates + nb - 1,
+      }),
+      { nbArticles: 0, nbDuplicates: 0 }
+    );
     Component = (
-      <Filters aggregations={aggregations} fields={fields} onSubmit={setFilters} />
+      <Filters
+        aggregations={aggregations}
+        fields={fields}
+        onSubmit={setFilters}
+        articlesMetadata={articlesMetadata}
+      />
     );
   }
   if (filteredGraph)
@@ -112,7 +129,9 @@ const App: FC<{}> = () => {
   if (isLoading) {
     Component = (
       <div className="loading">
-        <div><i className="fas fa-spinner fa-pulse fa-5x" /></div>
+        <div>
+          <i className="fas fa-spinner fa-pulse fa-5x" />
+        </div>
         <div>{loaderMessage}</div>
       </div>
     );

@@ -1,21 +1,16 @@
 import React, { FC, useState } from "react";
 import { last, max } from "lodash";
 
-import {
-  FiltersType,
-  FieldDefinition,
-  Aggregation
-} from "../Lib/types";
-
+import { FiltersType, FieldDefinition, Aggregation } from "../Lib/types";
 
 import "./Filters.css";
 
 const Filters: FC<{
-  aggregations: { [field: string]: Aggregation },
-  fields: FieldDefinition[],
+  aggregations: { [field: string]: Aggregation };
+  fields: FieldDefinition[];
+  articlesMetadata: { nbArticles: number; nbDuplicates: number };
   onSubmit(filters: FiltersType): void;
-}> = ({ aggregations, fields, onSubmit }) => {
-  
+}> = ({ aggregations, fields, articlesMetadata, onSubmit }) => {
   // Default filters:
   const [filters, setFilters] = useState<FiltersType>({
     references: 2,
@@ -31,6 +26,21 @@ const Filters: FC<{
         is strongly recommended NOT to include the references occurring in one
         record only.
       </p>
+      {articlesMetadata && (
+        <p>
+          <br />
+          <i>
+            Your data-set contained {articlesMetadata.nbArticles} articles in
+            which {articlesMetadata.nbDuplicates} (
+            {(articlesMetadata.nbArticles > 0
+              ? (articlesMetadata.nbDuplicates / articlesMetadata.nbArticles) *
+                100
+              : 0
+            ).toFixed(1)}
+            %) were duplicated.
+          </i>
+        </p>
+      )}
 
       <div className="fields">
         {fields.map((field) => {
@@ -45,8 +55,8 @@ const Filters: FC<{
             <div key={field.label}>
               <h4>{field.label || field.key}</h4>
               <div>
-                Keep the <strong>{count}</strong> {field.label} occurring in at least{" "}
-                <strong>{value}</strong> record
+                Keep the <strong>{count}</strong> {field.label} occurring in at
+                least <strong>{value}</strong> record
                 {value > 1 ? "s" : ""}
               </div>
               <div>
