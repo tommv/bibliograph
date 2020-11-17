@@ -60,10 +60,15 @@ const Home: FC<{
         <input {...getInputProps()} />
         <p>Drag and drop here your CSV files or their folder</p>
         {csvFiles.length > 0 && (
-          <p>
-            (currently {csvFiles.length} selected file
-            {csvFiles.length > 1 ? "s" : ""})
-          </p>
+          <>
+            <p>
+              <b>currently {csvFiles.length} selected file
+              {csvFiles.length > 1 ? "s" : ""}</b>
+            </p>
+            <div className="files-list">
+              {csvFiles.map(f => <span key={f.name}>{f.name}</span>)}
+            </div>
+          </>
         )}
       </div>
 

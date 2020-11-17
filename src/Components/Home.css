@@ -10,7 +10,6 @@
   border-color: grey;
   border-style: dashed;
   background-color: #fafafa;
-  color: #bdbdbd;
   outline: none;
   transition: border 0.24s ease-in-out;
 }
@@ -23,4 +22,14 @@
 }
 .Home .flex-row > * {
   margin: 0 0.4em;
+}
+
+.files-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 80%;
+  justify-content: center;
+}
+.files-list span {
+  margin: 0 5px;
 }
