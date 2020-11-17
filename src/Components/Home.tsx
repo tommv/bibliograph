@@ -61,11 +61,15 @@ const Home: FC<{
         {csvFiles.length > 0 && (
           <>
             <p>
-              <b>currently {csvFiles.length} selected file
-              {csvFiles.length > 1 ? "s" : ""}</b>
+              <b>
+                currently {csvFiles.length} selected file
+                {csvFiles.length > 1 ? "s" : ""}
+              </b>
             </p>
             <div className="files-list">
-              {csvFiles.map(f => <span key={f.name}>{f.name}</span>)}
+              {csvFiles.map((f) => (
+                <span key={f.name}>{f.name}</span>
+              ))}
             </div>
           </>
         )}
@@ -120,15 +124,22 @@ const Home: FC<{
           {csvFiles.length > 1 ? "s" : ""}
         </button>
       </div>
-      <hr/>
+      <hr />
       <div className="flex-row">
-        
         <div className="logos">
           <a href="https://cis.cnrs.fr/">
-            <img className="logo" src={process.env.PUBLIC_URL + "/img/logo_CNRS_CIS.jpg"} alt="Centre Internet Société CNRS"/>
+            <img
+              className="logo"
+              src={process.env.PUBLIC_URL + "/img/logo_CNRS_CIS.jpg"}
+              alt="Centre Internet Société CNRS"
+            />
           </a>
           <a href="https://ouestware.com">
-            <img className="logo" src={process.env.PUBLIC_URL + "/img/logo_ouestware_text.svg"} alt="OuestWare"/>
+            <img
+              className="logo"
+              src={process.env.PUBLIC_URL + "/img/logo_ouestware_text.svg"}
+              alt="OuestWare"
+            />
           </a>
         </div>
       </div>
