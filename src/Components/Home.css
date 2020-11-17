@@ -33,3 +33,14 @@
 .files-list span {
   margin: 0 5px;
 }
+.logo {
+  height: 80px;
+  max-width: 250px;
+  margin: 0 10px;
+}
+.Home .flex-row .logos {
+  margin-top: 10px;
+}
+.Home hr {
+  margin-top: 40px;
+}

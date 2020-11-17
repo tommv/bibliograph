@@ -4,7 +4,6 @@ import { toPairs } from "lodash";
 
 import { CSVFormats } from "../Lib/CSVFormats";
 import { CSVFormat } from "../Lib/types";
-
 import "./Home.css";
 
 const FORMAT_PLACEHOLDER = "SELECT_A_FORMAT";
@@ -120,6 +119,18 @@ const Home: FC<{
           Parse and index {csvFiles.length} CSV file
           {csvFiles.length > 1 ? "s" : ""}
         </button>
+      </div>
+      <hr/>
+      <div className="flex-row">
+        
+        <div className="logos">
+          <a href="https://cis.cnrs.fr/">
+            <img className="logo" src={process.env.PUBLIC_URL + "/img/logo_CNRS_CIS.jpg"} alt="Centre Internet Société CNRS"/>
+          </a>
+          <a href="https://ouestware.com">
+            <img className="logo" src={process.env.PUBLIC_URL + "/img/logo_ouestware_text.svg"} alt="OuestWare"/>
+          </a>
+        </div>
       </div>
     </section>
   );
