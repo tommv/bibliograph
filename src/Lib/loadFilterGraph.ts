@@ -106,6 +106,7 @@ const csvRowToGraph = (
       },
       {}
     );
+
     // generated fields
     if (format.generatedFields)
       format.generatedFields?.forEach((f: GeneratedField) => {
@@ -120,7 +121,7 @@ const csvRowToGraph = (
             .forEach((node) => {
               const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
                 ...node,
-                type: f.variableName,
+                dataType: f.variableName,
                 color: f.variableColor,
               });
               const nbArticles =
@@ -135,6 +136,7 @@ const csvRowToGraph = (
               metadataNodes.push(n);
             });
       });
+
     // add edges refs click
     if (references.length > 1) {
       const refEdges = combinations(references, 2);
@@ -169,6 +171,7 @@ export function loadFilterGraph(
   setLoaderMessage: (message: string) => void
 ): Promise<UndirectedGraph> {
   const fullGraph = new UndirectedGraph({ allowSelfLoops: false });
+
   return Promise.all(
     files.map(
       (file: File) =>
@@ -197,7 +200,7 @@ export function loadFilterGraph(
   ).then(() => {
     // finally remove orphans
     // To map degree information to node attributes
-    setLoaderMessage("Filtering no connected nodes...");
+    setLoaderMessage("Filtering disconnected nodes...");
 
     const nodesToDelete: string[] = fullGraph
       .nodes()
