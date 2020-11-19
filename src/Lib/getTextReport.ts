@@ -75,7 +75,7 @@ export function getTextReport(
     (filters.references || 1) > 1 ? "s" : ""
   }.
   We built the co-citation network of these references weighted by the frequency of their co-occurrence (aka bibliographic coupling).
-  We only keep the largest connected component of the graph.
+  We remove the nodes with no connection at all.
   We spatialized the network with the ForceAtlas2 layout and fixed the position of the reference-nodes at equilibrium.
  
  
@@ -83,17 +83,19 @@ export function getTextReport(
  
   From the same corpus we extracted and added to the network:
   ${format.metadataFields
+    .filter((field) => typeof filters[field.variableName] === "number")
     .map(
       (field) =>
         `- ${indicesValuesCount[field.variableName] || 0} value${
           (indicesValuesCount[field.variableName] || 0) > 1 ? "s" : ""
         } for "${field.variableLabel}" occuring in at least ${
-          filters[field.variableName] || 1
-        } record${(filters[field.variableName] || 1) > 1 ? "s" : ""}`
+          filters[field.variableName]
+        } record${filters[field.variableName] > 1 ? "s" : ""}`
     )
     .join("\n")}
   
   We connected these new nodes to the references co-appearing with them in the bibliographic records.
+  We only kept the largest connected component from the graph.
   We positioned new nodes using with the same layout algorithm while keeping fixed the position of the reference-nodes.
   We sized the nodes the nodes according to the number of records in which they occurred and coloured them according to their type.`;
 
