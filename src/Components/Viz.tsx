@@ -163,6 +163,7 @@ class Viz extends Component<PropsType, StateType> {
             view
           </button>
         </div>
+
         <div className="sigma-wrapper">
           <div className="sigma-container" ref={this.domRoot} />
 
@@ -208,6 +209,20 @@ class Viz extends Component<PropsType, StateType> {
               </button>
             </span>
           </div>
+        </div>
+
+        <div className="caption">
+          {[this.props.format.references, ...this.props.format.metadataFields]
+            .filter((field) => field.variableColor)
+            .map((field) => (
+              <span key={field.variableName}>
+                <span
+                  className="color-disc"
+                  style={{ background: field.variableColor }}
+                />{" "}
+                {field.variableLabel}
+              </span>
+            ))}
         </div>
       </section>
     );

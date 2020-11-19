@@ -22,7 +22,7 @@
 .Viz .sigma-wrapper {
   position: relative;
   flex-grow: 1;
-  margin: 30px;
+  margin: 15px 30px;
   border: 1px solid #bdbdbd;
   box-sizing: border-box;
 }
@@ -34,6 +34,7 @@
 .Viz .sigma-container canvas {
   margin: 0;
 }
+
 .Viz .controls {
   position: absolute;
   top: 10px;
@@ -54,4 +55,19 @@
   padding: 0.8em;
   width: 3em;
   text-align: center;
+}
+
+.Viz .caption {
+  text-align: right;
+  margin: 0 30px 30px;
+}
+.Viz .caption > span {
+  margin-left: 1em;
+}
+.Viz .caption .color-disc {
+  display: inline-block;
+  height: 1em;
+  width: 1em;
+  border-radius: 1em;
+  vertical-align: sub;
 }
