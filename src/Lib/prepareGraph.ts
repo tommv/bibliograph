@@ -78,7 +78,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
   );
 
   // 2. Put each none-ref node to the barycenter of its neighbors:
-  noneRefsNodes.forEach((noneRefNode) => {
+  noneRefsNodes.forEach((noneRefNode, i) => {
     const neighborsCount = mainGraph.neighbors(noneRefNode).length;
     let x = 0;
     let y = 0;
@@ -88,10 +88,22 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
       y += positions[neighbor].y;
     });
 
+    // Add some very tiny and unique vector, to prevent nodes to have exactly the same coordinates.
+    // Also, the tiny vector must not be random, so that the layout remains reproducible:
     mainGraph.mergeNodeAttributes(noneRefNode, {
-      x: x / neighborsCount,
-      y: y / neighborsCount,
+      x:
+        x / neighborsCount +
+        Math.cos((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
+      y:
+        y / neighborsCount +
+        Math.sin((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
     });
+  });
+
+  // 3. Run some FA2 to get a proper layout for none-ref nodes:
+  forceAtlas2.assign((mainGraph as unknown) as Graph, {
+    iterations: 200,
+    settings: forceAtlas2.inferSettings((mainGraph as unknown) as Graph),
   });
 
   return Promise.resolve((mainGraph as unknown) as Graph);
