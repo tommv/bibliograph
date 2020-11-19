@@ -20,6 +20,13 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       key: "PY",
       hidden: true,
     },
+    type: {
+      variableName: "type",
+      variableLabel: "Record types",
+      key: "DT",
+      separator: ";",
+      hidden: true,
+    },
     // year, title, authors used as a hash for deduplication
     hash: (line: Record<string, string>): string => line.PY + line.TI + line.AF,
     metadataFields: [
@@ -69,12 +76,6 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "Fundings",
         key: "FU",
         separator: ";",
-        hidden: true,
-      },
-      {
-        variableName: "type",
-        variableLabel: "Record types",
-        key: "DT",
         hidden: true,
       },
     ],
@@ -151,6 +152,12 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       key: "Year",
       hidden: true,
     },
+    type: {
+      variableName: "type",
+      variableLabel: "Record types",
+      key: "Document Type",
+      hidden: true,
+    },
     hash: (line: Record<string, string>): string =>
       line.Year + line.Title + line.Authors,
     metadataFields: [
@@ -200,12 +207,6 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "Fundings",
         key: "Funding Details",
         separator: ";",
-        hidden: true,
-      },
-      {
-        variableName: "type",
-        variableLabel: "Record types",
-        key: "Document Type",
         hidden: true,
       },
     ],

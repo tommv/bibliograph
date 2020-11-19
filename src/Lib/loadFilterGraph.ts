@@ -10,15 +10,15 @@ const csvRowToGraph = (
   graph: UndirectedGraph,
   filteredTypes: FieldIndices,
   yearRange: { min?: number; max?: number }
-) => {
+): boolean => {
   // year filter
   if (yearRange && (yearRange.min || yearRange.max) && format.year) {
     if (yearRange.min && csvRow[format.year.key] < "" + yearRange.min)
       // don't load this row cause out of range
-      return;
+      return false;
     if (yearRange.max && csvRow[format.year.key] > "" + yearRange.max)
       // don't load this row cause out of range
-      return;
+      return false;
   }
 
   // duplication filter
@@ -30,7 +30,7 @@ const csvRowToGraph = (
     }
     // other duplicated to filter out
     else {
-      return;
+      return false;
     }
   }
 
@@ -159,8 +159,11 @@ const csvRowToGraph = (
         });
       })
     );
-    return graph;
+
+    return true;
   }
+
+  return false;
 };
 
 export function loadFilterGraph(
@@ -171,6 +174,7 @@ export function loadFilterGraph(
   setLoaderMessage: (message: string) => void
 ): Promise<UndirectedGraph> {
   const fullGraph = new UndirectedGraph({ allowSelfLoops: false });
+  let parsedRows = 0;
 
   return Promise.all(
     files.map(
@@ -181,14 +185,20 @@ export function loadFilterGraph(
             delimiter: format.separator,
             header: true,
             step: function (row: ParseResult<{ [key: string]: string }>) {
+              const preparedRow = flattenDeep([row.data])[0];
+
               // transform row into graph nodes and edges
-              csvRowToGraph(
-                flattenDeep([row.data])[0],
+              const isRowIn = csvRowToGraph(
+                preparedRow,
                 format,
                 fullGraph,
                 filteredTypes,
                 range
               );
+
+              if (isRowIn) {
+                parsedRows++;
+              }
             },
             complete: () => {
               setLoaderMessage(`File "${file.name}" parsed and filtered.`);
@@ -198,15 +208,17 @@ export function loadFilterGraph(
         })
     )
   ).then(() => {
-    // finally remove orphans
+    // Remove orphans
     // To map degree information to node attributes
     setLoaderMessage("Filtering disconnected nodes...");
-
     const nodesToDelete: string[] = fullGraph
       .nodes()
       .filter((n) => fullGraph.degree(n) === 0);
-
     nodesToDelete.forEach((n) => fullGraph.dropNode(n));
+
+    // Store some useful metadata:
+    fullGraph.setAttribute("Data source", format.label);
+    fullGraph.setAttribute("Total raw entries count", parsedRows);
 
     return fullGraph;
   });

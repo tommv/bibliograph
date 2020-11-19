@@ -1,15 +1,20 @@
 import React, { Component, createRef, RefObject } from "react";
 import { WebGLRenderer } from "sigma";
 import Graph from "graphology";
-
-import { saveGEXF, saveHeatmap, saveSVG } from "../Lib/saveHelpers";
-
-import "./Viz.css";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 
+import { saveGEXF, saveHeatmap, saveSVG, saveReport } from "../Lib/saveHelpers";
+
+import { CSVFormat, FieldIndices, FiltersType } from "../Lib/types";
+
+import "./Viz.css";
+
 interface PropsType {
   graph: Graph;
+  indices: FieldIndices;
+  filters: FiltersType;
+  format: CSVFormat;
   onGoBack: () => void;
 }
 interface StateType {
@@ -138,6 +143,20 @@ class Viz extends Component<PropsType, StateType> {
           >
             <i className="fa fa-download" /> Download <strong>Heatmap</strong>{" "}
             image
+          </button>
+          <button
+            className="btn"
+            onClick={() =>
+              saveReport(
+                this.props.graph,
+                this.props.indices,
+                this.props.filters,
+                this.props.format,
+                "graph-report.txt"
+              )
+            }
+          >
+            <i className="fa fa-download" /> Download <strong>report</strong>{" "}
           </button>
           <button className="btn right" onClick={this.props.onGoBack}>
             <i className="fa fa-undo" /> Go back to <strong>filters</strong>{" "}

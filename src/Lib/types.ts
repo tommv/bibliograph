@@ -19,6 +19,7 @@ export interface CSVFormat {
   separator: string;
   references: Field;
   year: Field;
+  type: Field;
   hash: (line: { [key: string]: string }) => string;
   metadataFields: Field[];
   // fields to be generated from previously parsed fields (mandatory and metadata)

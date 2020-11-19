@@ -119,6 +119,9 @@ const App: FC = () => {
     Component = (
       <Viz
         graph={filteredGraph}
+        indices={indices}
+        filters={filters || {}}
+        format={format as CSVFormat}
         onGoBack={() => {
           setFilteredGraph(null);
           setFilters(null);

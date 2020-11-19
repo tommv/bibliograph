@@ -126,7 +126,7 @@ export function aggregateFieldIndices(
           (f) => f.variableName === fieldType
         );
     }
-    if (fieldDef)
+    if (fieldDef && !(fieldDef as Field).hidden)
       fields.push({
         label: fieldDef.variableLabel,
         key: fieldDef.variableName,

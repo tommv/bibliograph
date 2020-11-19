@@ -15,6 +15,12 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
   const largest = largestConnectedComponent(graph as never);
   const mainGraph = subGraph(graph as never, largest);
 
+  // Copy graph attributes
+  const graphAttributes = graph.getAttributes();
+  for (const key in graphAttributes) {
+    mainGraph.setAttribute(key, graphAttributes[key]);
+  }
+
   // calculate max occs
   const maxNbArticles: { [key: string]: number } = {};
   graph.forEachNode((node, attributes) => {
