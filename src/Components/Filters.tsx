@@ -45,7 +45,7 @@ const Filters: FC<{
       <div className="fields">
         {fields.map((field) => {
           const agg = aggregations[field.key];
-          const maxValue = last(agg.values)!.lowerBound || 0;
+          const maxValue = last(agg.values)?.lowerBound || 0;
           const value = filters[field.key] || maxValue + 1;
           const aggValue = agg.values.find((agg) => agg.lowerBound >= value);
           const maxCount = max(agg.values.map((v) => v.count));

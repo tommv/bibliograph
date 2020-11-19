@@ -20,20 +20,20 @@ const csvRowToGraph = (
       // don't load this row cause out of range
       return;
   }
+
   // duplication filter
   const hash = format.hash(csvRow);
   if (filteredTypes.hash && filteredTypes.hash[hash]) {
     if (filteredTypes.hash[hash] > 1) {
       //first article of duplicated set, keep it and edit dup flag
       filteredTypes.hash[hash] = 1;
-      console.log(`keep dup ${hash}`);
     }
     // other duplicated to filter out
     else {
-      console.log(`remove dup ${hash}`);
       return;
     }
   }
+
   // references
   const refsField = format.references;
   if (refsField && csvRow[refsField.key] && csvRow[refsField.key] !== "") {
@@ -61,47 +61,51 @@ const csvRowToGraph = (
         });
         return n;
       });
+
     // metadata factory
     const metadataNodes: string[] = [];
-    const metadata = format.metadataFields.reduce((meta: {}, f: Field) => {
-      // get value
-      let values = [];
-      // parse multiple values
-      if (csvRow[f.key]) {
-        if (f.separator) values = csvRow[f.key].split(f.separator);
-        else values.push(csvRow[f.key]);
-        // apply filters
-        if (filteredTypes[f.variableName])
-          values = values.filter((v) => !!filteredTypes[f.variableName][v]);
-        // generate node if not hidden field
-        // no filter => no nodes
-        if (!f.hidden && filteredTypes[f.variableName])
-          values
-            .map((v) => v.trim())
-            .forEach((value: string) => {
-              // meta node
-              const n = graph.mergeNode(`${value}_${f.variableName}`, {
-                label: value,
-                dataType: f.variableName,
-                color: f.variableColor,
+    const metadata = format.metadataFields.reduce(
+      (meta: Record<string, unknown>, f: Field) => {
+        // get value
+        let values = [];
+        // parse multiple values
+        if (csvRow[f.key]) {
+          if (f.separator) values = csvRow[f.key].split(f.separator);
+          else values.push(csvRow[f.key]);
+          // apply filters
+          if (filteredTypes[f.variableName])
+            values = values.filter((v) => !!filteredTypes[f.variableName][v]);
+          // generate node if not hidden field
+          // no filter => no nodes
+          if (!f.hidden && filteredTypes[f.variableName])
+            values
+              .map((v) => v.trim())
+              .forEach((value: string) => {
+                // meta node
+                const n = graph.mergeNode(`${value}_${f.variableName}`, {
+                  label: value,
+                  dataType: f.variableName,
+                  color: f.variableColor,
+                });
+                const nbArticles =
+                  (graph.getNodeAttribute(
+                    `${value}_${f.variableName}`,
+                    "nbArticles"
+                  ) || 0) + 1;
+                graph.mergeNodeAttributes(n, {
+                  nbArticles,
+                  size: Math.sqrt(nbArticles),
+                });
+                metadataNodes.push(n);
               });
-              const nbArticles =
-                (graph.getNodeAttribute(
-                  `${value}_${f.variableName}`,
-                  "nbArticles"
-                ) || 0) + 1;
-              graph.mergeNodeAttributes(n, {
-                nbArticles,
-                size: Math.sqrt(nbArticles),
-              });
-              metadataNodes.push(n);
-            });
-        // craft a parsed line for generated fields
-        return { ...meta, [f.variableName]: values };
-      } else {
-        return meta;
-      }
-    }, {});
+          // craft a parsed line for generated fields
+          return { ...meta, [f.variableName]: values };
+        } else {
+          return meta;
+        }
+      },
+      {}
+    );
     // generated fields
     if (format.generatedFields)
       format.generatedFields?.forEach((f: GeneratedField) => {
@@ -134,7 +138,7 @@ const csvRowToGraph = (
     // add edges refs click
     if (references.length > 1) {
       const refEdges = combinations(references, 2);
-      for (let [source, target] of refEdges) {
+      for (const [source, target] of refEdges) {
         //discard selfloop
         if (source !== target) {
           graph.mergeEdge(source, target);
@@ -194,11 +198,13 @@ export function loadFilterGraph(
     // finally remove orphans
     // To map degree information to node attributes
     setLoaderMessage("Filtering no connected nodes...");
+
     const nodesToDelete: string[] = fullGraph
       .nodes()
       .filter((n) => fullGraph.degree(n) === 0);
-    console.log(`remove ${nodesToDelete.length} unconnected nodes`);
+
     nodesToDelete.forEach((n) => fullGraph.dropNode(n));
+
     return fullGraph;
   });
 }

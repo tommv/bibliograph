@@ -27,13 +27,13 @@ class Viz extends Component<PropsType, StateType> {
   };
 
   // React lifecycle:
-  componentDidMount() {
+  componentDidMount(): void {
     this.initSigma();
   }
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     this.killSigma();
   }
-  componentDidUpdate(prevProps: PropsType) {
+  componentDidUpdate(prevProps: PropsType): void {
     if (prevProps.graph !== this.props.graph) {
       if (this.props.graph) {
         this.initSigma();
@@ -44,13 +44,13 @@ class Viz extends Component<PropsType, StateType> {
   }
 
   // Sigma lifecycle:
-  killSigma() {
+  killSigma(): void {
     if (this.sigma) {
       this.sigma.kill();
       this.sigma = undefined;
     }
   }
-  initSigma() {
+  initSigma(): void {
     if (!this.domRoot.current) return;
     if (this.state.isFA2Running) this.stopFA2();
     if (this.sigma) this.killSigma();
@@ -60,7 +60,7 @@ class Viz extends Component<PropsType, StateType> {
     });
 
     this.initFA2();
-    this.sigma.on("clickNode", ({ node }) => {
+    this.sigma.on("clickNode", (/*{ node }*/) => {
       // TODO
     });
     this.sigma.on("clickStage", () => {
@@ -69,7 +69,7 @@ class Viz extends Component<PropsType, StateType> {
   }
 
   // FA2 management:
-  initFA2() {
+  initFA2(): void {
     if (this.fa2) {
       this.fa2.kill();
     }
@@ -78,13 +78,13 @@ class Viz extends Component<PropsType, StateType> {
       settings: forceAtlas2.inferSettings(this.props.graph),
     });
   }
-  stopFA2() {
+  stopFA2(): void {
     if (!this.fa2) return;
 
     this.setState({ ...this.state, isFA2Running: false });
     this.fa2.stop();
   }
-  startFA2() {
+  startFA2(): void {
     if (!this.fa2) {
       return;
     }
@@ -92,7 +92,7 @@ class Viz extends Component<PropsType, StateType> {
     this.setState({ ...this.state, isFA2Running: true });
     this.fa2.start();
   }
-  toggleFA2() {
+  toggleFA2(): void {
     if (this.state.isFA2Running) {
       this.stopFA2();
     } else {
@@ -101,7 +101,7 @@ class Viz extends Component<PropsType, StateType> {
   }
 
   // Misc:
-  zoom(ratio?: number) {
+  zoom(ratio?: number): void {
     if (!this.sigma) return;
 
     if (!ratio) {
@@ -113,7 +113,7 @@ class Viz extends Component<PropsType, StateType> {
     }
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <section className="Viz">
         <div className="features">

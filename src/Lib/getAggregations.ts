@@ -90,10 +90,8 @@ export function aggregateGraphNbArticles(
   }
 
   // Aggregate the indices:
-  console.log(fields);
   fields.forEach((field) => {
     if (field.type === "number") {
-      console.log("agg", field);
       aggregations[field.key] = aggregateCumulativeNumbers(
         numberIndices[field.key]
       );

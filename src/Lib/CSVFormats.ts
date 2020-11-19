@@ -21,7 +21,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       hidden: true,
     },
     // year, title, authors used as a hash for deduplication
-    hash: (line: any) => line.PY + line.TI + line.AF,
+    hash: (line: Record<string, string>): string => line.PY + line.TI + line.AF,
     metadataFields: [
       {
         variableName: "authors",
@@ -85,9 +85,11 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "institutions",
         variableLabel: "Affiliation institutions",
         variableColor: "#E22521",
-        maker: (line: any) =>
+        maker: (
+          line: Record<string, unknown>
+        ): { key: string; label: string }[] =>
           line.affiliations &&
-          line.affiliations.map((aff: string) => {
+          (line.affiliations as string[]).map((aff: string) => {
             const institutions = aff.split("] ");
             const institution = (institutions.length > 1
               ? institutions[1]
@@ -101,9 +103,11 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "countries",
         variableLabel: "Affiliation countries",
         variableColor: "#DF60BF",
-        maker: (line: any) =>
+        maker: (
+          line: Record<string, unknown>
+        ): { key: string; label: string }[] =>
           line.affiliations &&
-          line.affiliations
+          (line.affiliations as string[])
             .filter((aff: string) => aff.includes(", "))
             .map((aff: string) => {
               const infos = aff.split(", ");
@@ -116,9 +120,11 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "funders",
         variableLabel: "Funders",
         variableColor: "#FF8F2E",
-        maker: (line: any) =>
+        maker: (
+          line: Record<string, unknown>
+        ): { key: string; label: string }[] =>
           line.fundings &&
-          line.fundings.map((funding: string) => {
+          (line.fundings as string[]).map((funding: string) => {
             let funder;
             if (funding.includes(" [")) funder = funding.split(" [")[0]?.trim();
             else funder = funding?.trim();
@@ -145,7 +151,8 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
       key: "Year",
       hidden: true,
     },
-    hash: (line: any) => line.Year + line.Title + line.Authors,
+    hash: (line: Record<string, string>): string =>
+      line.Year + line.Title + line.Authors,
     metadataFields: [
       {
         variableName: "_authors",
@@ -208,13 +215,17 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "authors",
         variableLabel: "Authors",
         variableColor: "#FFE915",
-        maker: (line: any) =>
+        maker: (
+          line: Record<string, unknown>
+        ): { key: string; label: string }[] =>
           zip(
             line._authors as string[],
-            line._authorsID.filter((id: any) => id !== "") as string[]
-          ).map(([name, id]: any) => ({
-            label: name?.trim(),
-            key: id?.trim(),
+            (line._authorsID as string[]).filter(
+              (id: string) => id !== ""
+            ) as string[]
+          ).map(([name, id]: [string | undefined, string | undefined]) => ({
+            label: (name || "").trim(),
+            key: (id || "").trim(),
           })),
       },
       {
@@ -222,8 +233,10 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "institutions",
         variableLabel: "Affiliation institutions",
         variableColor: "#E22521",
-        maker: (line: any) => {
-          const institutions = line.affiliations?.map(
+        maker: (
+          line: Record<string, unknown>
+        ): { key: string; label: string }[] => {
+          const institutions = (line.affiliations as string[])?.map(
             (aff: string) => aff.split(",")[0]
           );
           return institutions?.map((institution: string) => ({
@@ -237,9 +250,11 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "countries",
         variableLabel: "Affiliation countries",
         variableColor: "#DF60BF",
-        maker: (line: any) =>
+        maker: (
+          line: Record<string, unknown>
+        ): { key: string; label: string }[] =>
           line.affiliations &&
-          line.affiliations
+          (line.affiliations as string[])
             .filter((aff: string) => aff.includes(", "))
             .map((aff: string) => {
               const infos = aff.split(", ");
@@ -252,9 +267,11 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "funders",
         variableLabel: "Funders",
         variableColor: "#FF8F2E",
-        maker: (line: any) =>
+        maker: (
+          line: Record<string, unknown>
+        ): { key: string; label: string }[] =>
           line.fundings &&
-          line.fundings.map((funding: string) => {
+          (line.fundings as string[]).map((funding: string) => {
             const f = funding.split(":")[0]?.trim();
             return { key: f, label: f };
           }),

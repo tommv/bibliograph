@@ -92,7 +92,9 @@ function rescaleGraphToGraphicSpace(graph: Graph, settings: Settings): void {
   let ratio: number;
 
   graph.forEachNode((nodeId: string) => {
-    let { size, x, y } = graph.getNodeAttributes(nodeId);
+    const attributes = graph.getNodeAttributes(nodeId);
+    const { x } = attributes;
+    let { size, y } = attributes;
 
     // "Flip" the node:
     graph.setNodeAttribute(nodeId, "y", (y = -y));
@@ -177,7 +179,7 @@ export function getHeatmap(inputGraph: Graph, settings: Settings): string {
   const pixelValues = new Float32Array(settings.width * settings.height);
 
   // Init pixels:
-  for (let i in pixelValues) {
+  for (const i in pixelValues) {
     pixelValues[i] = 0;
   }
 
@@ -208,7 +210,7 @@ export function getHeatmap(inputGraph: Graph, settings: Settings): string {
   });
 
   let maxValue = -Infinity;
-  for (let i in pixelValues) {
+  for (const i in pixelValues) {
     maxValue = Math.max(pixelValues[i], maxValue);
   }
 

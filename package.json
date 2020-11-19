@@ -2,9 +2,9 @@
   "name": "bibliograph",
   "homepage": "http://tommv.github.io/bibliograph",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@ajusa/lit": "^1.1.0",
+    "@babel/eslint-parser": "^7.12.1",
     "@fortawesome/fontawesome-free": "^5.15.1",
     "@testing-library/jest-dom": "^5.11.5",
     "@testing-library/react": "^11.1.0",
@@ -18,8 +18,13 @@
     "@types/react": "^16.9.54",
     "@types/react-dom": "^16.9.9",
     "@types/react-dropzone": "^5.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.13.0",
+    "eslint-config-prettier": "^6.15.0",
     "faker": "^5.1.0",
     "file-saver": "^2.0.2",
+    "gh-pages": "^3.1.0",
     "graphology": "^0.18.0",
     "graphology-components": "^1.0.1",
     "graphology-generators": "^0.10.1",
@@ -46,6 +51,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "lint": "eslint --ext .js,.ts,.jsx,.tsx ./src/",
     "prettier": "prettier --write src",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"
@@ -67,8 +73,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "gh-pages": "^3.1.0"
   }
 }

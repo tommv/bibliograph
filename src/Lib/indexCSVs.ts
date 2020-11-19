@@ -1,6 +1,7 @@
 import papa, { ParseResult } from "papaparse";
+import { flattenDeep } from "lodash";
+
 import { Field, GeneratedField, CSVFormat, FieldIndices } from "./types";
-import { flattenDeep, toPairs } from "lodash";
 
 const incrementTypeIndex = (
   indices: { [field: string]: { [field: string]: number } },
@@ -33,25 +34,28 @@ const indexRow = (
         incrementTypeIndex(indices, "references", ref.trim());
       });
     // metadata factory
-    const metadata = format.metadataFields.reduce((meta: {}, f: Field) => {
-      // get value
-      let values = [];
-      // parse multiple values
-      if (csvRow[f.key]) {
-        if (f.separator)
-          values = csvRow[f.key].split(f.separator).filter((v) => v !== "");
-        else values.push(csvRow[f.key]);
-        // index if not hidden field
-        if (!f.hidden)
-          values.forEach((value: string) => {
-            incrementTypeIndex(indices, f.variableName, value.trim());
-          });
-        // craft a parsed line for generated fields
-        return { ...meta, [f.variableName]: values };
-      } else {
-        return meta;
-      }
-    }, {});
+    const metadata = format.metadataFields.reduce(
+      (meta: Record<string, unknown>, f: Field) => {
+        // get value
+        let values = [];
+        // parse multiple values
+        if (csvRow[f.key]) {
+          if (f.separator)
+            values = csvRow[f.key].split(f.separator).filter((v) => v !== "");
+          else values.push(csvRow[f.key]);
+          // index if not hidden field
+          if (!f.hidden)
+            values.forEach((value: string) => {
+              incrementTypeIndex(indices, f.variableName, value.trim());
+            });
+          // craft a parsed line for generated fields
+          return { ...meta, [f.variableName]: values };
+        } else {
+          return meta;
+        }
+      },
+      {}
+    );
     // generated fields
     if (format.generatedFields)
       format.generatedFields?.forEach((f: GeneratedField) => {
@@ -75,6 +79,7 @@ export function indexCSVs(
   setLoaderMessage: (message: string) => void
 ): Promise<FieldIndices> {
   const indices: FieldIndices = { hash: {} };
+
   return Promise.all(
     files.map(
       (file: File) =>
@@ -100,13 +105,6 @@ export function indexCSVs(
         })
     )
   ).then(() => {
-    // list duplicates
-    console.log(
-      toPairs(indices.hash)
-        .filter(([, nb]) => nb > 1)
-        .map(([h, nb]) => `${h} - ${nb}`)
-        .join("\n")
-    );
     return indices;
   });
 }

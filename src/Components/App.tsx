@@ -13,7 +13,7 @@ import { aggregateFieldIndices } from "../Lib/getAggregations";
 
 import "./App.css";
 
-const App: FC<{}> = () => {
+const App: FC = () => {
   const [files, setFiles] = useState<File[] | null>(null);
   const [range, setRange] = useState<{ min?: number; max?: number }>({});
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
@@ -51,14 +51,14 @@ const App: FC<{}> = () => {
       // filter fieldIndices
       // hash with at least one dups are passed for filtering
       const filteredFieldIndices: FieldIndices = {
-        hash: pickBy(indices.hash, (nb, hash) => nb > 1),
+        hash: pickBy(indices.hash, (nb) => nb > 1),
       };
       // keep the occ index entries only if occ counts >= filters
       toPairs(indices).forEach(([fieldType, valuesOccs]) => {
         if (filters[fieldType])
           filteredFieldIndices[fieldType] = pickBy(
             valuesOccs,
-            (occ, type) => occ >= filters[fieldType]
+            (occ) => occ >= filters[fieldType]
           );
       });
 
@@ -100,7 +100,7 @@ const App: FC<{}> = () => {
     // Aggregate data:
     const { aggregations, fields } = aggregateFieldIndices(indices, format);
     const articlesMetadata = toPairs(indices.hash).reduce(
-      (r, [hash, nb]) => ({
+      (r, [, nb]) => ({
         nbArticles: r.nbArticles + nb,
         nbDuplicates: r.nbDuplicates + nb - 1,
       }),

@@ -1,13 +1,19 @@
 import Graph from "graphology";
 import { saveAs } from "file-saver";
+import { getHeatmap } from "./getHeatmap";
 
+// [jacomyal] Note:
+// The three following imports are not typed, and I dealt with that by disabling
+// quality control locally:
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { write } from "graphology-gexf/browser";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import renderSVG from "graphology-svg/renderer";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { DEFAULTS } from "graphology-svg/defaults";
-import { getHeatmap } from "./getHeatmap";
 
 const SETTINGS = {
   margin: 20,
@@ -16,7 +22,7 @@ const SETTINGS = {
 };
 
 export function renderFixedSVG(graph: Graph): string {
-  const svgString = renderSVG(graph, {
+  return renderSVG(graph, {
     ...DEFAULTS,
     ...SETTINGS,
     nodes: {
@@ -31,8 +37,6 @@ export function renderFixedSVG(graph: Graph): string {
       }),
     },
   });
-
-  return svgString;
 }
 
 export function saveGEXF(graph: Graph, fileName: string): void {

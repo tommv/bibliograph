@@ -12,8 +12,8 @@ const maxNodeSizes = {
 };
 
 export async function prepareGraph(graph: Graph): Promise<Graph> {
-  const largest = largestConnectedComponent(graph as any);
-  const mainGraph = subGraph(graph as any, largest);
+  const largest = largestConnectedComponent(graph as never);
+  const mainGraph = subGraph(graph as never, largest);
 
   // calculate max occs
   const maxNbArticles: { [key: string]: number } = {};
@@ -56,7 +56,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     }
   });
 
-  const refsGraph = subGraph(mainGraph, refsNodes) as any;
+  const refsGraph = (subGraph(mainGraph, refsNodes) as unknown) as Graph;
   circular.assign(refsGraph);
   const positions = forceAtlas2(refsGraph, {
     iterations: 1000,
