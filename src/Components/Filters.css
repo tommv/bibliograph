@@ -13,3 +13,7 @@
 .Filters .fields input[type="range"] {
   width: 100%;
 }
+.Filters .actions {
+  width: 100%;
+  text-align: right;
+}

@@ -16,10 +16,20 @@ const incrementTypeIndex = (
 const indexRow = (
   csvRow: { [key: string]: string },
   format: CSVFormat,
-  indices: FieldIndices
+  indices: FieldIndices,
+  yearRange: { min?: number; max?: number }
 ) => {
   // references
   const refsField = format.references;
+  // year filter
+  if (yearRange && (yearRange.min || yearRange.max) && format.year) {
+    if (yearRange.min && csvRow[format.year.key] < "" + yearRange.min)
+      // don't load this row cause out of range
+      return;
+    if (yearRange.max && csvRow[format.year.key] > "" + yearRange.max)
+      // don't load this row cause out of range
+      return;
+  }
   if (refsField && csvRow[refsField.key]) {
     // test duplication
     const hash = format.hash(csvRow);
@@ -92,12 +102,7 @@ export function indexCSVs(
             header: true,
             step: function (row: ParseResult<{ [key: string]: string }>) {
               // transform row into graph nodes and edges
-              indexRow(
-                flattenDeep([row.data])[0],
-                format,
-                indices
-                //range
-              );
+              indexRow(flattenDeep([row.data])[0], format, indices, range);
             },
             complete: () => {
               setLoaderMessage(`file "${file.name}" parsed`);

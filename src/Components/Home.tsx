@@ -9,20 +9,24 @@ import "./Home.css";
 const FORMAT_PLACEHOLDER = "SELECT_A_FORMAT";
 
 const Home: FC<{
+  files: File[],
+  format: CSVFormat|null,
+  range: { min?: number; max?: number }
   onSubmit(
     files: File[],
     format: CSVFormat,
     range: { min?: number; max?: number }
   ): void;
-}> = ({ onSubmit }) => {
+}> = ({files, range, format, onSubmit }) => {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
+  const defaultFormat = toPairs(CSVFormats).find(([,f])=> f.label === format?.label);
   const [selectedFormat, setSelectedFormat] = useState<string>(
-    FORMAT_PLACEHOLDER
+    defaultFormat ? defaultFormat[0] : FORMAT_PLACEHOLDER
   );
-  const [minYear, setMinYear] = useState<number>(1900);
-  const [maxYear, setMaxYear] = useState<number>(2100);
-
-  const csvFiles = (acceptedFiles || []).filter(
+  const [minYear, setMinYear] = useState<number>(range.min || 1900);
+  const [maxYear, setMaxYear] = useState<number>(range.max || 2100);
+    
+  const csvFiles = (acceptedFiles.length>0 ? acceptedFiles : files).filter(
     (file: FileWithPath) =>
       file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv"
   );

@@ -13,11 +13,18 @@ import { aggregateFieldIndices } from "../Lib/getAggregations";
 
 import "./App.css";
 
+//TODO: put this in config
+const defaultFilters:FiltersType = {
+  references: 2,
+}
+
 const App: FC = () => {
   const [files, setFiles] = useState<File[] | null>(null);
+  const [filesReady, setFilesReady] = useState<boolean>(false);
   const [range, setRange] = useState<{ min?: number; max?: number }>({});
   const [format, setCSVFormat] = useState<CSVFormat | null>(null);
-  const [filters, setFilters] = useState<FiltersType | null>(null);
+  const [filters, setFilters] = useState<FiltersType>(defaultFilters);
+  const [filtersReady, setFiltersReady] = useState<boolean>(false);
   const [indices, setIndices] = useState<FieldIndices>({});
   const [filteredGraph, setFilteredGraph] = useState<Graph | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -26,14 +33,14 @@ const App: FC = () => {
   // ****************** Index uploaded CSV prepare filters *************** //
   useEffect(() => {
     // Load CSVs on submit Home component:
-    if (files && files.length && format && isEmpty(indices) && !isLoading) {
+    if (filesReady && files && files.length && format && isEmpty(indices) && !isLoading) {
       setIsLoading(true);
       indexCSVs(files, format, range, setLoaderMessage).then((indices) => {
         setIndices(indices);
         setIsLoading(false);
       });
     }
-  }, [files, format, indices, isLoading, range]);
+  }, [filesReady, files, format, indices, isLoading, range]);
 
   // ****************** Build and display Network *********************** //
   useEffect(() => {
@@ -44,6 +51,7 @@ const App: FC = () => {
       format &&
       indices &&
       filters &&
+      filtersReady && 
       !filteredGraph &&
       !isLoading
     ) {
@@ -77,7 +85,7 @@ const App: FC = () => {
         });
       });
     }
-  }, [files, filteredGraph, filters, format, indices, isLoading, range]);
+  }, [files, filteredGraph, filters, format, indices, isLoading, range, filtersReady]);
 
   // ****************** Chose the right component *********************** //
   let Component = <div>Woops, something went wrong...</div>;
@@ -85,6 +93,9 @@ const App: FC = () => {
   if (isEmpty(indices))
     Component = (
       <Home
+        files={files || []}
+        range={range}
+        format={format}
         onSubmit={(
           files: File[],
           format: CSVFormat,
@@ -93,6 +104,7 @@ const App: FC = () => {
           setFiles(files);
           setRange(range);
           setCSVFormat(format);
+          setFilesReady(true);
         }}
       />
     );
@@ -108,10 +120,20 @@ const App: FC = () => {
     );
     Component = (
       <Filters
+        filters={filters}
+        setFilters={setFilters}
         aggregations={aggregations}
         fields={fields}
-        onSubmit={setFilters}
+        onSubmit={()=> {
+          setFiltersReady(true);
+        }}
         articlesMetadata={articlesMetadata}
+        range={range}
+        onGoBack={() => {
+          setIndices({});
+          setFilters(defaultFilters);
+          setFilesReady(false);
+        }}
       />
     );
   }
@@ -124,7 +146,7 @@ const App: FC = () => {
         format={format as CSVFormat}
         onGoBack={() => {
           setFilteredGraph(null);
-          setFilters(null);
+          setFiltersReady(false);
         }}
       />
     );
