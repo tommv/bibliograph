@@ -1,26 +1,26 @@
 {
   "files": {
     "main.css": "/bibliograph/static/css/main.573b84d3.chunk.css",
-    "main.js": "/bibliograph/static/js/main.6ced3014.chunk.js",
-    "main.js.map": "/bibliograph/static/js/main.6ced3014.chunk.js.map",
-    "runtime-main.js": "/bibliograph/static/js/runtime-main.51f1cded.js",
-    "runtime-main.js.map": "/bibliograph/static/js/runtime-main.51f1cded.js.map",
-    "static/css/2.df8cb5b5.chunk.css": "/bibliograph/static/css/2.df8cb5b5.chunk.css",
-    "static/js/2.6d84c7b3.chunk.js": "/bibliograph/static/js/2.6d84c7b3.chunk.js",
-    "static/js/2.6d84c7b3.chunk.js.map": "/bibliograph/static/js/2.6d84c7b3.chunk.js.map",
-    "static/js/3.383adee6.chunk.js": "/bibliograph/static/js/3.383adee6.chunk.js",
-    "static/js/3.383adee6.chunk.js.map": "/bibliograph/static/js/3.383adee6.chunk.js.map",
+    "main.js": "/bibliograph/static/js/main.eaf04114.chunk.js",
+    "main.js.map": "/bibliograph/static/js/main.eaf04114.chunk.js.map",
+    "runtime-main.js": "/bibliograph/static/js/runtime-main.64642446.js",
+    "runtime-main.js.map": "/bibliograph/static/js/runtime-main.64642446.js.map",
+    "static/css/2.e4e03417.chunk.css": "/bibliograph/static/css/2.e4e03417.chunk.css",
+    "static/js/2.b071b7c2.chunk.js": "/bibliograph/static/js/2.b071b7c2.chunk.js",
+    "static/js/2.b071b7c2.chunk.js.map": "/bibliograph/static/js/2.b071b7c2.chunk.js.map",
+    "static/js/3.b8c8d03d.chunk.js": "/bibliograph/static/js/3.b8c8d03d.chunk.js",
+    "static/js/3.b8c8d03d.chunk.js.map": "/bibliograph/static/js/3.b8c8d03d.chunk.js.map",
     "index.html": "/bibliograph/index.html",
-    "static/css/2.df8cb5b5.chunk.css.map": "/bibliograph/static/css/2.df8cb5b5.chunk.css.map",
+    "static/css/2.e4e03417.chunk.css.map": "/bibliograph/static/css/2.e4e03417.chunk.css.map",
     "static/css/main.573b84d3.chunk.css.map": "/bibliograph/static/css/main.573b84d3.chunk.css.map",
-    "static/js/2.6d84c7b3.chunk.js.LICENSE.txt": "/bibliograph/static/js/2.6d84c7b3.chunk.js.LICENSE.txt",
-    "static/media/base.css": "/bibliograph/static/media/fa-solid-900.46fdbd2d.woff"
+    "static/js/2.b071b7c2.chunk.js.LICENSE.txt": "/bibliograph/static/js/2.b071b7c2.chunk.js.LICENSE.txt",
+    "static/media/base.css": "/bibliograph/static/media/fa-solid-900.f4f93856.woff"
   },
   "entrypoints": [
-    "static/js/runtime-main.51f1cded.js",
-    "static/css/2.df8cb5b5.chunk.css",
-    "static/js/2.6d84c7b3.chunk.js",
+    "static/js/runtime-main.64642446.js",
+    "static/css/2.e4e03417.chunk.css",
+    "static/js/2.b071b7c2.chunk.js",
     "static/css/main.573b84d3.chunk.css",
-    "static/js/main.6ced3014.chunk.js"
+    "static/js/main.eaf04114.chunk.js"
   ]
 }
