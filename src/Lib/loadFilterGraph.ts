@@ -219,8 +219,8 @@ export function loadFilterGraph(
     nodesToDelete.forEach((n) => fullGraph.dropNode(n));
 
     // Store some useful metadata:
-    fullGraph.setAttribute("Data source", format.label);
-    fullGraph.setAttribute("Total raw entries count", parsedRows);
+    fullGraph.setAttribute("datasource", format.label);
+    fullGraph.setAttribute("entriescount", parsedRows);
 
     return fullGraph;
   });

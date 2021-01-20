@@ -20,8 +20,8 @@ export function getTextReport(
 ): string {
   const graphAttributes = inputGraph.getAttributes();
 
-  const rowsTotal = graphAttributes["Total raw entries count"];
-  const dataSource = graphAttributes["Data source"];
+  const rowsTotal = graphAttributes.rawentriescount;
+  const dataSource = graphAttributes.datasource;
   const yearsIndex = indices[format.year.variableName] || {};
   const typesIndex = indices[format.type.variableName] || {};
   const referencesIndex = indices[format.references.variableName] || {};
