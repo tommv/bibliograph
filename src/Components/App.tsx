@@ -14,9 +14,9 @@ import { aggregateFieldIndices } from "../Lib/getAggregations";
 import "./App.css";
 
 //TODO: put this in config
-const defaultFilters:FiltersType = {
+const defaultFilters: FiltersType = {
   references: 2,
-}
+};
 
 const App: FC = () => {
   const [files, setFiles] = useState<File[] | null>(null);
@@ -33,7 +33,14 @@ const App: FC = () => {
   // ****************** Index uploaded CSV prepare filters *************** //
   useEffect(() => {
     // Load CSVs on submit Home component:
-    if (filesReady && files && files.length && format && isEmpty(indices) && !isLoading) {
+    if (
+      filesReady &&
+      files &&
+      files.length &&
+      format &&
+      isEmpty(indices) &&
+      !isLoading
+    ) {
       setIsLoading(true);
       indexCSVs(files, format, range, setLoaderMessage).then((indices) => {
         setIndices(indices);
@@ -51,7 +58,7 @@ const App: FC = () => {
       format &&
       indices &&
       filters &&
-      filtersReady && 
+      filtersReady &&
       !filteredGraph &&
       !isLoading
     ) {
@@ -85,7 +92,16 @@ const App: FC = () => {
         });
       });
     }
-  }, [files, filteredGraph, filters, format, indices, isLoading, range, filtersReady]);
+  }, [
+    files,
+    filteredGraph,
+    filters,
+    format,
+    indices,
+    isLoading,
+    range,
+    filtersReady,
+  ]);
 
   // ****************** Chose the right component *********************** //
   let Component = <div>Woops, something went wrong...</div>;
@@ -124,7 +140,7 @@ const App: FC = () => {
         setFilters={setFilters}
         aggregations={aggregations}
         fields={fields}
-        onSubmit={()=> {
+        onSubmit={() => {
           setFiltersReady(true);
         }}
         articlesMetadata={articlesMetadata}

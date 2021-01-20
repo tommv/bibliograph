@@ -65,7 +65,7 @@ const csvRowToGraph = (
     // metadata factory
     const metadataNodes: string[] = [];
     const metadata = format.metadataFields.reduce(
-      (meta: Record<string, unknown>, f: Field) => {
+      (meta: Record<string, string[]>, f: Field) => {
         // get value
         let values = [];
         // parse multiple values
@@ -185,7 +185,9 @@ export function loadFilterGraph(
             delimiter: format.separator,
             header: true,
             step: function (row: ParseResult<{ [key: string]: string }>) {
-              const preparedRow = flattenDeep([row.data])[0];
+              const preparedRow = flattenDeep<{ [key: string]: string }>([
+                row.data,
+              ])[0];
 
               // transform row into graph nodes and edges
               const isRowIn = csvRowToGraph(
@@ -202,7 +204,7 @@ export function loadFilterGraph(
             },
             complete: () => {
               setLoaderMessage(`File "${file.name}" parsed and filtered.`);
-              resolve();
+              resolve(null);
             },
           });
         })

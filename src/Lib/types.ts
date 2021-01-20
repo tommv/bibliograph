@@ -7,7 +7,9 @@ export interface Field {
   hidden?: boolean;
 }
 export interface GeneratedField {
-  maker: (line: { [key: string]: unknown }) => { key: string; label: string }[];
+  maker: (line: {
+    [key: string]: string[];
+  }) => { key: string; label: string }[];
   variableName: string;
   variableLabel: string;
   variableColor?: string;

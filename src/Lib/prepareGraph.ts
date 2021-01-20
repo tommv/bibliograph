@@ -2,7 +2,7 @@ import Graph from "graphology";
 import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import { largestConnectedComponent } from "graphology-components";
-import { subGraph } from "graphology-utils";
+import { subgraph } from "graphology-operators";
 
 //TODO: move this to conf file
 //TODO : adpat to initial window width ?
@@ -13,7 +13,7 @@ const maxNodeSizes = {
 
 export async function prepareGraph(graph: Graph): Promise<Graph> {
   const largest = largestConnectedComponent(graph as never);
-  const mainGraph = subGraph(graph as never, largest);
+  const mainGraph = subgraph(graph as never, largest);
 
   // Copy graph attributes
   const graphAttributes = graph.getAttributes();
@@ -62,7 +62,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     }
   });
 
-  const refsGraph = (subGraph(mainGraph, refsNodes) as unknown) as Graph;
+  const refsGraph = (subgraph(mainGraph, refsNodes) as unknown) as Graph;
   circular.assign(refsGraph);
   const positions = forceAtlas2(refsGraph, {
     iterations: 1000,
@@ -83,7 +83,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     let x = 0;
     let y = 0;
 
-    mainGraph.forEachNeighbor(noneRefNode, (neighbor) => {
+    mainGraph.forEachNeighbor(noneRefNode, (neighbor: string) => {
       x += positions[neighbor].x;
       y += positions[neighbor].y;
     });

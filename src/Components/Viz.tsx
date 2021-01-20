@@ -212,7 +212,11 @@ class Viz extends Component<PropsType, StateType> {
         </div>
 
         <div className="caption">
-          {[this.props.format.references, ...this.props.format.metadataFields, ...this.props.format.generatedFields]
+          {[
+            this.props.format.references,
+            ...this.props.format.metadataFields,
+            ...(this.props.format.generatedFields || []),
+          ]
             .filter((field) => field.variableColor)
             .map((field) => (
               <span key={field.variableName}>

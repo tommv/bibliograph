@@ -87,7 +87,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "Affiliation institutions",
         variableColor: "#E22521",
         maker: (
-          line: Record<string, unknown>
+          line: Record<string, string[]>
         ): { key: string; label: string }[] =>
           line.affiliations &&
           (line.affiliations as string[]).map((aff: string) => {
@@ -105,7 +105,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "Affiliation countries",
         variableColor: "#DF60BF",
         maker: (
-          line: Record<string, unknown>
+          line: Record<string, string[]>
         ): { key: string; label: string }[] =>
           line.affiliations &&
           (line.affiliations as string[])
@@ -122,7 +122,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "Funders",
         variableColor: "#FF8F2E",
         maker: (
-          line: Record<string, unknown>
+          line: Record<string, string[]>
         ): { key: string; label: string }[] =>
           line.fundings &&
           (line.fundings as string[]).map((funding: string) => {
@@ -252,7 +252,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "Affiliation countries",
         variableColor: "#DF60BF",
         maker: (
-          line: Record<string, unknown>
+          line: Record<string, string[]>
         ): { key: string; label: string }[] =>
           line.affiliations &&
           (line.affiliations as string[])
@@ -269,7 +269,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableLabel: "Funders",
         variableColor: "#FF8F2E",
         maker: (
-          line: Record<string, unknown>
+          line: Record<string, string[]>
         ): { key: string; label: string }[] =>
           line.fundings &&
           (line.fundings as string[]).map((funding: string) => {

@@ -7,21 +7,31 @@ import "./Filters.css";
 
 const Filters: FC<{
   filters: FiltersType;
-  setFilters: (f:FiltersType) => void;
+  setFilters: (f: FiltersType) => void;
   aggregations: { [field: string]: Aggregation };
   fields: FieldDefinition[];
   articlesMetadata: { nbArticles: number; nbDuplicates: number };
   onSubmit(filters: FiltersType): void;
   range: { min?: number; max?: number };
   onGoBack: () => void;
-}> = ({ filters, setFilters, aggregations, fields, articlesMetadata, onSubmit, range, onGoBack }) => {
+}> = ({
+  filters,
+  setFilters,
+  aggregations,
+  fields,
+  articlesMetadata,
+  onSubmit,
+  range,
+  onGoBack,
+}) => {
   return (
     <section className="Filters c">
       <div className="actions">
         <button className="btn right" onClick={onGoBack}>
-            <i className="fa fa-undo" /> Go back to <strong>upload CSV files</strong>
-          </button>
-          </div>
+          <i className="fa fa-undo" /> Go back to{" "}
+          <strong>upload CSV files</strong>
+        </button>
+      </div>
       <h2>
         <span className="hg">Filters</span>
       </h2>
@@ -35,7 +45,8 @@ const Filters: FC<{
         <p>
           <br />
           <i>
-            Your data-set contained {articlesMetadata.nbArticles} articles  published between {range.min} and {range.max}.<br/>
+            Your data-set contained {articlesMetadata.nbArticles} articles
+            published between {range.min} and {range.max}.<br />
             {articlesMetadata.nbDuplicates} articles were duplicates (
             {(articlesMetadata.nbArticles > 0
               ? (articlesMetadata.nbDuplicates / articlesMetadata.nbArticles) *

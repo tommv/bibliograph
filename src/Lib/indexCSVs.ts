@@ -48,7 +48,7 @@ const indexRow = (
       ...format.metadataFields,
       format.type,
       format.year,
-    ].reduce((meta: Record<string, unknown>, f: Field) => {
+    ].reduce((meta: Record<string, string[]>, f: Field) => {
       // get value
       let values = [];
       // parse multiple values
@@ -102,11 +102,16 @@ export function indexCSVs(
             header: true,
             step: function (row: ParseResult<{ [key: string]: string }>) {
               // transform row into graph nodes and edges
-              indexRow(flattenDeep([row.data])[0], format, indices, range);
+              indexRow(
+                flattenDeep<{ [key: string]: string }>([row.data])[0],
+                format,
+                indices,
+                range
+              );
             },
             complete: () => {
               setLoaderMessage(`file "${file.name}" parsed`);
-              resolve();
+              resolve(null);
             },
           });
         })
