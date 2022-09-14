@@ -40,14 +40,14 @@ const csvRowToGraph = (
     const references: string[] = (csvRow[refsField.key].split(
       refsField.separator || ","
     ) as string[])
+      .map((ref) => ref.trim())
       // apply filter
       .filter(
         (ref) =>
           ref !== "" &&
           filteredTypes.references &&
-          !!filteredTypes.references[ref]
+          filteredTypes.references[ref] !== undefined
       )
-      .map((ref) => ref.trim())
       .map((ref) => {
         const n = graph.mergeNode(ref, {
           label: ref,
