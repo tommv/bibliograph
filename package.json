@@ -2,6 +2,7 @@
   "name": "bibliograph",
   "homepage": "http://tommv.github.io/bibliograph",
   "version": "0.1.0",
+  "engines" : { "node" : "16.20.2", "npm": "8.19.4" },
   "dependencies": {
     "@ajusa/lit": "^1.1.0",
     "@babel/eslint-parser": "^7.12.1",
