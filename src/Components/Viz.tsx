@@ -1,5 +1,5 @@
 import React, { Component, createRef, RefObject } from "react";
-import { WebGLRenderer } from "sigma";
+import WebGLRenderer from "sigma";
 import Graph from "graphology";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import forceAtlas2 from "graphology-layout-forceatlas2";
@@ -62,6 +62,7 @@ class Viz extends Component<PropsType, StateType> {
 
     this.sigma = new WebGLRenderer(this.props.graph, this.domRoot.current, {
       labelFont: "Nunito, sans-serif",
+      labelRenderedSizeThreshold: 1,
     });
 
     this.initFA2();

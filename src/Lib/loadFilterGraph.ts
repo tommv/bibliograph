@@ -49,7 +49,7 @@ const csvRowToGraph = (
           filteredTypes.references[ref] !== undefined
       )
       .map((ref) => {
-        const n = graph.mergeNode(ref, {
+        const [n,] = graph.mergeNode(ref, {
           label: ref,
           dataType: "references",
           color: refsField.variableColor,
@@ -82,7 +82,7 @@ const csvRowToGraph = (
               .map((v) => v.trim())
               .forEach((value: string) => {
                 // meta node
-                const n = graph.mergeNode(`${value}_${f.variableName}`, {
+                const [n,] = graph.mergeNode(`${value}_${f.variableName}`, {
                   label: value,
                   dataType: f.variableName,
                   color: f.variableColor,
@@ -119,7 +119,7 @@ const csvRowToGraph = (
                 node && node.key && !!filteredTypes[f.variableName][node.key]
             )
             .forEach((node) => {
-              const n = graph.mergeNode(`${node.key}_${f.variableName}`, {
+              const [n,] = graph.mergeNode(`${node.key}_${f.variableName}`, {
                 ...node,
                 dataType: f.variableName,
                 color: f.variableColor,

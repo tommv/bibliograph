@@ -63,9 +63,7 @@ export function aggregateGraphNbArticles(
 
   const fields: FieldDefinition[] = [];
   // Index data
-  for (const iter of graph.nodeEntries()) {
-    const attributes = iter[1];
-
+  for (const {attributes} of graph.nodeEntries()) {
     if (!numberIndices[attributes.type]) {
       numberIndices[attributes.type] = [];
       let fieldDef: Field | GeneratedField | undefined;
