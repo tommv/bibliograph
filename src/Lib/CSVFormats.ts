@@ -165,7 +165,7 @@ export const CSVFormats: { [key: string]: CSVFormat } = {
         variableName: "_authors",
         variableLabel: "Author names",
         key: "Authors",
-        separator: ",",
+        separator: ";",
         hidden: true,
       },
       {
