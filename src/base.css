@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@300&display=swap");
-@import "@fortawesome/fontawesome-free/css/all.css";
 
 body {
   margin: 0;
@@ -36,4 +35,20 @@ select {
 
 .hg {
   box-shadow: inset 0 -0.4em #fa0;
+}
+
+.spin {
+  animation: spin 2s infinite linear;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+.x5 {
+  font-size: 5em;
 }

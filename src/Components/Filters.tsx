@@ -1,5 +1,6 @@
 import { last, max } from "lodash";
 import React, { FC } from "react";
+import { FaUndo } from "react-icons/fa";
 
 import { Aggregation, FieldDefinition, FiltersType } from "../Lib/types";
 import "./Filters.css";
@@ -18,7 +19,7 @@ const Filters: FC<{
     <section className="Filters c">
       <div className="actions">
         <button className="btn right" onClick={onGoBack}>
-          <i className="fa fa-undo" /> Go back to <strong>upload CSV files</strong>
+          <FaUndo /> Go back to <strong>upload CSV files</strong>
         </button>
       </div>
       <h2>

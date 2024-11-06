@@ -1,6 +1,7 @@
 import Graph, { UndirectedGraph } from "graphology";
 import { isEmpty, pickBy, toPairs } from "lodash";
 import React, { FC, useEffect, useState } from "react";
+import { FaSpinner } from "react-icons/fa6";
 
 import { aggregateFieldIndices } from "../Lib/getAggregations";
 import { indexCSVs } from "../Lib/indexCSVs";
@@ -132,7 +133,7 @@ const App: FC = () => {
     Component = (
       <div className="loading">
         <div>
-          <i className="fas fa-spinner fa-pulse fa-5x" />
+          <FaSpinner className="spin x5" />
         </div>
         <div>{loaderMessage}</div>
       </div>

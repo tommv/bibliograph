@@ -2,6 +2,8 @@ import Graph from "graphology";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import React, { Component, RefObject, createRef } from "react";
+import { FaDotCircle, FaSearchMinus, FaSearchPlus, FaUndo } from "react-icons/fa";
+import { FaDownload, FaPlay, FaSpinner } from "react-icons/fa6";
 import Sigma from "sigma";
 
 import { saveGEXF, saveHeatmap, saveReport, saveSVG } from "../Lib/saveHelpers";
@@ -115,13 +117,13 @@ class Viz extends Component<PropsType, StateType> {
       <section className="Viz">
         <div className="features">
           <button className="btn" onClick={() => saveGEXF(this.props.graph, "graph-export.gexf")}>
-            <i className="fa fa-download" /> Download <strong>.GEXF</strong> file
+            <FaDownload /> Download <strong>.GEXF</strong> file
           </button>
           <button className="btn" onClick={() => saveSVG(this.props.graph, "graph-export.svg")}>
-            <i className="fa fa-download" /> Download <strong>.SVG</strong> file
+            <FaDownload /> Download <strong>.SVG</strong> file
           </button>
           <button className="btn" onClick={() => saveHeatmap(this.props.graph, "graph-heatmap-export.svg")}>
-            <i className="fa fa-download" /> Download <strong>Heatmap</strong> image
+            <FaDownload /> Download <strong>Heatmap</strong> image
           </button>
           <button
             className="btn"
@@ -135,10 +137,10 @@ class Viz extends Component<PropsType, StateType> {
               )
             }
           >
-            <i className="fa fa-download" /> Download <strong>report</strong>{" "}
+            <FaDownload /> Download <strong>report</strong>{" "}
           </button>
           <button className="btn right" onClick={this.props.onGoBack}>
-            <i className="fa fa-undo" /> Go back to <strong>filters</strong> view
+            <FaUndo /> Go back to <strong>filters</strong> view
           </button>
         </div>
 
@@ -152,22 +154,22 @@ class Viz extends Component<PropsType, StateType> {
                 onClick={() => this.toggleFA2()}
                 title={this.state.isFA2Running ? "Stop the layout animation" : "Start the layout animation"}
               >
-                {this.state.isFA2Running ? <i className="fas fa-spinner fa-pulse" /> : <i className="fas fa-play" />}
+                {this.state.isFA2Running ? <FaSpinner className="spin" /> : <FaPlay />}
               </button>
             </span>
             <span className="btn-wrapper">
               <button className="btn" onClick={() => this.zoom(1)} title="Zoomer">
-                <i className="fas fa-search-plus" />
+                <FaSearchPlus />
               </button>
             </span>
             <span className="btn-wrapper">
               <button className="btn" onClick={() => this.zoom(-1)} title="Unzoom">
-                <i className="fas fa-search-minus" />
+                <FaSearchMinus />
               </button>
             </span>
             <span className="btn-wrapper">
               <button className="btn" onClick={() => this.zoom()} title="Zoom">
-                <i className="far fa-dot-circle" />
+                <FaDotCircle />
               </button>
             </span>
           </div>
