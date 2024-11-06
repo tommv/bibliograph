@@ -1,13 +1,11 @@
-import React, { Component, createRef, RefObject } from "react";
-import { WebGLRenderer } from "sigma";
 import Graph from "graphology";
-import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
 import forceAtlas2 from "graphology-layout-forceatlas2";
+import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
+import React, { Component, RefObject, createRef } from "react";
+import Sigma from "sigma";
 
-import { saveGEXF, saveHeatmap, saveSVG, saveReport } from "../Lib/saveHelpers";
-
+import { saveGEXF, saveHeatmap, saveReport, saveSVG } from "../Lib/saveHelpers";
 import { CSVFormat, FieldIndices, FiltersType } from "../Lib/types";
-
 import "./Viz.css";
 
 interface PropsType {
@@ -25,7 +23,7 @@ const DURATION = 200;
 
 class Viz extends Component<PropsType, StateType> {
   domRoot: RefObject<HTMLDivElement> = createRef<HTMLDivElement>();
-  sigma?: WebGLRenderer;
+  sigma?: Sigma;
   fa2?: FA2LayoutSupervisor;
   state: StateType = {
     isFA2Running: false,
@@ -60,17 +58,11 @@ class Viz extends Component<PropsType, StateType> {
     if (this.state.isFA2Running) this.stopFA2();
     if (this.sigma) this.killSigma();
 
-    this.sigma = new WebGLRenderer(this.props.graph, this.domRoot.current, {
+    this.sigma = new Sigma(this.props.graph, this.domRoot.current, {
       labelFont: "Nunito, sans-serif",
     });
 
     this.initFA2();
-    this.sigma.on("clickNode", (/*{ node }*/) => {
-      // TODO
-    });
-    this.sigma.on("clickStage", () => {
-      // TODO
-    });
   }
 
   // FA2 management:
@@ -122,27 +114,14 @@ class Viz extends Component<PropsType, StateType> {
     return (
       <section className="Viz">
         <div className="features">
-          <button
-            className="btn"
-            onClick={() => saveGEXF(this.props.graph, "graph-export.gexf")}
-          >
-            <i className="fa fa-download" /> Download <strong>.GEXF</strong>{" "}
-            file
+          <button className="btn" onClick={() => saveGEXF(this.props.graph, "graph-export.gexf")}>
+            <i className="fa fa-download" /> Download <strong>.GEXF</strong> file
           </button>
-          <button
-            className="btn"
-            onClick={() => saveSVG(this.props.graph, "graph-export.svg")}
-          >
+          <button className="btn" onClick={() => saveSVG(this.props.graph, "graph-export.svg")}>
             <i className="fa fa-download" /> Download <strong>.SVG</strong> file
           </button>
-          <button
-            className="btn"
-            onClick={() =>
-              saveHeatmap(this.props.graph, "graph-heatmap-export.svg")
-            }
-          >
-            <i className="fa fa-download" /> Download <strong>Heatmap</strong>{" "}
-            image
+          <button className="btn" onClick={() => saveHeatmap(this.props.graph, "graph-heatmap-export.svg")}>
+            <i className="fa fa-download" /> Download <strong>Heatmap</strong> image
           </button>
           <button
             className="btn"
@@ -152,15 +131,14 @@ class Viz extends Component<PropsType, StateType> {
                 this.props.indices,
                 this.props.filters,
                 this.props.format,
-                "graph-report.txt"
+                "graph-report.txt",
               )
             }
           >
             <i className="fa fa-download" /> Download <strong>report</strong>{" "}
           </button>
           <button className="btn right" onClick={this.props.onGoBack}>
-            <i className="fa fa-undo" /> Go back to <strong>filters</strong>{" "}
-            view
+            <i className="fa fa-undo" /> Go back to <strong>filters</strong> view
           </button>
         </div>
 
@@ -172,34 +150,18 @@ class Viz extends Component<PropsType, StateType> {
               <button
                 className="btn"
                 onClick={() => this.toggleFA2()}
-                title={
-                  this.state.isFA2Running
-                    ? "Stop the layout animation"
-                    : "Start the layout animation"
-                }
+                title={this.state.isFA2Running ? "Stop the layout animation" : "Start the layout animation"}
               >
-                {this.state.isFA2Running ? (
-                  <i className="fas fa-spinner fa-pulse" />
-                ) : (
-                  <i className="fas fa-play" />
-                )}
+                {this.state.isFA2Running ? <i className="fas fa-spinner fa-pulse" /> : <i className="fas fa-play" />}
               </button>
             </span>
             <span className="btn-wrapper">
-              <button
-                className="btn"
-                onClick={() => this.zoom(1)}
-                title="Zoomer"
-              >
+              <button className="btn" onClick={() => this.zoom(1)} title="Zoomer">
                 <i className="fas fa-search-plus" />
               </button>
             </span>
             <span className="btn-wrapper">
-              <button
-                className="btn"
-                onClick={() => this.zoom(-1)}
-                title="Unzoom"
-              >
+              <button className="btn" onClick={() => this.zoom(-1)} title="Unzoom">
                 <i className="fas fa-search-minus" />
               </button>
             </span>
@@ -220,11 +182,7 @@ class Viz extends Component<PropsType, StateType> {
             .filter((field) => field.variableColor)
             .map((field) => (
               <span key={field.variableName}>
-                <span
-                  className="color-disc"
-                  style={{ background: field.variableColor }}
-                />{" "}
-                {field.variableLabel}
+                <span className="color-disc" style={{ background: field.variableColor }} /> {field.variableLabel}
               </span>
             ))}
         </div>

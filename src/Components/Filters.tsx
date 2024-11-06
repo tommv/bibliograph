@@ -1,8 +1,7 @@
-import React, { FC } from "react";
 import { last, max } from "lodash";
+import React, { FC } from "react";
 
-import { FiltersType, FieldDefinition, Aggregation } from "../Lib/types";
-
+import { Aggregation, FieldDefinition, FiltersType } from "../Lib/types";
 import "./Filters.css";
 
 const Filters: FC<{
@@ -14,43 +13,31 @@ const Filters: FC<{
   onSubmit(filters: FiltersType): void;
   range: { min?: number; max?: number };
   onGoBack: () => void;
-}> = ({
-  filters,
-  setFilters,
-  aggregations,
-  fields,
-  articlesMetadata,
-  onSubmit,
-  range,
-  onGoBack,
-}) => {
+}> = ({ filters, setFilters, aggregations, fields, articlesMetadata, onSubmit, range, onGoBack }) => {
   return (
     <section className="Filters c">
       <div className="actions">
         <button className="btn right" onClick={onGoBack}>
-          <i className="fa fa-undo" /> Go back to{" "}
-          <strong>upload CSV files</strong>
+          <i className="fa fa-undo" /> Go back to <strong>upload CSV files</strong>
         </button>
       </div>
       <h2>
         <span className="hg">Filters</span>
       </h2>
       <p>
-        Use the sliders to chose how many nodes of each type should be included
-        in your network based on the number of records in which they appears. It
-        is strongly recommended NOT to include the references occurring in one
-        record only.
+        Use the sliders to chose how many nodes of each type should be included in your network based on the number of
+        records in which they appears. It is strongly recommended NOT to include the references occurring in one record
+        only.
       </p>
       {articlesMetadata && (
         <p>
           <br />
           <i>
-            Your data-set contained {articlesMetadata.nbArticles} articles
-            published between {range.min} and {range.max}.<br />
+            Your data-set contained {articlesMetadata.nbArticles} articles published between {range.min} and {range.max}
+            .<br />
             {articlesMetadata.nbDuplicates} articles were duplicates (
             {(articlesMetadata.nbArticles > 0
-              ? (articlesMetadata.nbDuplicates / articlesMetadata.nbArticles) *
-                100
+              ? (articlesMetadata.nbDuplicates / articlesMetadata.nbArticles) * 100
               : 0
             ).toFixed(1)}
             %).
@@ -71,8 +58,7 @@ const Filters: FC<{
             <div key={field.label}>
               <h4>{field.label || field.key}</h4>
               <div>
-                Keep the <strong>{count}</strong> {field.label} occurring in at
-                least <strong>{value}</strong> record
+                Keep the <strong>{count}</strong> {field.label} occurring in at least <strong>{value}</strong> record
                 {value > 1 ? "s" : ""}
               </div>
               <div>

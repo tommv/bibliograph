@@ -72,11 +72,7 @@ function addMissingVisualizationData(graph: Graph): void {
   });
 
   if (coordinateIssues > 0) {
-    alert(
-      "Note: " +
-        coordinateIssues +
-        " nodes had coordinate issues. We carelessly fixed them."
-    );
+    alert("Note: " + coordinateIssues + " nodes had coordinate issues. We carelessly fixed them.");
   }
 }
 
@@ -113,15 +109,11 @@ function rescaleGraphToGraphicSpace(graph: Graph, settings: Settings): void {
   let distMax = 0; // Maximal distance from barycenter
   graph.forEachNode((nodeId: string) => {
     const { x, y } = graph.getNodeAttributes(nodeId);
-    const dist = Math.sqrt(
-      Math.pow(x - xBarycenter, 2) + Math.pow(y - xBarycenter, 2)
-    );
+    const dist = Math.sqrt(Math.pow(x - xBarycenter, 2) + Math.pow(y - xBarycenter, 2));
     distMax = Math.max(distMax, dist);
   });
 
-  ratio =
-    (Math.min(settings.width, settings.height) - 2 * settings.offset) /
-    (2 * distMax);
+  ratio = (Math.min(settings.width, settings.height) - 2 * settings.offset) / (2 * distMax);
 
   // Initial resize
   const resize = () =>
@@ -193,8 +185,7 @@ export function getHeatmap(inputGraph: Graph, settings: Settings): string {
     ) {
       for (
         let y = Math.max(0, Math.floor(n.y - settings.spreading / 2));
-        y <=
-        Math.min(settings.height, Math.floor(n.y + settings.spreading / 2));
+        y <= Math.min(settings.height, Math.floor(n.y + settings.spreading / 2));
         y++
       ) {
         const d = Math.sqrt(Math.pow(n.x - x, 2) + Math.pow(n.y - y, 2));
@@ -225,9 +216,7 @@ export function getHeatmap(inputGraph: Graph, settings: Settings): string {
       const colorsSteps = settings.quantizationColors as number;
       value = Math.round((colorsSteps - 1) * value) / (colorsSteps - 1);
     }
-    const singleChannelValue = Math.round(
-      (maxColor - minColor) * value + minColor
-    );
+    const singleChannelValue = Math.round((maxColor - minColor) * value + minColor);
     pixels[i] = singleChannelValue; // Red channel
     pixels[i + 1] = singleChannelValue; // Green channel
     pixels[i + 2] = singleChannelValue; // Blue channel

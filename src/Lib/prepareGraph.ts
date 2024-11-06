@@ -1,11 +1,11 @@
 import Graph from "graphology";
+import { largestConnectedComponent } from "graphology-components";
 import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
-import { largestConnectedComponent } from "graphology-components";
 import { subgraph } from "graphology-operators";
 
 //TODO: move this to conf file
-//TODO : adpat to initial window width ?
+//TODO: adapt to initial window width?
 const maxNodeSizes = {
   references: 30,
   metadata: 50,
@@ -21,12 +21,11 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     mainGraph.setAttribute(key, graphAttributes[key]);
   }
 
-  // calculate max occs
+  // calculate max occurrences
   const maxNbArticles: { [key: string]: number } = {};
-  graph.forEachNode((node, attributes) => {
+  graph.forEachNode((_node, attributes) => {
     if (attributes.dataType === "references") {
-      if (attributes.nbArticles > (maxNbArticles.references || 0))
-        maxNbArticles.references = attributes.nbArticles;
+      if (attributes.nbArticles > (maxNbArticles.references || 0)) maxNbArticles.references = attributes.nbArticles;
     } else {
       if (attributes.nbArticles > (maxNbArticles[attributes.dataType] || 0))
         maxNbArticles[attributes.dataType] = attributes.nbArticles;
@@ -43,10 +42,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
       mainGraph.setNodeAttribute(
         node,
         "size",
-        Math.sqrt(
-          (maxNodeSizes.references * (attributes.nbArticles || 1)) /
-            maxNbArticles.references
-        )
+        Math.sqrt((maxNodeSizes.references * (attributes.nbArticles || 1)) / maxNbArticles.references),
       );
     } else {
       noneRefsNodes.push(node);
@@ -54,15 +50,12 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
       mainGraph.setNodeAttribute(
         node,
         "size",
-        Math.sqrt(
-          (maxNodeSizes.metadata * (attributes.nbArticles || 1)) /
-            maxNbArticles[attributes.dataType]
-        )
+        Math.sqrt((maxNodeSizes.metadata * (attributes.nbArticles || 1)) / maxNbArticles[attributes.dataType]),
       );
     }
   });
 
-  const refsGraph = (subgraph(mainGraph, refsNodes) as unknown) as Graph;
+  const refsGraph = subgraph(mainGraph, refsNodes) as unknown as Graph;
   circular.assign(refsGraph);
   const positions = forceAtlas2(refsGraph, {
     iterations: 1000,
@@ -74,7 +67,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     mainGraph.mergeNodeAttributes(refNode, {
       ...positions[refNode],
       fixed: true,
-    })
+    }),
   );
 
   // 2. Put each none-ref node to the barycenter of its neighbors:
@@ -91,20 +84,16 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     // Add some very tiny and unique vector, to prevent nodes to have exactly the same coordinates.
     // Also, the tiny vector must not be random, so that the layout remains reproducible:
     mainGraph.mergeNodeAttributes(noneRefNode, {
-      x:
-        x / neighborsCount +
-        Math.cos((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
-      y:
-        y / neighborsCount +
-        Math.sin((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
+      x: x / neighborsCount + Math.cos((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
+      y: y / neighborsCount + Math.sin((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
     });
   });
 
   // 3. Run some FA2 to get a proper layout for none-ref nodes:
-  forceAtlas2.assign((mainGraph as unknown) as Graph, {
+  forceAtlas2.assign(mainGraph as unknown as Graph, {
     iterations: 200,
-    settings: forceAtlas2.inferSettings((mainGraph as unknown) as Graph),
+    settings: forceAtlas2.inferSettings(mainGraph as unknown as Graph),
   });
 
-  return Promise.resolve((mainGraph as unknown) as Graph);
+  return Promise.resolve(mainGraph as unknown as Graph);
 }

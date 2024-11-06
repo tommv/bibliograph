@@ -1,6 +1,6 @@
-import React, { FC, useState } from "react";
-import { useDropzone, FileWithPath } from "react-dropzone";
 import { toPairs } from "lodash";
+import React, { FC, useState } from "react";
+import { FileWithPath, useDropzone } from "react-dropzone";
 
 import { CSVFormats } from "../Lib/CSVFormats";
 import { CSVFormat } from "../Lib/types";
@@ -12,25 +12,16 @@ const Home: FC<{
   files: File[];
   format: CSVFormat | null;
   range: { min?: number; max?: number };
-  onSubmit(
-    files: File[],
-    format: CSVFormat,
-    range: { min?: number; max?: number }
-  ): void;
+  onSubmit(files: File[], format: CSVFormat, range: { min?: number; max?: number }): void;
 }> = ({ files, range, format, onSubmit }) => {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
-  const defaultFormat = toPairs(CSVFormats).find(
-    ([, f]) => f.label === format?.label
-  );
-  const [selectedFormat, setSelectedFormat] = useState<string>(
-    defaultFormat ? defaultFormat[0] : FORMAT_PLACEHOLDER
-  );
+  const defaultFormat = toPairs(CSVFormats).find(([, f]) => f.label === format?.label);
+  const [selectedFormat, setSelectedFormat] = useState<string>(defaultFormat ? defaultFormat[0] : FORMAT_PLACEHOLDER);
   const [minYear, setMinYear] = useState<number>(range.min || 1900);
   const [maxYear, setMaxYear] = useState<number>(range.max || 2100);
 
   const csvFiles = (acceptedFiles.length > 0 ? acceptedFiles : files).filter(
-    (file: FileWithPath) =>
-      file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv"
+    (file: FileWithPath) => file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv",
   );
 
   return (
@@ -39,24 +30,22 @@ const Home: FC<{
         <span className="hg">Bibliograph</span>
       </h1>
       <p>
-        Bibliograph allows you turn a corpus of scientometrics records from ISI
-        Web of Science or Scopus into a landscape of bibliographic coupling.
-        Such a landscape consists in:
+        Bibliograph allows you turn a corpus of scientometrics records from ISI Web of Science or Scopus into a
+        landscape of bibliographic coupling. Such a landscape consists in:
       </p>
       <ol>
         <li>
-          A base map network of references co-occurring in the records of the
-          corpus - weighted by the frequency of their co-occurrence;
+          A base map network of references co-occurring in the records of the corpus - weighted by the frequency of
+          their co-occurrence;
         </li>
         <li>
-          A layer of metadata extracted from the records (e.g. authors, subject
-          areas, keywords) and positioned in the graph according to their
-          co-occurrence with the references of the base map.
+          A layer of metadata extracted from the records (e.g. authors, subject areas, keywords) and positioned in the
+          graph according to their co-occurrence with the references of the base map.
         </li>
       </ol>
       <p>
-        Upload your corpus, choose the period you want to investigate, select
-        the filtering thresholds and explore your bibliographic landscape.
+        Upload your corpus, choose the period you want to investigate, select the filtering thresholds and explore your
+        bibliographic landscape.
       </p>
 
       <br />
@@ -85,27 +74,13 @@ const Home: FC<{
 
       <div className="flex-row">
         <span>Only parse papers published between</span>{" "}
-        <input
-          value={minYear}
-          onChange={(e) => setMinYear(+e.target.value)}
-          className="card"
-          type="number"
-        />{" "}
+        <input value={minYear} onChange={(e) => setMinYear(+e.target.value)} className="card" type="number" />{" "}
         <span>and</span>{" "}
-        <input
-          value={maxYear}
-          onChange={(e) => setMaxYear(+e.target.value)}
-          className="card"
-          type="number"
-        />
+        <input value={maxYear} onChange={(e) => setMaxYear(+e.target.value)} className="card" type="number" />
       </div>
       <div className="flex-row">
         <span>These CSVs come from</span>
-        <select
-          className="card"
-          value={selectedFormat}
-          onChange={(e) => setSelectedFormat(e.target.value)}
-        >
+        <select className="card" value={selectedFormat} onChange={(e) => setSelectedFormat(e.target.value)}>
           <option value={FORMAT_PLACEHOLDER}>(please select a source)</option>
           {toPairs(CSVFormats).map(([key, format]) => (
             <option key={key} value={key}>
@@ -136,16 +111,12 @@ const Home: FC<{
           <a href="https://cis.cnrs.fr/">
             <img
               className="logo"
-              src={process.env.PUBLIC_URL + "/img/logo_CNRS_CIS.jpg"}
+              src={import.meta.env.BASE_URL + "img/logo_CNRS_CIS.jpg"}
               alt="Centre Internet Société CNRS"
             />
           </a>
           <a href="https://ouestware.com">
-            <img
-              className="logo"
-              src={process.env.PUBLIC_URL + "/img/logo_ouestware_text.svg"}
-              alt="OuestWare"
-            />
+            <img className="logo" src={import.meta.env.BASE_URL + "img/logo_ouestware_text.svg"} alt="OuestWare" />
           </a>
         </div>
       </div>

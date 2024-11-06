@@ -1,24 +1,17 @@
 import Graph from "graphology";
 import {
-  toPairs,
+  groupBy,
+  keys,
+  mapValues,
+  keys as objectKeys,
   values as objectValues,
   range,
-  groupBy,
-  keys as objectKeys,
-  mapValues,
-  keys,
-  values,
   sortBy,
+  toPairs,
+  values,
 } from "lodash";
 
-import {
-  Aggregation,
-  CSVFormat,
-  Field,
-  FieldDefinition,
-  FieldIndices,
-  GeneratedField,
-} from "./types";
+import { Aggregation, CSVFormat, Field, FieldDefinition, FieldIndices, GeneratedField } from "./types";
 
 function aggregateCumulativeNumbers(values: number[]): Aggregation {
   // count cumulative number of occurrences
@@ -27,20 +20,19 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
   const maxOcc = occValues.length - 1;
   const totalNbItems = values.length;
   // iterate on number of occurrences
-  const occCumulIndex: { [key: number]: number } = range(
-    occValues[0],
-    maxOcc + 1
-  ).reduce((index: { [key: number]: number }, occVal) => {
-    // for each occ sum number of occurrences greater than current
-    return {
-      [occVal]:
-      // start with the total number of items and then substract the nb of occ of last step
-      // we therefro calculate the factorial series in reverse
-        (index[occVal - 1] !== undefined ? index[occVal - 1] : totalNbItems) -
-        (groupedValues[occVal - 1] || 0),
-      ...index,
-    };
-  }, {});
+  const occCumulIndex: { [key: number]: number } = range(occValues[0], maxOcc + 1).reduce(
+    (index: { [key: number]: number }, occVal) => {
+      // for each occ sum number of occurrences greater than current
+      return {
+        [occVal]:
+        // start with the total number of items and then substract the nb of occ of last step
+        // we therefro calculate the factorial series in reverse
+          (index[occVal - 1] !== undefined ? index[occVal - 1] : totalNbItems) - (groupedValues[occVal - 1] || 0),
+        ...index,
+      };
+    },
+    {},
+  );
   return {
     min: Math.min(...objectValues(occCumulIndex)),
     max: Math.max(...objectValues(occCumulIndex)),
@@ -53,7 +45,7 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
 
 export function aggregateGraphNbArticles(
   graph: Graph,
-  format: CSVFormat
+  format: CSVFormat,
 ): {
   aggregations: { [field: string]: Aggregation };
   fields: FieldDefinition[];
@@ -71,13 +63,9 @@ export function aggregateGraphNbArticles(
       let fieldDef: Field | GeneratedField | undefined;
       if (attributes.type === "references") fieldDef = format.references;
       else {
-        fieldDef = format.metadataFields.find(
-          (f) => f.variableName === attributes.type
-        );
+        fieldDef = format.metadataFields.find((f) => f.variableName === attributes.type);
         if (!fieldDef && format.generatedFields)
-          fieldDef = format.generatedFields.find(
-            (f) => f.variableName === attributes.type
-          );
+          fieldDef = format.generatedFields.find((f) => f.variableName === attributes.type);
       }
       if (fieldDef)
         fields.push({
@@ -92,9 +80,7 @@ export function aggregateGraphNbArticles(
   // Aggregate the indices:
   fields.forEach((field) => {
     if (field.type === "number") {
-      aggregations[field.key] = aggregateCumulativeNumbers(
-        numberIndices[field.key]
-      );
+      aggregations[field.key] = aggregateCumulativeNumbers(numberIndices[field.key]);
     }
   });
 
@@ -103,7 +89,7 @@ export function aggregateGraphNbArticles(
 
 export function aggregateFieldIndices(
   fieldIndices: FieldIndices,
-  format: CSVFormat
+  format: CSVFormat,
 ): {
   aggregations: { [field: string]: Aggregation };
   fields: FieldDefinition[];
@@ -118,13 +104,9 @@ export function aggregateFieldIndices(
     let fieldDef: Field | GeneratedField | undefined;
     if (fieldType === "references") fieldDef = format.references;
     else {
-      fieldDef = format.metadataFields.find(
-        (f) => f.variableName === fieldType
-      );
+      fieldDef = format.metadataFields.find((f) => f.variableName === fieldType);
       if (!fieldDef && format.generatedFields)
-        fieldDef = format.generatedFields.find(
-          (f) => f.variableName === fieldType
-        );
+        fieldDef = format.generatedFields.find((f) => f.variableName === fieldType);
     }
     if (fieldDef && !(fieldDef as Field).hidden)
       fields.push({
@@ -133,9 +115,7 @@ export function aggregateFieldIndices(
         type: "number",
       });
     // calculate cumulative buckets
-    aggregations[fieldType] = aggregateCumulativeNumbers(
-      values(fieldIndices[fieldType])
-    );
+    aggregations[fieldType] = aggregateCumulativeNumbers(values(fieldIndices[fieldType]));
   });
 
   return { aggregations, fields };

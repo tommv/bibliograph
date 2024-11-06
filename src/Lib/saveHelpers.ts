@@ -1,7 +1,5 @@
-import Graph from "graphology";
 import { saveAs } from "file-saver";
-import { getHeatmap } from "./getHeatmap";
-
+import Graph from "graphology";
 // [jacomyal] Note:
 // The three following imports are not typed, and I dealt with that by disabling
 // quality control locally:
@@ -10,10 +8,12 @@ import { getHeatmap } from "./getHeatmap";
 import { write } from "graphology-gexf/browser";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import renderSVG from "graphology-svg/renderer";
+import { DEFAULTS } from "graphology-svg/defaults";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import { DEFAULTS } from "graphology-svg/defaults";
+import renderSVG from "graphology-svg/renderer";
+
+import { getHeatmap } from "./getHeatmap";
 import { getTextReport } from "./getTextReport";
 import { CSVFormat, FieldIndices, FiltersType } from "./types";
 
@@ -29,11 +29,7 @@ export function renderFixedSVG(graph: Graph): string {
     ...SETTINGS,
     nodes: {
       ...DEFAULTS.nodes,
-      reducer: (
-        settings: unknown,
-        node: string,
-        attr: { [k: string]: unknown }
-      ): { [k: string]: unknown } => ({
+      reducer: (settings: unknown, node: string, attr: { [k: string]: unknown }): { [k: string]: unknown } => ({
         ...attr,
         y: -(attr.y as number),
       }),
@@ -56,7 +52,7 @@ export function saveReport(
   indices: FieldIndices,
   filters: FiltersType,
   format: CSVFormat,
-  fileName: string
+  fileName: string,
 ): void {
   const txtContent = getTextReport(graph, indices, filters, format);
   saveAs(new Blob([txtContent]), fileName);
@@ -86,7 +82,7 @@ export function saveHeatmap(graph: Graph, fileName: string): void {
      xmlns:xlink="http://www.w3.org/1999/xlink">
      <g>
         <image width="${SETTINGS.width}" height="${SETTINGS.height}" preserveAspectRatio="none" xlink:href="${dataURL}" />
-     </g>`
+     </g>`,
   );
 
   saveAs(new Blob([svgString]), fileName);

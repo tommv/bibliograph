@@ -1,5 +1,6 @@
 import Graph from "graphology";
 import { range, sortBy, toPairs } from "lodash";
+
 import { CSVFormat, FieldIndices, FiltersType } from "./types";
 
 /**
@@ -16,7 +17,7 @@ export function getTextReport(
   inputGraph: Graph,
   indices: FieldIndices,
   filters: FiltersType,
-  format: CSVFormat
+  format: CSVFormat,
 ): string {
   const graphAttributes = inputGraph.getAttributes();
 
@@ -28,20 +29,27 @@ export function getTextReport(
   const years = Object.keys(yearsIndex).map((s) => +s);
   const minYear = Math.min(...years);
   const maxYear = Math.max(...years);
-  const indicesValuesCount: Record<string, number> = [
-    ...format.metadataFields,
-    format.references,
-  ].reduce(
+  const indicesValuesCount: Record<string, number> = [...format.metadataFields, format.references].reduce(
     (iter, field) => ({
       ...iter,
       [field.variableName]: filters[field.variableName]
-        ? toPairs(indices[field.variableName] || {}).filter(
-            ([, count]) => count >= filters[field.variableName]
-          ).length
+        ? toPairs(indices[field.variableName] || {}).filter(([, count]) => count >= filters[field.variableName]).length
         : Object.keys(indices[field.variableName] || {}).length,
     }),
-    {}
+    {},
   );
+
+  const networkAdditions = format.metadataFields
+    .filter((field) => typeof filters[field.variableName] === "number")
+    .map(
+      ({ variableName, variableLabel }) =>
+        `- ${indicesValuesCount[variableName] || 0} value${
+          (indicesValuesCount[variableName] || 0) > 1 ? "s" : ""
+        } for "${variableLabel}" occurring in at least ${
+          filters[variableName]
+        } record${filters[variableName] > 1 ? "s" : ""}`,
+    )
+    .join("\n");
 
   const report = `CORPUS
 
@@ -58,42 +66,21 @@ export function getTextReport(
     .join("\n")}
   Our corpus consisted of:
   ${sortBy(toPairs(typesIndex), ([, count]) => -count)
-    .map(
-      ([type, count]) =>
-        `- ${count} entr${count > 1 ? "ies" : "y"} flagged as "${type}"`
-    )
+    .map(([type, count]) => `- ${count} entr${count > 1 ? "ies" : "y"} flagged as "${type}"`)
     .join("\n")}
  
  
   BASE MAP
  
-  We extracted the ${
-    Object.keys(referencesIndex).length
-  } references present in this corpus and kept the ${
+  We extracted the ${Object.keys(referencesIndex).length} references present in this corpus and kept the ${
     indicesValuesCount.references
-  } references cited by at least ${filters.references || 1} record${
-    (filters.references || 1) > 1 ? "s" : ""
-  }.
+  } references cited by at least ${filters.references || 1} record${(filters.references || 1) > 1 ? "s" : ""}.
   We built the co-citation network of these references weighted by the frequency of their co-occurrence (aka bibliographic coupling).
   We remove the nodes with no connection at all.
   We spatialized the network with the ForceAtlas2 layout and fixed the position of the reference-nodes at equilibrium.
  
- 
   METADATA LAYER
- 
-  From the same corpus we extracted and added to the network:
-  ${format.metadataFields
-    .filter((field) => typeof filters[field.variableName] === "number")
-    .map(
-      (field) =>
-        `- ${indicesValuesCount[field.variableName] || 0} value${
-          (indicesValuesCount[field.variableName] || 0) > 1 ? "s" : ""
-        } for "${field.variableLabel}" occuring in at least ${
-          filters[field.variableName]
-        } record${filters[field.variableName] > 1 ? "s" : ""}`
-    )
-    .join("\n")}
-  
+  ${networkAdditions ? `\nFrom the same corpus we extracted and added to the network:\n${networkAdditions}\n` : ""}
   We connected these new nodes to the references co-appearing with them in the bibliographic records.
   We only kept the largest connected component from the graph.
   We positioned new nodes using with the same layout algorithm while keeping fixed the position of the reference-nodes.

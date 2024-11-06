@@ -1,6 +1,6 @@
 import React, { FC } from "react";
-import { Aggregation, FieldDefinition, FiltersType } from "../Lib/types";
 
+import { Aggregation, FieldDefinition, FiltersType } from "../Lib/types";
 import "./BarChart.css";
 
 const BarChart: FC<{
@@ -9,8 +9,7 @@ const BarChart: FC<{
   filters: FiltersType;
   setFilters: (filters: FiltersType) => void;
 }> = ({ agg, field, filters, setFilters }) => {
-  const maxP10 =
-    agg.max > 0 ? Math.pow(10, Math.floor(Math.log10(agg.max))) : 0;
+  const maxP10 = agg.max > 0 ? Math.pow(10, Math.floor(Math.log10(agg.max))) : 0;
   const hLineValue = ([5, 2].find((n) => n * maxP10 < agg.max) || 1) * maxP10;
 
   return (
@@ -19,9 +18,7 @@ const BarChart: FC<{
         {agg.values.map(({ lowerBound, count }) => (
           <div
             key={lowerBound}
-            className={`bar${
-              filters[field.key] === lowerBound ? " selected" : ""
-            }`}
+            className={`bar${filters[field.key] === lowerBound ? " selected" : ""}`}
             style={{
               height: (100 * Math.log(count)) / Math.log(agg.max) + "%",
             }}
