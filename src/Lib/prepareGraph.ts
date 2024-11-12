@@ -4,16 +4,14 @@ import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import { subgraph } from "graphology-operators";
 
-//TODO: move this to conf file
-//TODO: adapt to initial window width?
 const maxNodeSizes = {
   references: 30,
   metadata: 50,
 };
 
 export async function prepareGraph(graph: Graph): Promise<Graph> {
-  const largest = largestConnectedComponent(graph as never);
-  const mainGraph = subgraph(graph as never, largest);
+  const largest = largestConnectedComponent(graph);
+  const mainGraph = subgraph(graph, largest);
 
   // Copy graph attributes
   const graphAttributes = graph.getAttributes();
@@ -36,7 +34,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
   const refsNodes: string[] = [];
   const noneRefsNodes: string[] = [];
   mainGraph.forEachNode((node, attributes) => {
-    if (attributes.dataType === "references") {
+    if (attributes.dataType === "refs") {
       refsNodes.push(node);
       // scale size, if 0 articles use size of 1
       mainGraph.setNodeAttribute(
@@ -55,7 +53,7 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
     }
   });
 
-  const refsGraph = subgraph(mainGraph, refsNodes) as unknown as Graph;
+  const refsGraph = subgraph(mainGraph, refsNodes);
   circular.assign(refsGraph);
   const positions = forceAtlas2(refsGraph, {
     iterations: 1000,
@@ -90,10 +88,10 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
   });
 
   // 3. Run some FA2 to get a proper layout for none-ref nodes:
-  forceAtlas2.assign(mainGraph as unknown as Graph, {
+  forceAtlas2.assign(mainGraph, {
     iterations: 200,
-    settings: forceAtlas2.inferSettings(mainGraph as unknown as Graph),
+    settings: forceAtlas2.inferSettings(mainGraph),
   });
 
-  return Promise.resolve(mainGraph as unknown as Graph);
+  return Promise.resolve(mainGraph);
 }

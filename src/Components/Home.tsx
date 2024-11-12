@@ -1,27 +1,21 @@
-import { toPairs } from "lodash";
-import React, { FC, useState } from "react";
-import { FileWithPath, useDropzone } from "react-dropzone";
+import React, { FC, useMemo, useState } from "react";
 
-import { CSVFormats } from "../Lib/CSVFormats";
-import { CSVFormat } from "../Lib/types";
+import { fetchFiles, fetchQuery } from "../Lib/data";
+import { Work } from "../Lib/types";
 import "./Home.css";
 
-const FORMAT_PLACEHOLDER = "SELECT_A_FORMAT";
-
 const Home: FC<{
-  files: File[];
-  format: CSVFormat | null;
-  range: { min?: number; max?: number };
-  onSubmit(files: File[], format: CSVFormat, range: { min?: number; max?: number }): void;
-}> = ({ files, range, format, onSubmit }) => {
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
-  const defaultFormat = toPairs(CSVFormats).find(([, f]) => f.label === format?.label);
-  const [selectedFormat, setSelectedFormat] = useState<string>(defaultFormat ? defaultFormat[0] : FORMAT_PLACEHOLDER);
-  const [minYear, setMinYear] = useState<number>(range.min || 1900);
-  const [maxYear, setMaxYear] = useState<number>(range.max || 2100);
-
-  const csvFiles = (acceptedFiles.length > 0 ? acceptedFiles : files).filter(
-    (file: FileWithPath) => file.path && (file.path.split(".").pop() || "").toLowerCase() === "csv",
+  onSubmit(dataset: Work[]): void;
+}> = ({ onSubmit }) => {
+  const initialQueryURL: string | null = null;
+  const [queryURL, setQueryURL] = useState<string | null>(initialQueryURL);
+  const [files, setFiles] = useState<File[]>([]);
+  const iframeURL = useMemo(
+    () =>
+      queryURL
+        ? queryURL.replace("//api.", "//") + "&view=api,list,report"
+        : "https://openalex.org/works?view=api,list,report",
+    [],
   );
 
   return (
@@ -50,63 +44,62 @@ const Home: FC<{
 
       <br />
 
-      <div {...getRootProps({ className: "dropzone" })}>
-        <input {...getInputProps()} />
-        <p>Drag and drop here your CSV files or their folder</p>
-        {csvFiles.length > 0 && (
-          <>
-            <p>
-              <b>
-                currently {csvFiles.length} selected file
-                {csvFiles.length > 1 ? "s" : ""}
-              </b>
-            </p>
-            <div className="files-list">
-              {csvFiles.map((f) => (
-                <span key={f.name}>{f.name}</span>
-              ))}
-            </div>
-          </>
-        )}
+      <iframe src={iframeURL} width="100%" height="480px" allow="clipboard-write"></iframe>
+
+      <br />
+
+      <div className="row">
+        <div className="6 col">
+          <label htmlFor="query-url">Please copy the address provided above in the "API Box" and paste it below:</label>
+          <div className="flex-row">
+            <input
+              id="query-url"
+              type="text"
+              value={queryURL || ""}
+              onChange={(e) => setQueryURL(e.target.value || null)}
+              placeholder={initialQueryURL || undefined}
+              style={{
+                flexGrow: 1,
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="6 col">
+          <label htmlFor="file-upload">Or upload a local OpenAlex CSV works results file instead:</label>
+          <div>
+            <input
+              id="file-upload"
+              type="file"
+              multiple
+              onChange={(e) => setFiles(Array.from(e.target.files || []))}
+              style={{
+                width: "100%",
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       <br />
 
-      <div className="flex-row">
-        <span>Only parse papers published between</span>{" "}
-        <input value={minYear} onChange={(e) => setMinYear(+e.target.value)} className="card" type="number" />{" "}
-        <span>and</span>{" "}
-        <input value={maxYear} onChange={(e) => setMaxYear(+e.target.value)} className="card" type="number" />
-      </div>
-      <div className="flex-row">
-        <span>These CSVs come from</span>
-        <select className="card" value={selectedFormat} onChange={(e) => setSelectedFormat(e.target.value)}>
-          <option value={FORMAT_PLACEHOLDER}>(please select a source)</option>
-          {toPairs(CSVFormats).map(([key, format]) => (
-            <option key={key} value={key}>
-              {format.label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div className="flex-row">
+      <div className="flex-row center">
         <button
           className="btn primary"
-          disabled={!csvFiles.length || !CSVFormats[selectedFormat]}
+          disabled={!files.length && !queryURL}
           onClick={() => {
-            if (csvFiles.length && CSVFormats[selectedFormat])
-              onSubmit(csvFiles, CSVFormats[selectedFormat], {
-                min: minYear,
-                max: maxYear,
-              });
+            if (files.length) {
+              fetchFiles(files).then((results) => onSubmit(results));
+            } else if (queryURL) {
+              fetchQuery(queryURL).then((results) => onSubmit(results));
+            }
           }}
         >
-          Parse and index {csvFiles.length} CSV file
-          {csvFiles.length > 1 ? "s" : ""}
+          {files.length ? `Index the given OpenAlex API results JSON files` : `Query OpenAlex API`}
         </button>
       </div>
       <hr />
-      <div className="flex-row">
+      <div className="flex-row center">
         <div className="logos">
           <a href="https://cis.cnrs.fr/">
             <img

@@ -2,19 +2,18 @@ import { last, max } from "lodash";
 import React, { FC } from "react";
 import { FaUndo } from "react-icons/fa";
 
-import { Aggregation, FieldDefinition, FiltersType } from "../Lib/types";
+import { FIELDS_META } from "../Lib/consts";
+import { Aggregations, FIELD_IDS, FiltersType, Work } from "../Lib/types";
 import "./Filters.css";
 
 const Filters: FC<{
   filters: FiltersType;
   setFilters: (f: FiltersType) => void;
-  aggregations: { [field: string]: Aggregation };
-  fields: FieldDefinition[];
-  articlesMetadata: { nbArticles: number; nbDuplicates: number };
+  aggregations: Aggregations;
+  works: Work[];
   onSubmit(filters: FiltersType): void;
-  range: { min?: number; max?: number };
   onGoBack: () => void;
-}> = ({ filters, setFilters, aggregations, fields, articlesMetadata, onSubmit, range, onGoBack }) => {
+}> = ({ filters, setFilters, aggregations, works, onSubmit, onGoBack }) => {
   return (
     <section className="Filters c">
       <div className="actions">
@@ -30,36 +29,28 @@ const Filters: FC<{
         records in which they appears. It is strongly recommended NOT to include the references occurring in one record
         only.
       </p>
-      {articlesMetadata && (
-        <p>
-          <br />
-          <i>
-            Your data-set contained {articlesMetadata.nbArticles} articles published between {range.min} and {range.max}
-            .<br />
-            {articlesMetadata.nbDuplicates} articles were duplicates (
-            {(articlesMetadata.nbArticles > 0
-              ? (articlesMetadata.nbDuplicates / articlesMetadata.nbArticles) * 100
-              : 0
-            ).toFixed(1)}
-            %).
-          </i>
-        </p>
-      )}
+      <p>
+        <br />
+        <i>Your data-set contains {works.length} articles.</i>
+      </p>
+
+      <br />
 
       <div className="fields">
-        {fields.map((field) => {
-          const agg = aggregations[field.key];
+        {FIELD_IDS.map((field) => {
+          const { label } = FIELDS_META[field];
+          const agg = aggregations[field];
           const maxValue = last(agg.values)?.lowerBound || 0;
-          const value = filters[field.key] || maxValue + 1;
+          const value = filters[field] || maxValue + 1;
           const aggValue = agg.values.find((agg) => agg.lowerBound >= value);
           const maxCount = max(agg.values.map((v) => v.count));
           const count = aggValue ? aggValue.count : 0;
 
           return (
-            <div key={field.label}>
-              <h4>{field.label || field.key}</h4>
+            <div key={label}>
               <div>
-                Keep the <strong>{count}</strong> {field.label} occurring in at least <strong>{value}</strong> record
+                Keep the <strong>{count}</strong> <span className="hg">{label.toLowerCase()}</span> occurring in at
+                least <strong>{value}</strong> record
                 {value > 1 ? "s" : ""}
               </div>
               <div>
@@ -67,7 +58,7 @@ const Filters: FC<{
                 <span style={{ float: "right" }}>{maxCount}</span>
               </div>
               <input
-                list={field.key + "-tickmarks"}
+                list={field + "-tickmarks"}
                 type="range"
                 name="vol"
                 min={0}
@@ -76,7 +67,7 @@ const Filters: FC<{
                 onChange={(e) =>
                   setFilters({
                     ...filters,
-                    [field.key]: maxValue + 1 - +e.target.value,
+                    [field]: maxValue + 1 - +e.target.value,
                   })
                 }
               />

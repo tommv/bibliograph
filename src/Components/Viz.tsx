@@ -6,15 +6,15 @@ import { FaDotCircle, FaSearchMinus, FaSearchPlus, FaUndo } from "react-icons/fa
 import { FaDownload, FaPlay, FaSpinner } from "react-icons/fa6";
 import Sigma from "sigma";
 
-import { saveGEXF, saveHeatmap, saveReport, saveSVG } from "../Lib/saveHelpers";
-import { CSVFormat, FieldIndices, FiltersType } from "../Lib/types";
+import { FIELDS_META } from "../Lib/consts";
+import { saveGEXF, saveHeatmap, saveSVG } from "../Lib/saveHelpers";
+import { FIELD_IDS, FieldIndices, FiltersType } from "../Lib/types";
 import "./Viz.css";
 
 interface PropsType {
   graph: Graph;
   indices: FieldIndices;
   filters: FiltersType;
-  format: CSVFormat;
   onGoBack: () => void;
 }
 interface StateType {
@@ -125,20 +125,6 @@ class Viz extends Component<PropsType, StateType> {
           <button className="btn" onClick={() => saveHeatmap(this.props.graph, "graph-heatmap-export.svg")}>
             <FaDownload /> Download <strong>Heatmap</strong> image
           </button>
-          <button
-            className="btn"
-            onClick={() =>
-              saveReport(
-                this.props.graph,
-                this.props.indices,
-                this.props.filters,
-                this.props.format,
-                "graph-report.txt",
-              )
-            }
-          >
-            <FaDownload /> Download <strong>report</strong>{" "}
-          </button>
           <button className="btn right" onClick={this.props.onGoBack}>
             <FaUndo /> Go back to <strong>filters</strong> view
           </button>
@@ -176,17 +162,14 @@ class Viz extends Component<PropsType, StateType> {
         </div>
 
         <div className="caption">
-          {[
-            this.props.format.references,
-            ...this.props.format.metadataFields,
-            ...(this.props.format.generatedFields || []),
-          ]
-            .filter((field) => field.variableColor)
-            .map((field) => (
-              <span key={field.variableName}>
-                <span className="color-disc" style={{ background: field.variableColor }} /> {field.variableLabel}
+          {FIELD_IDS.map((field) => {
+            const { color, label } = FIELDS_META[field];
+            return (
+              <span key={field}>
+                <span className="color-disc" style={{ background: color }} /> {label}
               </span>
-            ))}
+            );
+          })}
         </div>
       </section>
     );

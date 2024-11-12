@@ -3,8 +3,6 @@ import Graph from "graphology";
 // [jacomyal] Note:
 // The three following imports are not typed, and I dealt with that by disabling
 // quality control locally:
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { write } from "graphology-gexf/browser";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -14,8 +12,6 @@ import { DEFAULTS } from "graphology-svg/defaults";
 import renderSVG from "graphology-svg/renderer";
 
 import { getHeatmap } from "./getHeatmap";
-import { getTextReport } from "./getTextReport";
-import { CSVFormat, FieldIndices, FiltersType } from "./types";
 
 const SETTINGS = {
   margin: 20,
@@ -45,17 +41,6 @@ export function saveGEXF(graph: Graph, fileName: string): void {
 export function saveSVG(graph: Graph, fileName: string): void {
   const svgString = renderFixedSVG(graph);
   saveAs(new Blob([svgString]), fileName);
-}
-
-export function saveReport(
-  graph: Graph,
-  indices: FieldIndices,
-  filters: FiltersType,
-  format: CSVFormat,
-  fileName: string,
-): void {
-  const txtContent = getTextReport(graph, indices, filters, format);
-  saveAs(new Blob([txtContent]), fileName);
 }
 
 export function saveHeatmap(graph: Graph, fileName: string): void {

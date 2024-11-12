@@ -20,7 +20,7 @@ interface Settings {
 }
 
 /**
- * Returns true if the given number or string is or can be a proper number, ie.
+ * Returns true if the given number or string is or can be a proper number, i.e.
  * not Infinity, -Infinity or NaN.
  */
 function isNumeric(n: number | string): boolean {
