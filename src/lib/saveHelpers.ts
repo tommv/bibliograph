@@ -1,8 +1,5 @@
 import { saveAs } from "file-saver";
 import Graph from "graphology";
-// [jacomyal] Note:
-// The three following imports are not typed, and I dealt with that by disabling
-// quality control locally:
 import { write } from "graphology-gexf/browser";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -25,7 +22,7 @@ export function renderFixedSVG(graph: Graph): string {
     ...SETTINGS,
     nodes: {
       ...DEFAULTS.nodes,
-      reducer: (settings: unknown, node: string, attr: { [k: string]: unknown }): { [k: string]: unknown } => ({
+      reducer: (_settings: unknown, _node: string, attr: { [k: string]: unknown }): { [k: string]: unknown } => ({
         ...attr,
         y: -(attr.y as number),
       }),

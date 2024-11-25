@@ -5,12 +5,13 @@ import { FIELD_IDS, FieldIndices, Work } from "./types";
 import { wait } from "./utils";
 
 const PER_PAGE = 200;
+const DEFAULT_MAILTO = "tommaso.venturini@cnrs.fr";
 
 export async function fetchWorksCount(queryURL: string) {
   let count = 0;
   const url = new URL(queryURL);
   url.searchParams.set("select", "id");
-  url.searchParams.set("mailto", "****@****.com");
+  url.searchParams.set("mailto", DEFAULT_MAILTO);
   url.searchParams.set("per-page", "1");
   url.searchParams.set("page", "1");
   try {
@@ -40,7 +41,7 @@ export async function fetchQuery(
     "select",
     "id,title,publication_year,primary_location,authorships,concepts,locations,grants,referenced_works,cited_by_count",
   );
-  url.searchParams.set("mailto", "****@****.com");
+  url.searchParams.set("mailto", DEFAULT_MAILTO);
   url.searchParams.set("per-page", `${PER_PAGE}`);
 
   let works = await Promise.all(

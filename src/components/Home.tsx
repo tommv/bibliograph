@@ -2,13 +2,16 @@ import React, { FC, useMemo, useState } from "react";
 
 import { fetchFiles, fetchQuery } from "../lib/data";
 import { Work } from "../lib/types";
+import { useLocalStorage } from "../lib/useLocalStorage";
 import "./Home.css";
+
+const STORAGE_LAST_QUERY_KEY = "lastQueryKey";
 
 const Home: FC<{
   onSubmit(dataset: Work[]): void;
 }> = ({ onSubmit }) => {
-  const initialQueryURL: string | null = null;
-  const [queryURL, setQueryURL] = useState<string | null>(initialQueryURL);
+  const [initialQueryURL, setInitialQueryURL] = useLocalStorage(STORAGE_LAST_QUERY_KEY);
+  const [queryURL, setQueryURL] = useState<string | null | undefined>(initialQueryURL);
   const [files, setFiles] = useState<File[]>([]);
   const iframeURL = useMemo(
     () =>
@@ -91,6 +94,7 @@ const Home: FC<{
             if (files.length) {
               fetchFiles(files).then((results) => onSubmit(results));
             } else if (queryURL) {
+              setInitialQueryURL(queryURL);
               fetchQuery(queryURL).then((results) => onSubmit(results));
             }
           }}

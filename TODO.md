@@ -5,4 +5,4 @@
 - [x] Fix JSON import
 - [ ] Add missing fields
 - [ ] Sample refs nodes by positions
-- [ ] Handle caching in Home component
+- [x] Handle caching in Home component
