@@ -2,11 +2,11 @@ import Graph from "graphology";
 import React, { FC, useCallback, useState } from "react";
 import { FaSpinner } from "react-icons/fa6";
 
-import { indexWorks } from "../Lib/data";
-import { getDefaultFilters, getFilteredGraph } from "../Lib/filters";
-import { aggregateFieldIndices } from "../Lib/getAggregations";
-import { prepareGraph } from "../Lib/prepareGraph";
-import { Aggregations, FieldIndices, FiltersType, Work } from "../Lib/types";
+import { indexWorks } from "../lib/data";
+import { getDefaultFilters, getFilteredGraph } from "../lib/filters";
+import { aggregateFieldIndices } from "../lib/getAggregations";
+import { prepareGraph } from "../lib/prepareGraph";
+import { Aggregations, FieldIndices, FiltersType, Work } from "../lib/types";
 import "./App.css";
 import Filters from "./Filters";
 import Home from "./Home";

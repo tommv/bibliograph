@@ -6,9 +6,9 @@ import { FaDotCircle, FaSearchMinus, FaSearchPlus, FaUndo } from "react-icons/fa
 import { FaDownload, FaPlay, FaSpinner } from "react-icons/fa6";
 import Sigma from "sigma";
 
-import { FIELDS_META } from "../Lib/consts";
-import { saveGEXF, saveHeatmap, saveSVG } from "../Lib/saveHelpers";
-import { FIELD_IDS, FieldIndices, FiltersType } from "../Lib/types";
+import { FIELDS_META } from "../lib/consts";
+import { saveGEXF, saveHeatmap, saveSVG } from "../lib/saveHelpers";
+import { FIELD_IDS, FieldIndices, FiltersType } from "../lib/types";
 import "./Viz.css";
 
 interface PropsType {

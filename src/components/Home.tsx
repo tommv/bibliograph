@@ -1,7 +1,7 @@
 import React, { FC, useMemo, useState } from "react";
 
-import { fetchFiles, fetchQuery } from "../Lib/data";
-import { Work } from "../Lib/types";
+import { fetchFiles, fetchQuery } from "../lib/data";
+import { Work } from "../lib/types";
 import "./Home.css";
 
 const Home: FC<{

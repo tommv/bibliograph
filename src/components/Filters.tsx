@@ -2,8 +2,8 @@ import { last, max } from "lodash";
 import React, { FC } from "react";
 import { FaUndo } from "react-icons/fa";
 
-import { FIELDS_META } from "../Lib/consts";
-import { Aggregations, FIELD_IDS, FiltersType, Work } from "../Lib/types";
+import { FIELDS_META } from "../lib/consts";
+import { Aggregations, FIELD_IDS, FiltersType, Work } from "../lib/types";
 import "./Filters.css";
 
 const Filters: FC<{
