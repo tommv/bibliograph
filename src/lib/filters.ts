@@ -11,7 +11,9 @@ export function getDefaultFilters(aggregations: Aggregations): FiltersType {
     FIELD_IDS.map((field) => {
       const { threshold } = FIELDS_META[field];
       const agg = aggregations[field];
-      return (sortBy(agg.values, "lowerBound").find(({ count }) => count <= threshold) || agg.values[0]).lowerBound;
+      return agg.values.length
+        ? (sortBy(agg.values, "lowerBound").find(({ count }) => count <= threshold) || agg.values[0]).lowerBound
+        : 0;
     }),
   ) as FiltersType;
 }
