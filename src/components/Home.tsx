@@ -1,6 +1,7 @@
 import React, { FC, useMemo, useState } from "react";
 
-import { fetchFiles, fetchQuery } from "../lib/data";
+import { fetchQuery } from "../lib/api";
+import { fetchFiles } from "../lib/data";
 import { Work } from "../lib/types";
 import { useLocalStorage } from "../lib/useLocalStorage";
 import "./Home.css";

@@ -9,10 +9,14 @@ export function getDefaultFilters(aggregations: Aggregations): FiltersType {
   return zipObject(
     FIELD_IDS,
     FIELD_IDS.map((field) => {
-      const { threshold } = FIELDS_META[field];
+      const { threshold = Infinity, minRecords = -Infinity } = FIELDS_META[field];
       const agg = aggregations[field];
       return agg.values.length
-        ? (sortBy(agg.values, "lowerBound").find(({ count }) => count <= threshold) || agg.values[0]).lowerBound
+        ? (
+            sortBy(agg.values, "lowerBound").find(
+              ({ count, lowerBound }) => count <= threshold && lowerBound >= minRecords,
+            ) || agg.values[0]
+          ).lowerBound
         : 0;
     }),
   ) as FiltersType;
@@ -28,6 +32,7 @@ export async function getFilteredGraph(works: Work[], indices: FieldIndices, fil
   for (let workIndex = 0; workIndex < works.length; workIndex++) {
     const work = works[workIndex];
 
+    // Index nodes:
     const referenceNodes: string[] = [];
     const metadataNodes: string[] = [];
     for (let fieldIndex = 0; fieldIndex < FIELD_IDS.length; fieldIndex++) {
@@ -39,7 +44,7 @@ export async function getFilteredGraph(works: Work[], indices: FieldIndices, fil
         .filter((v) => isValueOK(field, v.id, indices, filters))
         .forEach(({ id, label }) => {
           const [n] = graph.mergeNode(id, {
-            label: label,
+            label,
             dataType: field,
             color,
           });
@@ -54,7 +59,7 @@ export async function getFilteredGraph(works: Work[], indices: FieldIndices, fil
         });
     }
 
-    // add edges refs click
+    // Add edges refs click
     if (referenceNodes.length > 1) {
       const refEdges = combinations(referenceNodes, 2);
       for (const [source, target] of refEdges) {
@@ -67,7 +72,8 @@ export async function getFilteredGraph(works: Work[], indices: FieldIndices, fil
         }
       }
     }
-    // add edges between refs and metadata
+
+    // Add edges between refs and metadata
     referenceNodes.forEach((ref) =>
       metadataNodes.forEach((m) => {
         graph.mergeEdge(ref, m);

@@ -1,8 +1,11 @@
+import { isNil } from "lodash";
+
 import { FieldID, Work } from "./types";
 
 type FieldValue = {
   id: string;
   label?: string;
+  attributes?: Record<string, string | undefined>;
 };
 
 type ValueOrArray<T> = undefined | T | T[];
@@ -18,6 +21,7 @@ export async function cleanFieldValues(input: ReturnType<GetValue>): Promise<Fie
       ? [
           {
             id: s,
+            label: s,
           },
         ]
       : s
@@ -26,42 +30,33 @@ export async function cleanFieldValues(input: ReturnType<GetValue>): Promise<Fie
   );
 }
 
-export const FIELDS_META: Record<FieldID, { label: string; color: string; threshold: number; getValues: GetValue }> = {
-  refs: {
-    label: "References",
-    color: "#ebebeb",
-    threshold: 5000,
-    getValues: (work: Work) => work.referenced_works,
-  },
-  // works: {
-  //   label: "Works",
-  //   color: "#202020",
-  //   threshold: 50,
-  //   getValues: (work: Work) => ({ id: work.id, label: work.display_name }),
-  // },
+export const FIELDS_META: Record<
+  FieldID,
+  { label: string; color: string; threshold?: number; minRecords?: number; getValues: GetValue }
+> = {
   authors: {
     label: "Authors",
-    color: "#ffe915",
-    threshold: 50,
+    color: "#FFE918",
+    threshold: 25,
     getValues: (work: Work) =>
       work.authorships?.map(({ author }) => ({
         id: author.id,
         label: author.display_name,
+        attributes: {
+          orcid: author.orcid,
+        },
       })),
   },
-  sources: {
-    label: "Sources",
-    color: "#a7d30d",
-    threshold: 50,
-    getValues: (work: Work) =>
-      [work.primary_location, ...(work.locations || [])].flatMap(({ source } = {}) =>
-        source?.id ? [{ id: source.id, label: source.display_name }] : [],
-      ),
+  countries: {
+    label: "Countries",
+    color: "#FF9300",
+    threshold: 15,
+    getValues: (work: Work) => work.authorships?.flatMap(({ countries }) => countries),
   },
   institutions: {
     label: "Institutions",
-    color: "#e22521",
-    threshold: 50,
+    color: "#E22621",
+    threshold: 25,
     getValues: (work: Work) =>
       work.authorships?.flatMap(({ institutions }) =>
         institutions.flatMap((institution) => ({
@@ -70,15 +65,22 @@ export const FIELDS_META: Record<FieldID, { label: string; color: string; thresh
         })),
       ),
   },
-  countries: {
-    label: "Countries",
-    color: "#df60bf",
-    threshold: 25,
-    getValues: (work: Work) => work.authorships?.flatMap(({ countries }) => countries),
+  fields: {
+    label: "Fields",
+    color: "#06B0F0",
+    getValues: (work: Work) =>
+      work.primary_topic?.field
+        ? [
+            {
+              id: work.primary_topic?.field.id,
+              label: work.primary_topic?.field.display_name,
+            },
+          ]
+        : [],
   },
   funders: {
     label: "Funders",
-    color: "#ff8f2e",
+    color: "#FF93BD",
     threshold: 25,
     getValues: (work: Work) =>
       work.grants?.map((grant) => ({
@@ -86,14 +88,66 @@ export const FIELDS_META: Record<FieldID, { label: string; color: string; thresh
         label: grant.funder_display_name,
       })),
   },
-  concepts: {
-    label: "Concepts",
-    color: "#9dabf5",
-    threshold: 200,
+  keywords: {
+    label: "Keywords",
+    color: "#9DABF6",
+    threshold: 150,
     getValues: (work: Work) =>
-      work.concepts?.map((concept) => ({
-        id: concept.id,
-        label: concept.display_name,
+      work.keywords?.map((keyword) => ({
+        id: keyword.id,
+        label: keyword.display_name,
       })),
+  },
+  records: {
+    label: "Records",
+    color: "#A6A6A6",
+    threshold: 50,
+    getValues: (work: Work) => ({ id: work.id, label: work.display_name || work.title || work.id }),
+  },
+  refs: {
+    label: "References",
+    color: "#F3F3F3",
+    threshold: 35000,
+    minRecords: 2,
+    getValues: (work: Work) => work.referenced_works,
+  },
+  subfields: {
+    label: "Sub-fields",
+    color: "#94DCF8",
+    threshold: 150,
+    getValues: (work: Work) =>
+      work.primary_topic?.subfield
+        ? [
+            {
+              id: work.primary_topic?.subfield.id,
+              label: work.primary_topic?.subfield.display_name,
+            },
+          ]
+        : [],
+  },
+  topics: {
+    label: "Topics",
+    color: "#CAEDFB",
+    threshold: 0,
+    getValues: (work: Work) =>
+      work.topics?.map((topic) => ({
+        id: topic.id,
+        label: topic.display_name,
+      })) || [],
+  },
+  years: {
+    label: "Years",
+    color: "#D86DCD",
+    threshold: 15,
+    getValues: (work: Work) => (!isNil(work.publication_year) ? ["" + work.publication_year] : []),
+  },
+  sources: {
+    label: "Sources",
+    color: "#A7D30E",
+    threshold: 50,
+    getValues: (work: Work) =>
+      [work.primary_location, ...(work.locations || [])].flatMap((location) =>
+        location?.source?.id ? [{ id: location.source.id, label: location.source.display_name }] : [],
+      ),
   },
 };

@@ -1,12 +1,16 @@
 export const FIELD_IDS = [
-  "refs",
-  // "works",
   "authors",
-  "sources",
-  "institutions",
   "countries",
+  "institutions",
+  "fields",
   "funders",
-  "concepts",
+  "keywords",
+  "records",
+  "refs",
+  "subfields",
+  "topics",
+  "years",
+  "sources",
 ] as const;
 export type FieldID = (typeof FIELD_IDS)[number];
 
@@ -56,6 +60,24 @@ export interface Location {
     type?: string;
   };
   version?: string;
+}
+
+export interface Topic {
+  display_name: string;
+  domain?: {
+    display_name: string;
+    id: string;
+  };
+  field?: {
+    display_name: string;
+    id: string;
+  };
+  id: string;
+  keywords?: string[];
+  subfield?: {
+    display_name: string;
+    id: string;
+  };
 }
 
 export interface Work {
@@ -164,6 +186,7 @@ export interface Work {
     oa_url: string;
   };
   primary_location?: Location;
+  primary_topic?: Topic;
   publication_date?: string;
   publication_year?: number;
   referenced_works?: string[];
@@ -175,6 +198,7 @@ export interface Work {
     score: number;
   }[];
   title?: string;
+  topics?: Topic[];
   type?: string;
   type_crossref?: string;
   updated_date?: string;
