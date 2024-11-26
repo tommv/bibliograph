@@ -38,6 +38,25 @@ export async function fetchQuery(
   url.searchParams.set("sort", "cited_by_count:desc");
   url.searchParams.set("mailto", DEFAULT_MAILTO);
   url.searchParams.set("per-page", `${PER_PAGE}`);
+  url.searchParams.set(
+    "select",
+    [
+      "id",
+      "display_name",
+      "authorships",
+      "cited_by_count",
+      "grants",
+      "keywords",
+      "locations",
+      "primary_location",
+      "primary_topic",
+      "primary_topic",
+      "publication_year",
+      "referenced_works",
+      "title",
+      "topics",
+    ].join(","),
+  );
 
   let works = await Promise.all(
     [...Array(numReq).keys()].map(async (i) => {

@@ -99,10 +99,10 @@ export const FIELDS_META: Record<
       })),
   },
   records: {
-    label: "Records",
+    label: "Works",
     color: "#A6A6A6",
     threshold: 50,
-    getValues: (work: Work) => ({ id: work.id, label: work.display_name || work.title || work.id }),
+    getValues: () => [],
   },
   refs: {
     label: "References",

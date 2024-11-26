@@ -9,7 +9,7 @@ import "./Home.css";
 const STORAGE_LAST_QUERY_KEY = "lastQueryKey";
 
 const Home: FC<{
-  onSubmit(dataset: Work[]): void;
+  onSubmit(promise: Promise<Work[]>): void;
 }> = ({ onSubmit }) => {
   const [initialQueryURL, setInitialQueryURL] = useLocalStorage(STORAGE_LAST_QUERY_KEY);
   const [queryURL, setQueryURL] = useState<string | null | undefined>(initialQueryURL);
@@ -93,10 +93,10 @@ const Home: FC<{
           disabled={!files.length && !queryURL}
           onClick={() => {
             if (files.length) {
-              fetchFiles(files).then((results) => onSubmit(results));
+              onSubmit(fetchFiles(files));
             } else if (queryURL) {
               setInitialQueryURL(queryURL);
-              fetchQuery(queryURL).then((results) => onSubmit(results));
+              onSubmit(fetchQuery(queryURL));
             }
           }}
         >

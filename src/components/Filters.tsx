@@ -46,11 +46,14 @@ const Filters: FC<{
           const maxCount = max(agg.values.map((v) => v.count));
           const count = aggValue ? aggValue.count : 0;
 
+          const intro = field === "records" ? "with at least" : "occurring in at least";
+          const unity = field === "records" ? "citation" : "record";
+
           return (
             <div key={label}>
               <div>
-                Keep the <strong>{count}</strong> <span className="hg">{label.toLowerCase()}</span> occurring in at
-                least <strong>{value}</strong> record
+                Keep the <strong>{count}</strong> <span className="hg">{label.toLowerCase()}</span> {intro}{" "}
+                <strong>{value}</strong> {unity}
                 {value > 1 ? "s" : ""}
               </div>
               <div>

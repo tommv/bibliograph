@@ -7,6 +7,7 @@ import { getDefaultFilters, getFilteredGraph } from "../lib/filters";
 import { aggregateFieldIndices } from "../lib/getAggregations";
 import { prepareGraph } from "../lib/prepareGraph";
 import { Aggregations, FieldIndices, FiltersType, Work } from "../lib/types";
+import { wait } from "../lib/utils";
 import "./App.css";
 import Filters from "./Filters";
 import Home from "./Home";
@@ -24,10 +25,11 @@ const App: FC = () => {
   const [loaderMessage, setLoaderMessage] = useState<string | null>(null);
 
   const prepareData = useCallback(
-    async (works: Work[]) => {
+    async (promise: Promise<Work[]>) => {
       setIsLoading(true);
+      const works = await promise;
       const indices = await indexWorks(works);
-      const aggregations = aggregateFieldIndices(indices);
+      const aggregations = aggregateFieldIndices(indices, works);
 
       setIsLoading(false);
       setData({

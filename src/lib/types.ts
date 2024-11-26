@@ -1,3 +1,5 @@
+import Graph from "graphology";
+
 export const FIELD_IDS = [
   "authors",
   "countries",
@@ -27,6 +29,22 @@ export type Aggregation = {
   }[];
 };
 export type Aggregations = Record<FieldID, Aggregation>;
+
+export type NodeAttributes = {
+  entityId: string;
+  label: string | null;
+  dataType: FieldID;
+  color: string;
+  nbArticles: number;
+  size?: number;
+  // Classic sigma ttributes:
+  x: number;
+  y: number;
+  fixed?: boolean;
+};
+
+export type EdgeAttributes = { weight: number };
+export type BiblioGraph = Graph<NodeAttributes, EdgeAttributes>;
 
 /**
  * OPEN ALEX DATA TYPES:

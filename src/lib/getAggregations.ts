@@ -10,7 +10,7 @@ import {
   zipObject,
 } from "lodash";
 
-import { Aggregation, Aggregations, FIELD_IDS, FieldIndices } from "./types";
+import { Aggregation, Aggregations, FIELD_IDS, FieldIndices, Work } from "./types";
 
 function aggregateCumulativeNumbers(values: number[]): Aggregation {
   // count cumulative number of occurrences
@@ -43,7 +43,7 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
   };
 }
 
-export function aggregateFieldIndices(fieldIndices: FieldIndices): Aggregations {
+export function aggregateFieldIndices(fieldIndices: FieldIndices, works: Work[]): Aggregations {
   const aggregations = zipObject(
     FIELD_IDS,
     FIELD_IDS.map(() => ({})),
@@ -52,7 +52,11 @@ export function aggregateFieldIndices(fieldIndices: FieldIndices): Aggregations 
   // Aggregate the indices:
   FIELD_IDS.forEach((field) => {
     // Calculate cumulative buckets
-    aggregations[field] = aggregateCumulativeNumbers(map(fieldIndices[field], ({ count }) => count));
+    if (field === "records") {
+      aggregations[field] = aggregateCumulativeNumbers(works.map((work) => work.cited_by_count || 0));
+    } else {
+      aggregations[field] = aggregateCumulativeNumbers(map(fieldIndices[field], ({ count }) => count));
+    }
   });
 
   return aggregations;

@@ -3,11 +3,11 @@ import { largestConnectedComponent } from "graphology-components";
 import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import { subgraph } from "graphology-operators";
-import { zipObject } from "lodash";
 import { Coordinates } from "sigma/types";
 
 import { fetchRefsLabels } from "./api";
 import { sampleKPoints } from "./kMeans";
+import { BiblioGraph } from "./types";
 import { wait } from "./utils";
 
 const maxNodeSizes = {
@@ -15,7 +15,7 @@ const maxNodeSizes = {
   metadata: 50,
 };
 
-export async function prepareGraph(graph: Graph): Promise<Graph> {
+export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
   const largest = largestConnectedComponent(graph);
   const mainGraph = subgraph(graph, largest);
 
@@ -121,11 +121,11 @@ export async function prepareGraph(graph: Graph): Promise<Graph> {
       const { x, y } = mainGraph.getNodeAttributes(node) as Coordinates;
       return { id: node, coordinates: { x, y } };
     });
-  const refsWithLabels = sampleKPoints(allRefs, 15, 5).map((p) => p.id);
+  const refsWithLabels = (allRefs.length > 20 ? sampleKPoints(allRefs, 15, 5) : allRefs).map((p) => p.id);
 
   const labels = await fetchRefsLabels(refsWithLabels);
   mainGraph.forEachNode((node, attributes) => {
-    if (attributes.dataType === "refs") mainGraph.setNodeAttribute(node, "label", labels[node] || null);
+    if (attributes.dataType === "refs") mainGraph.setNodeAttribute(node, "label", labels[attributes.entityId] || null);
   });
 
   return Promise.resolve(mainGraph);
