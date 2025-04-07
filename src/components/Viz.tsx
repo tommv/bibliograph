@@ -117,13 +117,13 @@ class Viz extends Component<PropsType, StateType> {
       <section className="Viz">
         <div className="features">
           <button className="btn" onClick={() => saveGEXF(this.props.graph, "graph-export.gexf")}>
-            <FaDownload /> Download <strong>.GEXF</strong> file
+            <FaDownload /> Download <strong>GEXF</strong> 
           </button>
           <button className="btn" onClick={() => saveSVG(this.props.graph, "graph-export.svg")}>
-            <FaDownload /> Download <strong>.SVG</strong> file
+            <FaDownload /> Download <strong>graph</strong> image
           </button>
           <button className="btn" onClick={() => saveHeatmap(this.props.graph, "graph-heatmap-export.svg")}>
-            <FaDownload /> Download <strong>Heatmap</strong> image
+            <FaDownload /> Download <strong>heatmap</strong> image
           </button>
           <button className="btn right" onClick={this.props.onGoBack}>
             <FaUndo /> Go back to <strong>filters</strong> view
