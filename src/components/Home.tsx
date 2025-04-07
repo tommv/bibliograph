@@ -27,24 +27,14 @@ const Home: FC<{
       <h1 className="center">
         <span className="hg">Bibliograph</span>
       </h1>
-      <p>
-        Bibliograph allows you turn a corpus of scientometrics records from ISI Web of Science or Scopus into a
-        landscape of bibliographic coupling. Such a landscape consists in:
-      </p>
-      <ol>
-        <li>
-          A base map network of references co-occurring in the records of the corpus - weighted by the frequency of
-          their co-occurrence;
-        </li>
-        <li>
-          A layer of metadata extracted from the records (e.g. authors, subject areas, keywords) and positioned in the
-          graph according to their co-occurrence with the references of the base map.
-        </li>
-      </ol>
-      <p>
-        Upload your corpus, choose the period you want to investigate, select the filtering thresholds and explore your
-        bibliographic landscape.
-      </p>
+      <p>BiblioGraph allows you turn a corpus of OpenAlex records into a scientometric landscape, composed of:</p>
+        <ol>
+          <li>A base map consisting in the network of references that appear together in the records of the corpus</li>
+          <li>A layer of metadata extracted from the records (authors, sources, subﬁelds...) positioned according to their co-occurrence with the references of the base map</li>
+        </ol>
+      <p>(1) Deﬁne your corpus, (2) set the ﬁlter thresholds and (3) explore your bibliographic landscape.</p>
+      <p><a href="https://docs.google.com/document/d/1YOcy9B9VeLpCAfG-gDwSoSma8UUCehzokVoJ2wPJKmM/edit?usp=sharing" target="_blank">Read the method paper &gt;&gt;</a></p>
+      
 
       <br />
 
