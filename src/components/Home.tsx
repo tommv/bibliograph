@@ -34,7 +34,6 @@ const Home: FC<{
         </ol>
       <p>(1) Deﬁne your corpus, (2) set the ﬁlter thresholds and (3) explore your bibliographic landscape.</p>
       <p><a href="https://docs.google.com/document/d/1YOcy9B9VeLpCAfG-gDwSoSma8UUCehzokVoJ2wPJKmM/edit?usp=sharing" target="_blank">Read the method paper &gt;&gt;</a></p>
-      
 
       <br />
 
@@ -96,6 +95,13 @@ const Home: FC<{
       <hr />
       <div className="flex-row center">
         <div className="logos">
+        <a href="https://www.unige.ch/sciences-societe/medialab/">
+            <img
+              className="logo"
+              src={import.meta.env.BASE_URL + "img/logo_medialab_UNIGE.jpg"}
+              alt="Centre Internet Société CNRS"
+            />
+          </a>
           <a href="https://cis.cnrs.fr/">
             <img
               className="logo"
