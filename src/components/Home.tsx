@@ -99,7 +99,7 @@ const Home: FC<{
             <img
               className="logo"
               src={import.meta.env.BASE_URL + "img/logo_medialab_UNIGE.jpg"}
-              alt="Centre Internet Société CNRS"
+              alt="Medialab UNIGE"
             />
           </a>
           <a href="https://cis.cnrs.fr/">
