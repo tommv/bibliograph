@@ -1,20 +1,25 @@
 import Graph from "graphology";
-import React, { FC, useCallback, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { FaUndo } from "react-icons/fa";
 import { FaSpinner } from "react-icons/fa6";
 import { TbFaceIdError } from "react-icons/tb";
 
+import { fetchFiles } from "../lib/api";
 import { indexWorks } from "../lib/data";
 import { getDefaultFilters, getFilteredGraph } from "../lib/filters";
 import { aggregateFieldIndices } from "../lib/getAggregations";
 import { prepareGraph } from "../lib/prepareGraph";
 import { Aggregations, FieldIndices, FiltersType, RichWork } from "../lib/types";
+import { useQuery } from "../lib/useQuery";
 import "./App.css";
 import Filters from "./Filters";
 import Home from "./Home";
 import Viz from "./Viz";
 
 const App: FC = () => {
+  const {
+    query: { file },
+  } = useQuery();
   const [data, setData] = useState<{
     works: RichWork[];
     indices: FieldIndices;
@@ -66,6 +71,13 @@ const App: FC = () => {
   }, [data, setIsLoading, setFilteredGraph]);
 
   let Component = <div>Woops, something went wrong...</div>;
+
+  useEffect(() => {
+    if (!data && file) {
+      prepareData(fetchFiles([file]));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [file, prepareData]);
 
   if (!data) Component = <Home onSubmit={prepareData} />;
   if (data && !filteredGraph) {

@@ -226,14 +226,14 @@ const UNFLATTEN_WORKS_SETTINGS = {
   ],
 };
 const OPEN_ALEX_MARKERS = ["id", "doi", "type", "has_fulltext", "versions"];
-export async function fetchFiles(files: File[]): Promise<RichWork[]> {
+export async function fetchFiles(files: (File | string)[]): Promise<RichWork[]> {
   const works: RichWork[] = [];
 
   await Promise.all(
     files.map(async (file) => {
-      const text = await file.text();
+      const text = await (typeof file === "string" ? (await fetch(file)).text() : file.text());
 
-      const extension = file.name.split(".").at(-1)?.toLowerCase();
+      const extension = (typeof file === "string" ? file : file.name).split(".").at(-1)?.toLowerCase();
       switch (extension) {
         case "csv": {
           // Check header to see if the CSV is an export from OpenAlex:
