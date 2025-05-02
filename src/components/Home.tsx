@@ -1,14 +1,14 @@
 import React, { FC, useMemo, useState } from "react";
 
 import { fetchFiles, fetchQuery } from "../lib/api";
-import { RichWork } from "../lib/types";
+import { CustomFieldTypes, RichWork } from "../lib/types";
 import { useLocalStorage } from "../lib/useLocalStorage";
 import "./Home.css";
 
 const STORAGE_LAST_QUERY_KEY = "lastQueryKey";
 
 const Home: FC<{
-  onSubmit(promise: Promise<RichWork[]>): void;
+  onSubmit(promise: Promise<{ works: RichWork[]; customFields: CustomFieldTypes }>): void;
 }> = ({ onSubmit }) => {
   const [initialQueryURL, setInitialQueryURL] = useLocalStorage(STORAGE_LAST_QUERY_KEY);
   const [queryURL, setQueryURL] = useState<string | null | undefined>(initialQueryURL);

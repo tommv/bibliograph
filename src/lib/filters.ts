@@ -1,47 +1,82 @@
 import Graph from "graphology";
-import { sortBy, zipObject } from "lodash";
+import { forEach, mapValues, sortBy, zipObject } from "lodash";
 import { combinations } from "obliterator";
 
-import { FIELDS_META, cleanFieldValues } from "./consts";
+import { DEFAULT_METADATA_COLOR, FIELDS_META, FieldValue, GetValue, cleanFieldValues } from "./consts";
 import {
   Aggregations,
   BiblioGraph,
+  CustomFieldTypes,
   EdgeAttributes,
   FIELD_IDS,
   FieldID,
   FieldIndices,
   FiltersType,
   NodeAttributes,
-  Work,
+  RichWork,
 } from "./types";
 
 export function getDefaultFilters(aggregations: Aggregations): FiltersType {
-  return zipObject(
-    FIELD_IDS,
-    FIELD_IDS.map((field) => {
-      const { threshold = Infinity, minRecords = -Infinity } = FIELDS_META[field];
-      const agg = aggregations[field];
-      return agg.values.length
+  return {
+    openAlex: zipObject(
+      FIELD_IDS,
+      FIELD_IDS.map((field) => {
+        const { threshold = Infinity, minRecords = -Infinity } = FIELDS_META[field];
+        const agg = aggregations.openAlex[field];
+        return agg.values.length
+          ? (
+              sortBy(agg.values, "lowerBound").find(
+                ({ count, lowerBound }) => count <= threshold && lowerBound >= minRecords,
+              ) || agg.values[0]
+            ).lowerBound
+          : 0;
+      }),
+    ),
+    custom: mapValues(aggregations.custom, ({ values }) => {
+      const minRecords = 2;
+      const threshold = 10;
+      return values.length
         ? (
-            sortBy(agg.values, "lowerBound").find(
+            sortBy(values, "lowerBound").find(
               ({ count, lowerBound }) => count <= threshold && lowerBound >= minRecords,
-            ) || agg.values[0]
+            ) || values[0]
           ).lowerBound
         : 0;
     }),
-  ) as FiltersType;
+  };
 }
 
-export function isValueOK(field: FieldID, value: string, indices: FieldIndices, filters: FiltersType): boolean {
-  return (indices[field][value]?.count || 0) >= filters[field];
+export function isOpenAlexValueOK(field: FieldID, value: string, indices: FieldIndices, filters: FiltersType): boolean {
+  return (indices.openAlex[field][value]?.count || 0) >= filters.openAlex[field];
+}
+
+export function isCustomValueOK(field: string, value: string, indices: FieldIndices, filters: FiltersType): boolean {
+  return ((indices.custom[field] || {})[value]?.count || 0) >= filters.custom[field];
 }
 
 export async function getFilteredGraph(
-  works: Work[],
+  works: RichWork[],
   indices: FieldIndices,
   filters: FiltersType,
+  customFields: CustomFieldTypes,
 ): Promise<BiblioGraph> {
   const graph = new Graph<NodeAttributes, EdgeAttributes>();
+  const allFields: { type: "openAlex" | "custom"; field: string; color: string; getValues: GetValue }[] = [
+    ...FIELD_IDS.map((field) => ({
+      type: "openAlex" as const,
+      field,
+      ...FIELDS_META[field],
+    })),
+  ];
+
+  forEach(customFields, (_, field) => {
+    allFields.push({
+      type: "custom",
+      field,
+      color: DEFAULT_METADATA_COLOR,
+      getValues: (work) => work.metadata[field],
+    });
+  });
 
   for (let workIndex = 0; workIndex < works.length; workIndex++) {
     // Index nodes:
@@ -49,7 +84,7 @@ export async function getFilteredGraph(
     const metadataNodes: string[] = [];
 
     const work = works[workIndex];
-    if ((work.cited_by_count || 0) >= filters.records) {
+    if ((work.cited_by_count || 0) >= filters.openAlex.records) {
       const [workNode] = graph.mergeNode(`records::${work.id}`, {
         label: work.display_name,
         dataType: "records",
@@ -58,29 +93,30 @@ export async function getFilteredGraph(
       metadataNodes.push(workNode);
     }
 
-    for (let fieldIndex = 0; fieldIndex < FIELD_IDS.length; fieldIndex++) {
-      const field = FIELD_IDS[fieldIndex];
-      const { getValues, color } = FIELDS_META[field];
+    for (let fieldIndex = 0; fieldIndex < allFields.length; fieldIndex++) {
+      const { field, getValues, color, type } = allFields[fieldIndex];
       const values = await cleanFieldValues(getValues(work));
+      const isValueOK =
+        type === "openAlex"
+          ? (v: FieldValue) => isOpenAlexValueOK(field as FieldID, v.id, indices, filters)
+          : (v: FieldValue) => isCustomValueOK(field, v.id, indices, filters);
 
-      values
-        .filter((v) => isValueOK(field, v.id, indices, filters))
-        .forEach(({ id, label }) => {
-          const [n] = graph.mergeNode(`${field}::${id}`, {
-            entityId: id,
-            label,
-            dataType: field,
-            color,
-          });
-          const nbArticles = (graph.getNodeAttribute(n, "nbArticles") || 0) + 1;
-          graph.mergeNodeAttributes(n, {
-            nbArticles,
-            size: Math.sqrt(nbArticles),
-          });
-
-          if (field === "refs") referenceNodes.push(n);
-          else metadataNodes.push(n);
+      values.filter(isValueOK).forEach(({ id, label }) => {
+        const [n] = graph.mergeNode(`${field}::${id}`, {
+          entityId: id,
+          label,
+          dataType: field,
+          color,
         });
+        const nbArticles = (graph.getNodeAttribute(n, "nbArticles") || 0) + 1;
+        graph.mergeNodeAttributes(n, {
+          nbArticles,
+          size: Math.sqrt(nbArticles),
+        });
+
+        if (field === "refs") referenceNodes.push(n);
+        else if (n) metadataNodes.push(n);
+      });
     }
 
     // Add edges refs click

@@ -1,32 +1,32 @@
 import { isNil } from "lodash";
 
-import { FieldID, Work } from "./types";
+import { FieldID, RichWork, Work } from "./types";
 
-type FieldValue = {
+export type FieldValue = {
   id: string;
   label?: string;
   attributes?: Record<string, string | undefined>;
 };
 
 type ValueOrArray<T> = undefined | T | T[];
-type GetValue = (
-  work: Work,
+export type GetValue = (
+  work: RichWork,
 ) => ValueOrArray<string> | ValueOrArray<FieldValue> | Promise<ValueOrArray<string> | ValueOrArray<FieldValue>>;
 
 export async function cleanFieldValues(input: ReturnType<GetValue>): Promise<FieldValue[]> {
   const expected = await input;
   const array = Array.isArray(expected) ? expected : [expected];
   return array.flatMap((s) =>
-    typeof s === "string"
-      ? [
-          {
-            id: s,
-            label: s,
-          },
-        ]
-      : s
-        ? [s]
-        : [],
+    s
+      ? typeof s === "string"
+        ? [
+            {
+              id: s,
+              label: s,
+            },
+          ]
+        : [s]
+      : [],
   );
 }
 
@@ -151,3 +151,5 @@ export const FIELDS_META: Record<
       ),
   },
 };
+
+export const DEFAULT_METADATA_COLOR = "pink";

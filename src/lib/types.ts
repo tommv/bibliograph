@@ -16,12 +16,14 @@ export const FIELD_IDS = [
 ] as const;
 export type FieldID = (typeof FIELD_IDS)[number];
 
-export type FieldIndices = Record<FieldID, Record<string, { count: number; label: string }>>;
+export const BASE_TYPES = ["openAlex", "custom"] as const;
+export type BaseType = (typeof BASE_TYPES)[number];
 
-export type CustomFieldType = { type: "quantitative" } | { type: "qualitative"; separator?: string };
-export type CustomFieldIndices = Record<string, CustomFieldType>;
-
-export type FiltersType = Record<FieldID, number>;
+export type CustomFieldType =
+  | { type: "number" }
+  | { type: "boolean" }
+  | { type: "terms"; separator?: string; values: Record<string, { count: number; label: string }> };
+export type CustomFieldTypes = Record<string, CustomFieldType>;
 
 export type Aggregation = {
   min: number;
@@ -31,16 +33,19 @@ export type Aggregation = {
     count: number;
   }[];
 };
-export type Aggregations = Record<FieldID, Aggregation>;
+
+export type FieldIndices = Record<BaseType, Record<string, Record<string, { count: number; label: string }>>>;
+export type FiltersType = Record<BaseType, Record<string, number>>;
+export type Aggregations = Record<BaseType, Record<string, Aggregation>>;
 
 export type NodeAttributes = {
   entityId: string;
   label: string | null;
-  dataType: FieldID;
+  dataType: string;
   color: string;
   nbArticles: number;
   size?: number;
-  // Classic sigma ttributes:
+  // Classic sigma attributes:
   x: number;
   y: number;
   fixed?: boolean;
@@ -231,7 +236,7 @@ export interface Work {
  * CUSTOM ADDITIONAL DATA TYPES:
  * *****************************
  */
-export type MetadataValue = string[] | number | boolean;
+export type MetadataValue = string[] /* | number | boolean*/;
 export type RichWork = Work & {
   metadata: Record<string, MetadataValue | undefined>;
 };

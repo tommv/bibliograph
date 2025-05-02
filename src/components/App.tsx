@@ -9,7 +9,7 @@ import { indexWorks } from "../lib/data";
 import { getDefaultFilters, getFilteredGraph } from "../lib/filters";
 import { aggregateFieldIndices } from "../lib/getAggregations";
 import { prepareGraph } from "../lib/prepareGraph";
-import { Aggregations, FieldIndices, FiltersType, RichWork } from "../lib/types";
+import { Aggregations, CustomFieldTypes, FieldIndices, FiltersType, RichWork } from "../lib/types";
 import { useQuery } from "../lib/useQuery";
 import "./App.css";
 import Filters from "./Filters";
@@ -22,6 +22,7 @@ const App: FC = () => {
   } = useQuery();
   const [data, setData] = useState<{
     works: RichWork[];
+    customFields: CustomFieldTypes;
     indices: FieldIndices;
     aggregations: Aggregations;
     filters: FiltersType;
@@ -32,17 +33,18 @@ const App: FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const prepareData = useCallback(
-    async (promise: Promise<RichWork[]>) => {
+    async (promise: Promise<{ works: RichWork[]; customFields: CustomFieldTypes }>) => {
       setIsLoading(true);
       setLoaderMessage("Indexing data");
 
       try {
-        const works = await promise;
+        const { works, customFields } = await promise;
         const indices = await indexWorks(works);
-        const aggregations = aggregateFieldIndices(indices, works);
+        const aggregations = aggregateFieldIndices(indices, works, customFields);
 
         setData({
           works,
+          customFields,
           indices,
           aggregations,
           filters: getDefaultFilters(aggregations),
@@ -62,7 +64,7 @@ const App: FC = () => {
 
     setIsLoading(true);
     setLoaderMessage("Preparing graph data");
-    let graph = await getFilteredGraph(data.works, data.indices, data.filters);
+    let graph = await getFilteredGraph(data.works, data.indices, data.filters, data.customFields);
     graph = await prepareGraph(graph);
 
     setLoaderMessage(null);
@@ -86,6 +88,7 @@ const App: FC = () => {
         works={data.works}
         aggregations={data.aggregations}
         filters={data.filters}
+        customFields={data.customFields}
         setFilters={(filters) => setData({ ...data, filters })}
         onSubmit={filterGraph}
         onGoBack={() => {
@@ -121,12 +124,12 @@ const App: FC = () => {
     Component = (
       <div className="error">
         <div>
-          <TbFaceIdError />
+          <TbFaceIdError className="x5" />
         </div>
         <div>{errorMessage}</div>
         <div>
           <button className="btn right" onClick={() => setData(null)}>
-            <FaUndo /> Go back to <strong>upload CSV files</strong>
+            <FaUndo /> Go back to <strong>homepage</strong>
           </button>
         </div>
       </div>

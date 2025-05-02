@@ -1,19 +1,32 @@
-import { last, max } from "lodash";
-import React, { FC } from "react";
+import { last, map, max } from "lodash";
+import React, { FC, useMemo } from "react";
 import { FaUndo } from "react-icons/fa";
 
 import { FIELDS_META } from "../lib/consts";
-import { Aggregations, FIELD_IDS, FiltersType, Work } from "../lib/types";
+import { Aggregations, CustomFieldTypes, FIELD_IDS, FieldID, FiltersType, RichWork } from "../lib/types";
 import "./Filters.css";
 
 const Filters: FC<{
   filters: FiltersType;
   setFilters: (f: FiltersType) => void;
   aggregations: Aggregations;
-  works: Work[];
+  works: RichWork[];
+  customFields: CustomFieldTypes;
   onSubmit(filters: FiltersType): void;
   onGoBack: () => void;
-}> = ({ filters, setFilters, aggregations, works, onSubmit, onGoBack }) => {
+}> = ({ filters, setFilters, aggregations, works, customFields, onSubmit, onGoBack }) => {
+  const allFilterFields = useMemo(
+    () =>
+      [
+        ...FIELD_IDS.map((field) => ({ field, type: "openAlex" })),
+        ...map(customFields, (type, field) => ({
+          field,
+          type: "custom",
+        })),
+      ] as { field: string; type: "openAlex" | "custom" }[],
+    [customFields],
+  );
+
   return (
     <section className="Filters c">
       <div className="actions">
@@ -37,11 +50,13 @@ const Filters: FC<{
       <br />
 
       <div className="fields">
-        {FIELD_IDS.map((field) => {
-          const { label } = FIELDS_META[field];
-          const agg = aggregations[field];
+        {allFilterFields.map(({ field, type }) => {
+          const label = type === "openAlex" ? FIELDS_META[field as FieldID].label : `"${field}"`;
+          const agg = aggregations[type][field];
+          if (!agg) return null;
+
           const maxValue = last(agg.values)?.lowerBound || 0;
-          const value = filters[field] || maxValue + 1;
+          const value = filters[type][field] || maxValue + 1;
           const aggValue = agg.values.find((agg) => agg.lowerBound >= value);
           const maxCount = max(agg.values.map((v) => v.count));
           const count = aggValue ? aggValue.count : 0;
@@ -70,7 +85,10 @@ const Filters: FC<{
                 onChange={(e) =>
                   setFilters({
                     ...filters,
-                    [field]: maxValue + 1 - +e.target.value,
+                    [type]: {
+                      ...filters[type],
+                      [field]: maxValue + 1 - +e.target.value,
+                    },
                   })
                 }
               />

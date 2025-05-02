@@ -1,4 +1,5 @@
 import {
+  forEach,
   groupBy,
   map,
   mapValues,
@@ -10,7 +11,7 @@ import {
   zipObject,
 } from "lodash";
 
-import { Aggregation, Aggregations, FIELD_IDS, FieldIndices, Work } from "./types";
+import { Aggregation, Aggregations, CustomFieldTypes, FIELD_IDS, FieldIndices, RichWork } from "./types";
 
 function aggregateCumulativeNumbers(values: number[]): Aggregation {
   // count cumulative number of occurrences
@@ -43,19 +44,39 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
   };
 }
 
-export function aggregateFieldIndices(fieldIndices: FieldIndices, works: Work[]): Aggregations {
-  const aggregations = zipObject(
-    FIELD_IDS,
-    FIELD_IDS.map(() => ({})),
-  ) as Aggregations;
+export function aggregateFieldIndices(
+  fieldIndices: FieldIndices,
+  works: RichWork[],
+  customFields: CustomFieldTypes,
+): Aggregations {
+  const aggregations = {
+    openAlex: zipObject(
+      FIELD_IDS,
+      FIELD_IDS.map(() => ({})),
+    ),
+    custom: {},
+  } as Aggregations;
 
-  // Aggregate the indices:
   FIELD_IDS.forEach((field) => {
     // Calculate cumulative buckets
     if (field === "records") {
-      aggregations[field] = aggregateCumulativeNumbers(works.map((work) => work.cited_by_count || 0));
+      aggregations.openAlex[field] = aggregateCumulativeNumbers(works.map((work) => work.cited_by_count || 0));
     } else {
-      aggregations[field] = aggregateCumulativeNumbers(map(fieldIndices[field], ({ count }) => count));
+      aggregations.openAlex[field] = aggregateCumulativeNumbers(
+        map(fieldIndices.openAlex[field], ({ count }) => count),
+      );
+    }
+  });
+
+  forEach(customFields, (fieldDef, field) => {
+    switch (fieldDef.type) {
+      case "boolean":
+      case "number":
+        // TODO
+        break;
+      case "terms":
+        aggregations.custom[field] = aggregateCumulativeNumbers(map(fieldDef.values, ({ count }) => count));
+        break;
     }
   });
 

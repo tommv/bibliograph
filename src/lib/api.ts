@@ -2,7 +2,7 @@ import { chunk, fromPairs, isEmpty, keyBy, mapValues, omit, pickBy, values } fro
 import { parse } from "papaparse";
 
 import { enrichWorks } from "./data";
-import { RichWork, Work } from "./types";
+import { CustomFieldTypes, RichWork, Work } from "./types";
 import { unflattenObject, wait } from "./utils";
 
 const PER_PAGE = 200;
@@ -47,7 +47,7 @@ export async function fetchWorksCount(queryURL: string) {
 export async function fetchQuery(
   queryURL: string,
   { maxWorks = 10000, updateProgress }: { maxWorks?: number; updateProgress?: (percents: number) => void } = {},
-): Promise<RichWork[]> {
+): Promise<{ works: RichWork[]; customFields: CustomFieldTypes }> {
   const count = await fetchWorksCount(queryURL);
   const numReq = Math.ceil(Math.min(count, maxWorks) / PER_PAGE);
   let numReqDone = 0;
@@ -84,11 +84,14 @@ export async function fetchQuery(
     }),
   );
 
-  return works
-    .flat()
-    .slice(0, maxWorks)
-    .filter((work) => work)
-    .map((work) => ({ ...work, metadata: {} }));
+  return {
+    works: works
+      .flat()
+      .slice(0, maxWorks)
+      .filter((work) => work)
+      .map((work) => ({ ...work, metadata: {} })),
+    customFields: {},
+  };
 }
 
 export async function fetchWorks(
@@ -226,8 +229,10 @@ const UNFLATTEN_WORKS_SETTINGS = {
   ],
 };
 const OPEN_ALEX_MARKERS = ["id", "doi", "type", "has_fulltext", "versions"];
-export async function fetchFiles(files: (File | string)[]): Promise<RichWork[]> {
-  const works: RichWork[] = [];
+export async function fetchFiles(
+  files: (File | string)[],
+): Promise<{ works: RichWork[]; customFields: CustomFieldTypes }> {
+  const result: { works: RichWork[]; customFields: CustomFieldTypes } = { works: [], customFields: {} };
 
   await Promise.all(
     files.map(async (file) => {
@@ -249,7 +254,7 @@ export async function fetchFiles(files: (File | string)[]): Promise<RichWork[]> 
               // This test clears empty-esque trailing rows:
               if (!isEmpty(pickBy(row, (v) => !!v))) {
                 const work = unflattenObject<RichWork>(row, UNFLATTEN_WORKS_SETTINGS);
-                works.push(work);
+                result.works.push(work);
               }
             });
           }
@@ -272,20 +277,22 @@ export async function fetchFiles(files: (File | string)[]): Promise<RichWork[]> 
             const customRows = fromPairs(
               data.map((row) => [row[idField], omit(row, idField) as Record<string, string>]),
             );
-            enrichWorks(rawWorks, customRows).forEach((work) => {
-              works.push(work);
+            const { works, customFields } = enrichWorks(rawWorks, customRows);
+            works.forEach((work) => {
+              result.works.push(work);
             });
+            result.customFields = customFields;
           }
           break;
         }
         case "json":
         default: {
           const data = JSON.parse(text) as { results: Work[] };
-          data.results.forEach((work) => works.push({ ...work, metadata: {} }));
+          data.results.forEach((work) => result.works.push({ ...work, metadata: {} }));
         }
       }
     }),
   );
 
-  return works;
+  return result;
 }

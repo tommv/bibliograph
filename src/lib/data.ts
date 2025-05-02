@@ -1,13 +1,16 @@
 import { forEach, fromPairs, isNil, mapValues, sortBy, take, uniq, zipObject } from "lodash";
 
 import { FIELDS_META, cleanFieldValues } from "./consts";
-import { CustomFieldIndices, CustomFieldType, FIELD_IDS, FieldIndices, MetadataValue, RichWork, Work } from "./types";
+import { CustomFieldType, CustomFieldTypes, FIELD_IDS, FieldIndices, MetadataValue, RichWork, Work } from "./types";
 
-export async function indexWorks(works: Work[]): Promise<FieldIndices> {
-  const indices = zipObject(
-    FIELD_IDS,
-    FIELD_IDS.map(() => ({})),
-  ) as FieldIndices;
+export async function indexWorks(works: RichWork[]): Promise<FieldIndices> {
+  const indices: FieldIndices = {
+    custom: {},
+    openAlex: zipObject(
+      FIELD_IDS,
+      FIELD_IDS.map(() => ({})),
+    ),
+  };
 
   for (let workIndex = 0; workIndex < works.length; workIndex++) {
     const work = works[workIndex];
@@ -18,13 +21,22 @@ export async function indexWorks(works: Work[]): Promise<FieldIndices> {
       try {
         const values = await cleanFieldValues(getValues(work));
         values.forEach(({ id, label }) => {
-          indices[field][id] = indices[field][id] || { count: 0, label };
-          indices[field][id].count++;
+          indices.openAlex[field][id] = indices.openAlex[field][id] || { count: 0, label };
+          indices.openAlex[field][id].count++;
         });
       } catch (e) {
         console.error(`Could not index work`, work);
         console.error(e);
       }
+    }
+
+    for (const field in work.metadata) {
+      const values = await cleanFieldValues(work.metadata[field]);
+      values.forEach(({ id, label }) => {
+        indices.custom[field] = indices.custom[field] || {};
+        indices.custom[field][id] = indices.custom[field][id] || { count: 0, label };
+        indices.custom[field][id].count++;
+      });
     }
   }
 
@@ -66,7 +78,7 @@ export function guessSeparator(values: string[]): string | null {
  */
 export function inferFieldType(values: string[], itemsCount: number): CustomFieldType {
   if (values.every((v) => !isNaN(+v))) {
-    return { type: "quantitative" };
+    return { type: "number" };
   }
 
   const separator = guessSeparator(
@@ -75,27 +87,34 @@ export function inferFieldType(values: string[], itemsCount: number): CustomFiel
       100,
     ),
   );
+
   const uniqValues = uniq(separator ? values.flatMap((v) => (v + "").split(separator)) : values);
   const uniqValuesCount = uniqValues.length;
-
-  if (
-    separator &&
+  const valuesCount: Record<string, number> = {};
+  const useSeparator =
+    !!separator &&
     uniqValuesCount > 1 &&
     uniqValuesCount < 50 &&
-    uniqValuesCount < Math.max(separator ? itemsCount : Math.pow(itemsCount, 0.75), 5)
-  ) {
-    return {
-      type: "qualitative",
-      separator,
-    };
-  }
+    uniqValuesCount < Math.max(separator ? itemsCount : Math.pow(itemsCount, 0.75), 5);
+
+  values.forEach((str) => {
+    const list = useSeparator ? str.split(separator) : str ? [str] : [];
+    list.forEach((s) => {
+      valuesCount[s] = (valuesCount[s] || 0) + 1;
+    });
+  });
 
   return {
-    type: "qualitative",
+    type: "terms",
+    separator: useSeparator ? separator : undefined,
+    values: mapValues(valuesCount, (count, label) => ({ count, label })),
   };
 }
 
-export function enrichWorks(works: Work[], customMetadata: Record<string, Record<string, string>>): RichWork[] {
+export function enrichWorks(
+  works: Work[],
+  customMetadata: Record<string, Record<string, string>>,
+): { works: RichWork[]; customFields: CustomFieldTypes } {
   const fields: Record<string, string[]> = {};
 
   // Identify all values:
@@ -111,29 +130,34 @@ export function enrichWorks(works: Work[], customMetadata: Record<string, Record
   });
 
   // Infer field types:
-  const fieldTypes: CustomFieldIndices = mapValues(fields, (values) => inferFieldType(values, works.length));
+  const fieldTypes: CustomFieldTypes = mapValues(fields, (values) => inferFieldType(values, works.length));
 
   // Enrich the works, with the proper custom field types:
-  return works.map((work) => ({
-    ...work,
-    metadata: fromPairs(
-      Object.keys(fieldTypes).map((field) => {
-        const rawValue = (customMetadata[work.id] || {})[field];
-        const fieldType = fieldTypes[field];
-        let value: MetadataValue | null = null;
+  return {
+    works: works.map((work) => ({
+      ...work,
+      metadata: fromPairs(
+        Object.keys(fieldTypes).map((field) => {
+          const rawValue = (customMetadata[work.id] || {})[field];
+          const fieldType = fieldTypes[field];
+          let value: MetadataValue | null = null;
 
-        switch (fieldType.type) {
-          case "quantitative":
-            value = +rawValue;
-            break;
-          case "qualitative":
-            if (fieldType.separator) value = rawValue.split(fieldType.separator);
-            else value = [rawValue];
-            break;
-        }
+          switch (fieldType.type) {
+            case "boolean":
+            case "number":
+              // value = +rawValue;
+              value = rawValue ? [rawValue] : [];
+              break;
+            case "terms":
+              if (fieldType.separator) value = rawValue.split(fieldType.separator);
+              else value = rawValue ? [rawValue] : [];
+              break;
+          }
 
-        return [field, isNil(value) ? undefined : value];
-      }),
-    ),
-  }));
+          return [field, isNil(value) ? undefined : value];
+        }),
+      ),
+    })),
+    customFields: fieldTypes,
+  };
 }
