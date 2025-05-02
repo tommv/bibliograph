@@ -7,7 +7,7 @@ export function useLocalStorage(key: string): ReturnType<typeof useState<string 
   useEffect(() => {
     if (isNil(state)) localStorage.removeItem(key);
     else localStorage.setItem(key, state);
-  }, [state]);
+  }, [key, state]);
 
   useEffect(() => {
     setState(localStorage.getItem(key));

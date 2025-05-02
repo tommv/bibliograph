@@ -1,4 +1,3 @@
-import Graph from "graphology";
 import { largestConnectedComponent } from "graphology-components";
 import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";

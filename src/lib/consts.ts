@@ -58,7 +58,7 @@ export const FIELDS_META: Record<
     color: "#E22621",
     threshold: 25,
     getValues: (work: Work) =>
-      work.authorships?.flatMap(({ institutions }) =>
+      work.authorships?.flatMap(({ institutions = [] }) =>
         institutions.flatMap((institution) => ({
           id: institution.id,
           label: institution.display_name,

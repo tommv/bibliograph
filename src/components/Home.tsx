@@ -1,15 +1,14 @@
 import React, { FC, useMemo, useState } from "react";
 
-import { fetchQuery } from "../lib/api";
-import { fetchFiles } from "../lib/data";
-import { Work } from "../lib/types";
+import { fetchFiles, fetchQuery } from "../lib/api";
+import { RichWork } from "../lib/types";
 import { useLocalStorage } from "../lib/useLocalStorage";
 import "./Home.css";
 
 const STORAGE_LAST_QUERY_KEY = "lastQueryKey";
 
 const Home: FC<{
-  onSubmit(promise: Promise<Work[]>): void;
+  onSubmit(promise: Promise<RichWork[]>): void;
 }> = ({ onSubmit }) => {
   const [initialQueryURL, setInitialQueryURL] = useLocalStorage(STORAGE_LAST_QUERY_KEY);
   const [queryURL, setQueryURL] = useState<string | null | undefined>(initialQueryURL);
@@ -19,7 +18,7 @@ const Home: FC<{
       queryURL
         ? queryURL.replace("//api.", "//") + "&view=api,list,report"
         : "https://openalex.org/works?view=api,list,report",
-    [],
+    [queryURL],
   );
 
   return (
@@ -59,7 +58,9 @@ const Home: FC<{
         </div>
 
         <div className="6 col">
-          <label htmlFor="file-upload">Or upload a local OpenAlex CSV works results file instead:</label>
+          <label htmlFor="file-upload">
+            Or upload a local CSV or JSON OpenAlex results file, or a custom CSV file instead:
+          </label>
           <div>
             <input
               id="file-upload"

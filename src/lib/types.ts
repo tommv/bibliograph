@@ -18,6 +18,9 @@ export type FieldID = (typeof FIELD_IDS)[number];
 
 export type FieldIndices = Record<FieldID, Record<string, { count: number; label: string }>>;
 
+export type CustomFieldType = { type: "quantitative" } | { type: "qualitative"; separator?: string };
+export type CustomFieldIndices = Record<string, CustomFieldType>;
+
 export type FiltersType = Record<FieldID, number>;
 
 export type Aggregation = {
@@ -99,6 +102,10 @@ export interface Topic {
 }
 
 export interface Work {
+  id: string;
+  display_name?: string;
+
+  // Optional fields:
   abstract_inverted_index?: object;
   apc_list?: Apc;
   apc_paid?: Apc;
@@ -110,7 +117,7 @@ export interface Work {
     };
     author_position: string;
     countries: string[];
-    institutions: {
+    institutions?: {
       country_code: string;
       display_name: string;
       id: string;
@@ -152,7 +159,6 @@ export interface Work {
     year: number;
   }[];
   created_date?: string;
-  display_name: string;
   doi?: string;
   grants?: {
     award_id: string;
@@ -160,7 +166,6 @@ export interface Work {
     funder_display_name: string;
   }[];
   has_fulltext?: boolean;
-  id: string;
   ids?: {
     crossref?: string;
     doi?: string;
@@ -221,3 +226,12 @@ export interface Work {
   type_crossref?: string;
   updated_date?: string;
 }
+
+/**
+ * CUSTOM ADDITIONAL DATA TYPES:
+ * *****************************
+ */
+export type MetadataValue = string[] | number | boolean;
+export type RichWork = Work & {
+  metadata: Record<string, MetadataValue | undefined>;
+};
