@@ -56,10 +56,13 @@ const Filters: FC<{
           if (!agg) return null;
 
           const maxValue = last(agg.values)?.lowerBound || 0;
-          const value = filters[type][field] || maxValue + 1;
+          const value = filters[type][field] ?? maxValue + 1;
           const aggValue = agg.values.find((agg) => agg.lowerBound >= value);
           const maxCount = max(agg.values.map((v) => v.count));
           const count = aggValue ? aggValue.count : 0;
+
+          let inputMax = maxValue;
+          if (type === "openAlex" && field === "records") inputMax++;
 
           const intro = field === "records" ? "with at least" : "occurring in at least";
           const unity = field === "records" ? "citation" : "record";
@@ -80,7 +83,7 @@ const Filters: FC<{
                 type="range"
                 name="vol"
                 min={0}
-                max={maxValue}
+                max={inputMax}
                 value={maxValue + 1 - value}
                 onChange={(e) =>
                   setFilters({
