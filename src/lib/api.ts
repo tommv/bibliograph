@@ -1,4 +1,4 @@
-import { chunk, fromPairs, isEmpty, keyBy, mapValues, omit, pickBy, values } from "lodash";
+import { chunk, fromPairs, isEmpty, isPlainObject, keyBy, mapValues, omit, pickBy, values } from "lodash";
 import { parse } from "papaparse";
 
 import { enrichWorks } from "./data";
@@ -164,6 +164,16 @@ export async function fetchRefsLabels(ids: string[]): Promise<Record<string, str
   return mapValues(keyBy(data.results, "id"), ({ display_name }) => display_name);
 }
 
+export type FilePath = { path: string; extension?: string };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isFilePath(file: any): file is FilePath {
+  return isPlainObject(file) && typeof file.path === "string";
+}
+
+export function getPathExtension(path: string) {
+  return path.split(".").at(-1)?.toLowerCase();
+}
+
 const UNFLATTEN_WORKS_SETTINGS = {
   arrayKeys: [
     "authorships",
@@ -231,15 +241,15 @@ const UNFLATTEN_WORKS_SETTINGS = {
 };
 const OPEN_ALEX_MARKERS = ["id", "doi", "type", "has_fulltext", "versions"];
 export async function fetchFiles(
-  files: (File | string)[],
+  files: (File | FilePath)[],
 ): Promise<{ works: RichWork[]; customFields: CustomFieldTypes }> {
   const result: { works: RichWork[]; customFields: CustomFieldTypes } = { works: [], customFields: {} };
 
   await Promise.all(
     files.map(async (file) => {
-      const text = await (typeof file === "string" ? (await fetch(file)).text() : file.text());
+      const text = await (isFilePath(file) ? (await fetch(file.path)).text() : file.text());
 
-      const extension = (typeof file === "string" ? file : file.name).split(".").at(-1)?.toLowerCase();
+      const extension = isFilePath(file) ? file.extension || getPathExtension(file.path) : getPathExtension(file.name);
       switch (extension) {
         case "csv": {
           // Check header to see if the CSV is an export from OpenAlex:

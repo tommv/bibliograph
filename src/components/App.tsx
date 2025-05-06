@@ -4,7 +4,7 @@ import { FaUndo } from "react-icons/fa";
 import { FaSpinner } from "react-icons/fa6";
 import { TbFaceIdError } from "react-icons/tb";
 
-import { fetchFiles } from "../lib/api";
+import { fetchFiles, fetchQuery } from "../lib/api";
 import { indexWorks } from "../lib/data";
 import { getDefaultFilters, getFilteredGraph } from "../lib/filters";
 import { aggregateFieldIndices } from "../lib/getAggregations";
@@ -18,7 +18,7 @@ import Viz from "./Viz";
 
 const App: FC = () => {
   const {
-    query: { file },
+    query: { csvFile, jsonFile, openAlexQuery },
   } = useQuery();
   const [data, setData] = useState<{
     works: RichWork[];
@@ -75,11 +75,15 @@ const App: FC = () => {
   let Component = <div>Woops, something went wrong...</div>;
 
   useEffect(() => {
-    if (!data && file) {
-      prepareData(fetchFiles([file]));
+    if (!data && csvFile) {
+      prepareData(fetchFiles([{ path: csvFile, extension: "csv" }]));
+    } else if (!data && jsonFile) {
+      prepareData(fetchFiles([{ path: jsonFile, extension: "json" }]));
+    } else if (!data && openAlexQuery) {
+      prepareData(fetchQuery(openAlexQuery));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [file, prepareData]);
+  }, [csvFile, jsonFile, prepareData]);
 
   if (!data) Component = <Home onSubmit={prepareData} />;
   if (data && !filteredGraph) {
