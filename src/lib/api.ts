@@ -9,6 +9,7 @@ const PER_PAGE = 200;
 const DEFAULT_MAILTO = "tommaso.venturini@cnrs.fr";
 const WORK_FIELDS = [
   "id",
+  "doi",
   "display_name",
   "authorships",
   "cited_by_count",
