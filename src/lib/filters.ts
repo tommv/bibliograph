@@ -23,7 +23,6 @@ export function getDefaultFilters(aggregations: Aggregations): FiltersType {
       FIELD_IDS.map((field) => {
         const { threshold = Infinity, minRecords = -Infinity } = FIELDS_META[field];
         const agg = aggregations.openAlex[field];
-        console.log({ field, threshold, agg });
         return agg.values.length
           ? (
               sortBy(agg.values, "lowerBound").find(
@@ -90,6 +89,7 @@ export async function getFilteredGraph(
         label: work.display_name,
         dataType: "records",
         color: FIELDS_META.records.color,
+        nbArticles: work.cited_by_count,
       });
       metadataNodes.push(workNode);
     }
