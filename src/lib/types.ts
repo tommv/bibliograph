@@ -41,7 +41,7 @@ export type Aggregations = Record<BaseType, Record<string, Aggregation>>;
 export type NodeAttributes = {
   entityId: string;
   label: string | null;
-  hoverLabel: string | null;
+  allLabel: string | null;
   dataType: string;
   color: string;
   nbArticles: number;

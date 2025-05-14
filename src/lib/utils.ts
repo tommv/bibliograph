@@ -72,5 +72,5 @@ export function drawNodeHover(
   data: PartialButFor<NodeDisplayData, "x" | "y" | "size" | "label" | "color">,
   settings: Settings,
 ) {
-  drawDiscNodeHover(context, { ...data, label: data.label || data.hoverLabel }, settings);
+  drawDiscNodeHover(context, { ...data, label: data.label || data.allLabel }, settings);
 }

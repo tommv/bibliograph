@@ -153,5 +153,8 @@ export async function getFilteredGraph(
   // Store some useful metadata:
   graph.setAttribute("entriescount", works.length);
 
+  // Store all labels in the allLabel attribute:
+  graph.forEachNode((node, { label }) => graph.setNodeAttribute(node, "allLabel", label));
+
   return graph;
 }

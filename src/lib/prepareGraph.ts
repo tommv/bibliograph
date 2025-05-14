@@ -127,7 +127,7 @@ export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
     if (attributes.dataType === "refs") {
       const label = labels[attributes.entityId] || null;
       mainGraph.mergeNodeAttributes(node, {
-        hoverLabel: label,
+        allLabel: label,
         label: refsWithLabels.has(node) ? label : null,
       });
     }
