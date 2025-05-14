@@ -120,11 +120,17 @@ export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
       const { x, y } = mainGraph.getNodeAttributes(node) as Coordinates;
       return { id: node, coordinates: { x, y } };
     });
-  const refsWithLabels = (allRefs.length > 20 ? sampleKPoints(allRefs, 15, 5) : allRefs).map((p) => p.id);
+  const refsWithLabels = new Set((allRefs.length > 20 ? sampleKPoints(allRefs, 15, 5) : allRefs).map((p) => p.id));
 
-  const labels = await fetchRefsLabels(refsWithLabels);
+  const labels = await fetchRefsLabels(allRefs.map((p) => p.id));
   mainGraph.forEachNode((node, attributes) => {
-    if (attributes.dataType === "refs") mainGraph.setNodeAttribute(node, "label", labels[attributes.entityId] || null);
+    if (attributes.dataType === "refs") {
+      const label = labels[attributes.entityId] || null;
+      mainGraph.mergeNodeAttributes(node, {
+        hoverLabel: label,
+        label: refsWithLabels.has(node) ? label : null,
+      });
+    }
   });
 
   return Promise.resolve(mainGraph);

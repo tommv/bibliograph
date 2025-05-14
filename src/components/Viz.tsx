@@ -9,6 +9,7 @@ import Sigma from "sigma";
 import { DEFAULT_METADATA_COLOR, FIELDS_META } from "../lib/consts";
 import { saveGEXF, saveHeatmap, saveSVG } from "../lib/saveHelpers";
 import { FIELD_IDS, FieldIndices, FiltersType } from "../lib/types";
+import { drawNodeHover } from "../lib/utils";
 import "./Viz.css";
 
 interface PropsType {
@@ -62,6 +63,7 @@ class Viz extends Component<PropsType, StateType> {
 
     this.sigma = new Sigma(this.props.graph, this.domRoot.current, {
       labelFont: "Nunito, sans-serif",
+      defaultDrawNodeHover: drawNodeHover,
     });
 
     this.initFA2();
@@ -117,7 +119,7 @@ class Viz extends Component<PropsType, StateType> {
       <section className="Viz">
         <div className="features">
           <button className="btn" onClick={() => saveGEXF(this.props.graph, "graph-export.gexf")}>
-            <FaDownload /> Download <strong>GEXF</strong> 
+            <FaDownload /> Download <strong>GEXF</strong>
           </button>
           <button className="btn" onClick={() => saveSVG(this.props.graph, "graph-export.svg")}>
             <FaDownload /> Download <strong>graph</strong> image

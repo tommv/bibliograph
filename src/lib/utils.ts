@@ -1,5 +1,8 @@
 import JSON5 from "json5";
 import { forEach, isPlainObject } from "lodash";
+import { drawDiscNodeHover } from "sigma/rendering";
+import { Settings } from "sigma/settings";
+import { NodeDisplayData, PartialButFor } from "sigma/types";
 
 export async function wait(delay: number = 0) {
   return new Promise((resolve) => (delay ? setTimeout(resolve, delay) : requestIdleCallback(resolve)));
@@ -62,4 +65,12 @@ export function unflattenObject<T = Record<string, unknown>>(
     );
   });
   return res as unknown as T;
+}
+
+export function drawNodeHover(
+  context: CanvasRenderingContext2D,
+  data: PartialButFor<NodeDisplayData, "x" | "y" | "size" | "label" | "color">,
+  settings: Settings,
+) {
+  drawDiscNodeHover(context, { ...data, label: data.label || data.hoverLabel }, settings);
 }
