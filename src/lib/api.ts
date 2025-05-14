@@ -277,7 +277,7 @@ export async function fetchFiles(
             const idField = meta.fields?.at(0);
             if (!idField) throw new Error("Missing ID field.");
 
-            const ids = data.map((row) => row[idField]);
+            const ids = data.map((row) => row[idField]).filter((str) => !!str);
             const idType: "doi" | "openalex" = ids[0].match(/^https:\/\/openalex\.org/)
               ? "openalex"
               : ids[0].match(/^https:\/\/doi\.org/)
