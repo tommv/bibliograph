@@ -1,14 +1,14 @@
 import Graph from "graphology";
 
 export const FIELD_IDS = [
+  "records",
+  "refs",
   "authors",
   "countries",
   "institutions",
   "fields",
   "funders",
   "keywords",
-  "records",
-  "refs",
   "subfields",
   "topics",
   "years",

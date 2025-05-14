@@ -19,7 +19,7 @@ const Filters: FC<{
     () =>
       [
         ...FIELD_IDS.map((field) => ({ field, type: "openAlex" })),
-        ...map(customFields, (type, field) => ({
+        ...map(customFields, (_type, field) => ({
           field,
           type: "custom",
         })),
@@ -68,7 +68,7 @@ const Filters: FC<{
           const unity = field === "records" ? "citation" : "record";
 
           return (
-            <div key={label}>
+            <div key={label} data-type={type} data-field={field}>
               <div>
                 Keep the <strong>{count}</strong> <span className="hg">{label.toLowerCase()}</span> {intro}{" "}
                 <strong>{value}</strong> {unity}
