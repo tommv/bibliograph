@@ -34,7 +34,7 @@ export function getDefaultFilters(aggregations: Aggregations): FiltersType {
     ),
     custom: mapValues(aggregations.custom, ({ values }) => {
       const minRecords = 2;
-      const threshold = 10;
+      const threshold = 50;
       return values.length
         ? (
             sortBy(values, "lowerBound").find(
