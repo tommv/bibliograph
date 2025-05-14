@@ -23,11 +23,12 @@ export function getDefaultFilters(aggregations: Aggregations): FiltersType {
       FIELD_IDS.map((field) => {
         const { threshold = Infinity, minRecords = -Infinity } = FIELDS_META[field];
         const agg = aggregations.openAlex[field];
+        console.log({ field, threshold, agg });
         return agg.values.length
           ? (
               sortBy(agg.values, "lowerBound").find(
                 ({ count, lowerBound }) => count <= threshold && lowerBound >= minRecords,
-              ) || agg.values[0]
+              ) || { lowerBound: agg.values.at(-1)!.lowerBound + 1 }
             ).lowerBound
           : 0;
       }),
@@ -39,7 +40,7 @@ export function getDefaultFilters(aggregations: Aggregations): FiltersType {
         ? (
             sortBy(values, "lowerBound").find(
               ({ count, lowerBound }) => count <= threshold && lowerBound >= minRecords,
-            ) || values[0]
+            ) || { lowerBound: values.at(-1)!.lowerBound + 1 }
           ).lowerBound
         : 0;
     }),
