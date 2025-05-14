@@ -148,20 +148,39 @@ export async function fetchWorks(
   }
 }
 
-export async function fetchRefsLabels(ids: string[]): Promise<Record<string, string | undefined>> {
+export async function fetchRefsLabels(
+  ids: string[],
+  { batchSize = 30 }: { batchSize?: number } = {},
+): Promise<Record<string, string | undefined>> {
   if (ids.length === 0) return {};
 
-  const url = new URL(`https://api.openalex.org/works`);
-  url.searchParams.set("select", "display_name,id");
-  url.searchParams.set("mailto", DEFAULT_MAILTO);
-  url.searchParams.set("filter", "ids.openalex:" + ids.join("|"));
-  url.searchParams.set("per-page", ids.length + "");
-  url.searchParams.set("page", "1");
+  if (ids.length > batchSize) {
+    const allBatchesResults = await Promise.all(
+      chunk(ids, batchSize).map(async (batch) => {
+        try {
+          return await fetchRefsLabels(batch, { batchSize });
+        } catch (e) {
+          console.error(`Error while fetching works:\n\t${e}`);
+        }
 
-  const response = await fetch(url);
-  if (!response.ok) return {};
-  const data = (await response.json()) as { results: Work[] };
-  return mapValues(keyBy(data.results, "id"), ({ display_name }) => display_name);
+        return {};
+      }),
+    );
+
+    return allBatchesResults.reduce((iter, batchResults) => ({ ...iter, ...batchResults }), {});
+  } else {
+    const url = new URL(`https://api.openalex.org/works`);
+    url.searchParams.set("select", "display_name,id");
+    url.searchParams.set("mailto", DEFAULT_MAILTO);
+    url.searchParams.set("filter", "ids.openalex:" + ids.join("|"));
+    url.searchParams.set("per-page", ids.length + "");
+    url.searchParams.set("page", "1");
+
+    const response = await fetch(url);
+    if (!response.ok) return {};
+    const data = (await response.json()) as { results: Work[] };
+    return mapValues(keyBy(data.results, "id"), ({ display_name }) => display_name);
+  }
 }
 
 export type FilePath = { path: string; extension?: string };
