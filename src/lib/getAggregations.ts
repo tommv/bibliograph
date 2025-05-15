@@ -17,23 +17,16 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
   // count cumulative number of occurrences
   const groupedValues = mapValues(groupBy(values), (v) => v.length);
   const occValues = sortBy(objectKeys(groupedValues).map((o) => +o));
-  const maxOcc = occValues.length - 1;
   const totalNbItems = values.length;
 
-  // Iterate on number of occurrences
-  const occCumulIndex: { [key: number]: number } = range(occValues[0], maxOcc + 1).reduce(
-    (index: { [key: number]: number }, occVal) => {
-      // For each occurrence, sum number of occurrences greater than current
-      return {
-        [occVal]:
-        // start with the total number of items and then subtract the nb of occ of last step
-        // we therefor calculate the factorial series in reverse
-          (index[occVal - 1] !== undefined ? index[occVal - 1] : totalNbItems) - (groupedValues[occVal - 1] || 0),
-        ...index,
-      };
-    },
-    {},
-  );
+  const occCumulIndex: { [key: number]: number } = {};
+  const min = occValues[0];
+  const max = occValues.at(-1) || occValues[0];
+  for (let occVal = min; occVal <= max; occVal++) {
+    const previous = occCumulIndex[occVal - 1];
+    occCumulIndex[occVal] = (previous !== undefined ? previous : totalNbItems) - (groupedValues[occVal - 1] || 0);
+  }
+
   return {
     min: Math.min(...objectValues(occCumulIndex)),
     max: Math.max(...objectValues(occCumulIndex)),
