@@ -109,7 +109,7 @@ function rescaleGraphToGraphicSpace(graph: Graph, settings: Settings): void {
   let distMax = 0; // Maximal distance from barycenter
   graph.forEachNode((nodeId: string) => {
     const { x, y } = graph.getNodeAttributes(nodeId);
-    const dist = Math.sqrt(Math.pow(x - xBarycenter, 2) + Math.pow(y - xBarycenter, 2));
+    const dist = Math.sqrt(Math.pow(x - xBarycenter, 2) + Math.pow(y - yBarycenter, 2));
     distMax = Math.max(distMax, dist);
   });
 
