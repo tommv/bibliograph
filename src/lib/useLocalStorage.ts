@@ -1,17 +1,22 @@
 import { isNil } from "lodash";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
-export function useLocalStorage(key: string): ReturnType<typeof useState<string | null>> {
-  const [state, setState] = useState<string | null | undefined>(localStorage.getItem(key));
+type ValueType = string | null | undefined;
 
-  useEffect(() => {
-    if (isNil(state)) localStorage.removeItem(key);
-    else localStorage.setItem(key, state);
-  }, [key, state]);
+export function useLocalStorage(key: string): [ValueType, (newValue: ValueType) => void] {
+  const [state, setState] = useState<ValueType>(localStorage.getItem(key));
+  const writeValue = useCallback(
+    (newValue: ValueType) => {
+      if (isNil(newValue)) localStorage.removeItem(key);
+      else localStorage.setItem(key, newValue);
+      setState(newValue);
+    },
+    [key],
+  );
 
   useEffect(() => {
     setState(localStorage.getItem(key));
   }, [key]);
 
-  return [state, setState];
+  return [state, writeValue];
 }

@@ -106,7 +106,7 @@ const Home: FC<{
             }
           }}
         >
-          {files.length ? `Index the given OpenAlex API results JSON files` : `Extract data from OpenAlex`}
+          {files.length ? `Extract data from files` : `Extract data from OpenAlex`}
         </button>
       </div>
       <hr />
