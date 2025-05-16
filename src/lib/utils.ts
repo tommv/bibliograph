@@ -1,12 +1,9 @@
+import { wait } from "@ouestware/async";
 import JSON5 from "json5";
 import { forEach, isPlainObject } from "lodash";
 import { drawDiscNodeHover } from "sigma/rendering";
 import { Settings } from "sigma/settings";
 import { NodeDisplayData, PartialButFor } from "sigma/types";
-
-export async function wait(delay: number = 0) {
-  return new Promise((resolve) => (delay ? setTimeout(resolve, delay) : requestIdleCallback(resolve)));
-}
 
 export function unflattenObject<T = Record<string, unknown>>(
   o: Record<string, string>,
@@ -73,4 +70,24 @@ export function drawNodeHover(
   settings: Settings,
 ) {
   drawDiscNodeHover(context, { ...data, label: data.label || data.allLabel }, settings);
+}
+
+export async function waitAndRetry<T>(
+  task: () => Promise<T>,
+  delay: number,
+  retryCount: number,
+  defaultValue?: T,
+): Promise<T> {
+  try {
+    return await task();
+  } catch (e) {
+    if (retryCount > 0) {
+      await wait(delay);
+      return waitAndRetry(task, delay, retryCount - 1, defaultValue);
+    } else if (defaultValue) {
+      return defaultValue;
+    } else {
+      throw e;
+    }
+  }
 }

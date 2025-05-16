@@ -3,9 +3,10 @@ import {
   groupBy,
   map,
   mapValues,
+  max,
+  min,
   keys as objectKeys,
   values as objectValues,
-  range,
   sortBy,
   toPairs,
   zipObject,
@@ -20,16 +21,16 @@ function aggregateCumulativeNumbers(values: number[]): Aggregation {
   const totalNbItems = values.length;
 
   const occCumulIndex: { [key: number]: number } = {};
-  const min = occValues[0];
-  const max = occValues.at(-1) || occValues[0];
-  for (let occVal = min; occVal <= max; occVal++) {
+  const occValuesMin = occValues[0];
+  const occValuesMax = occValues.at(-1) || occValues[0];
+  for (let occVal = occValuesMin; occVal <= occValuesMax; occVal++) {
     const previous = occCumulIndex[occVal - 1];
     occCumulIndex[occVal] = (previous !== undefined ? previous : totalNbItems) - (groupedValues[occVal - 1] || 0);
   }
 
   return {
-    min: Math.min(...objectValues(occCumulIndex)),
-    max: Math.max(...objectValues(occCumulIndex)),
+    min: min(objectValues(occCumulIndex)) as number,
+    max: max(objectValues(occCumulIndex)) as number,
     values: toPairs(occCumulIndex).map(([lowerBound, value]) => ({
       lowerBound: +lowerBound,
       count: value,

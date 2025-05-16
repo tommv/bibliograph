@@ -1,10 +1,13 @@
+import { parallelize } from "@ouestware/async";
 import { chunk, fromPairs, isEmpty, isPlainObject, keyBy, mapValues, omit, pickBy, values } from "lodash";
 import { parse } from "papaparse";
 
 import { enrichWorks } from "./data";
 import { CustomFieldTypes, RichWork, Work } from "./types";
-import { unflattenObject, wait } from "./utils";
+import { unflattenObject, waitAndRetry } from "./utils";
 
+const MAX_RETRIES = 3;
+const THROTTLE_DELAY = 1000;
 const PER_PAGE = 200;
 const DEFAULT_MAILTO = "tommaso.venturini@cnrs.fr";
 const WORK_FIELDS = [
@@ -47,7 +50,11 @@ export async function fetchWorksCount(queryURL: string) {
 
 export async function fetchQuery(
   queryURL: string,
-  { maxWorks = 10000, updateProgress }: { maxWorks?: number; updateProgress?: (percents: number) => void } = {},
+  {
+    maxWorks = 10000,
+    maxParallelCalls = 10,
+    updateProgress,
+  }: { maxWorks?: number; updateProgress?: (percents: number) => void; maxParallelCalls?: number } = {},
 ): Promise<{ works: RichWork[]; customFields: CustomFieldTypes }> {
   const count = await fetchWorksCount(queryURL);
   const numReq = Math.ceil(Math.min(count, maxWorks) / PER_PAGE);
@@ -59,30 +66,19 @@ export async function fetchQuery(
   url.searchParams.set("per-page", `${PER_PAGE}`);
   url.searchParams.set("select", WORK_FIELDS.join(","));
 
-  const works = await Promise.all(
-    [...Array(numReq).keys()].map(async (i) => {
-      try {
+  const works = await parallelize(
+    [...Array(numReq).keys()]
+      .map((i) => async () => {
         url.searchParams.set("page", `${i + 1}`);
-        let response = await fetch(url);
-        if (response.status == 429) {
-          for (let j = 1; j <= 3 && !response.ok; j++) {
-            await wait(j * 100);
-            response = await fetch(url);
-          }
-        }
-        if (!response.ok) {
-          throw new Error(`Network response was ${response.status} ${response.statusText}`);
-        }
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Network response was ${response.status} ${response.statusText}`);
         const data = (await response.json()) as { results: Work[] };
         numReqDone++;
         if (updateProgress) updateProgress(Math.round((numReqDone / numReq) * 100));
         return data.results;
-      } catch (e) {
-        console.error(`Error while fetching works:\n\t${e}`);
-      }
-
-      return [];
-    }),
+      })
+      .map((task) => () => waitAndRetry(task, THROTTLE_DELAY, MAX_RETRIES, [])),
+    maxParallelCalls,
   );
 
   return {
@@ -98,26 +94,29 @@ export async function fetchQuery(
 export async function fetchWorks(
   ids: string[],
   {
+    maxParallelCalls = 10,
     batchSize = 50,
     updateProgress,
     idType = "openalex",
-  }: { batchSize?: number; updateProgress?: (percents: number) => void; idType?: "doi" | "openalex" } = {},
+  }: {
+    batchSize?: number;
+    updateProgress?: (percents: number) => void;
+    idType?: "doi" | "openalex";
+    maxParallelCalls?: number;
+  } = {},
 ): Promise<Record<string, Work>> {
   if (ids.length > batchSize) {
     let complete = 0;
-    const allBatchesResults = await Promise.all(
-      chunk(ids, batchSize).map(async (batch) => {
-        try {
+    const allBatchesResults = await parallelize(
+      chunk(ids, batchSize)
+        .map((batch) => async () => {
           const batchResult = await fetchWorks(batch, { batchSize, idType });
           complete += batch.length;
           if (updateProgress) updateProgress(Math.round((complete / ids.length) * 100));
           return batchResult;
-        } catch (e) {
-          console.error(`Error while fetching works:\n\t${e}`);
-        }
-
-        return {};
-      }),
+        })
+        .map((task) => () => waitAndRetry(task, THROTTLE_DELAY, MAX_RETRIES, {})),
+      maxParallelCalls,
     );
 
     return allBatchesResults.reduce((iter, batchResults) => ({ ...iter, ...batchResults }), {});
@@ -129,16 +128,9 @@ export async function fetchWorks(
     url.searchParams.set("per-page", ids.length + "");
     url.searchParams.set("page", "1");
 
-    let response = await fetch(url);
-    if (response.status == 429) {
-      for (let j = 1; j <= 3 && !response.ok; j++) {
-        await wait(j * 100);
-        response = await fetch(url);
-      }
-    }
-    if (!response.ok) {
-      throw new Error(`Network response was ${response.status} ${response.statusText}`);
-    }
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Network response was ${response.status} ${response.statusText}`);
+
     const data = (await response.json()) as { results: Work[] };
 
     return keyBy(
@@ -150,21 +142,16 @@ export async function fetchWorks(
 
 export async function fetchRefsLabels(
   ids: string[],
-  { batchSize = 30 }: { batchSize?: number } = {},
+  { batchSize = 30, maxParallelCalls = 10 }: { batchSize?: number; maxParallelCalls?: number } = {},
 ): Promise<Record<string, string | undefined>> {
   if (ids.length === 0) return {};
 
   if (ids.length > batchSize) {
-    const allBatchesResults = await Promise.all(
-      chunk(ids, batchSize).map(async (batch) => {
-        try {
-          return await fetchRefsLabels(batch, { batchSize });
-        } catch (e) {
-          console.error(`Error while fetching works:\n\t${e}`);
-        }
-
-        return {};
-      }),
+    const allBatchesResults = await parallelize(
+      chunk(ids, batchSize)
+        .map((batch) => () => fetchRefsLabels(batch, { batchSize }))
+        .map((task) => () => waitAndRetry(task, THROTTLE_DELAY, MAX_RETRIES, {})),
+      maxParallelCalls,
     );
 
     return allBatchesResults.reduce((iter, batchResults) => ({ ...iter, ...batchResults }), {});
@@ -177,7 +164,8 @@ export async function fetchRefsLabels(
     url.searchParams.set("page", "1");
 
     const response = await fetch(url);
-    if (!response.ok) return {};
+    if (!response.ok) throw new Error(`Network response was ${response.status} ${response.statusText}`);
+
     const data = (await response.json()) as { results: Work[] };
     return mapValues(keyBy(data.results, "id"), ({ display_name }) => display_name);
   }

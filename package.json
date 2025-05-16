@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@ajusa/lit": "^1.1.0",
+    "@ouestware/async": "^0.0.1-alpha.4",
     "file-saver": "^2.0.5",
     "graphology": "^0.25.4",
     "graphology-components": "^1.5.4",

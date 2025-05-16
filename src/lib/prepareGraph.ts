@@ -1,3 +1,4 @@
+import { wait } from "@ouestware/async";
 import { largestConnectedComponent } from "graphology-components";
 import { circular } from "graphology-layout";
 import forceAtlas2 from "graphology-layout-forceatlas2";
@@ -7,7 +8,6 @@ import { Coordinates } from "sigma/types";
 import { fetchRefsLabels } from "./api";
 import { sampleKPoints } from "./kMeans";
 import { BiblioGraph } from "./types";
-import { wait } from "./utils";
 
 const maxNodeSizes = {
   references: 30,
