@@ -17,6 +17,8 @@ interface Settings {
   zoomWindowSize?: number;
 
   saveAtTheEnd?: boolean;
+
+  nodesWhiteList?: string[];
 }
 
 /**
@@ -176,7 +178,10 @@ export function getHeatmap(inputGraph: Graph, settings: Settings): string {
   }
 
   // Values from nodes:
+  const allowedNodes = settings.nodesWhiteList ? new Set(settings.nodesWhiteList) : null;
   graph.forEachNode((nodeId: string) => {
+    if (allowedNodes && !allowedNodes.has(nodeId)) return;
+
     const n = graph.getNodeAttributes(nodeId);
     for (
       let x = Math.max(0, Math.floor(n.x - settings.spreading / 2));

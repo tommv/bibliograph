@@ -1,6 +1,7 @@
 import { saveAs } from "file-saver";
 import Graph from "graphology";
 import { write } from "graphology-gexf/browser";
+import { subgraph } from "graphology-operators";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { DEFAULTS } from "graphology-svg/defaults";
@@ -41,9 +42,7 @@ export function saveSVG(graph: Graph, fileName: string): void {
 }
 
 export function saveHeatmap(graph: Graph, fileName: string): void {
-  const graphWithNoEdge = graph.emptyCopy();
-
-  const dataURL = getHeatmap(graphWithNoEdge, {
+  const dataURL = getHeatmap(graph.emptyCopy(), {
     width: SETTINGS.width,
     height: SETTINGS.height,
     offset: SETTINGS.margin,
@@ -52,10 +51,10 @@ export function saveHeatmap(graph: Graph, fileName: string): void {
     min255Color: 255,
     max255Color: 170,
     spreading: (SETTINGS.width + SETTINGS.height) / 2 / 20, // arbitrary
+    nodesWhiteList: graph.filterNodes((_, { dataType }) => dataType === "refs"),
   });
 
-  // Temporarily rotate the graph:
-  let svgString = renderFixedSVG(graphWithNoEdge);
+  let svgString = renderFixedSVG(graph.emptyCopy());
 
   // Ugly trick to put the generated heatmap image into the SVG file:
   svgString = svgString.replace(
