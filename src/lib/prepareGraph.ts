@@ -14,9 +14,68 @@ const maxNodeSizes = {
   metadata: 50,
 };
 
+export async function handleLayout(graph: BiblioGraph): Promise<BiblioGraph> {
+  const refsNodes: string[] = [];
+  const noneRefsNodes: string[] = [];
+  graph.forEachNode((node, attributes) => (attributes.dataType === "refs" ? refsNodes : noneRefsNodes).push(node));
+
+  const refsGraph = subgraph(graph, refsNodes);
+  circular.assign(refsGraph);
+  const positions = forceAtlas2(refsGraph, {
+    iterations: 1000,
+    settings: forceAtlas2.inferSettings(refsGraph),
+  });
+
+  await wait();
+
+  // Apply newly found positions into the *input* graph (and fix those nodes):
+  refsGraph.forEachNode((refNode: string) =>
+    graph.mergeNodeAttributes(refNode, {
+      ...positions[refNode],
+      fixed: true,
+    }),
+  );
+
+  await wait();
+
+  // 2. Put each none-ref node to the barycenter of its neighbors:
+  noneRefsNodes.forEach((noneRefNode, i) => {
+    const neighborsCount = graph.neighbors(noneRefNode).length;
+    let x = 0;
+    let y = 0;
+
+    graph.forEachNeighbor(noneRefNode, (neighbor: string) => {
+      if (!positions[neighbor]) return;
+      x += positions[neighbor].x;
+      y += positions[neighbor].y;
+    });
+
+    // Add some very tiny and unique vector, to prevent nodes to have exactly the same coordinates.
+    // Also, the tiny vector must not be random, so that the layout remains reproducible:
+    graph.mergeNodeAttributes(noneRefNode, {
+      x: x / neighborsCount + Math.cos((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
+      y: y / neighborsCount + Math.sin((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
+    });
+  });
+
+  await wait();
+
+  // 3. Run some FA2 to get a proper layout for none-ref nodes:
+  forceAtlas2.assign(graph, {
+    iterations: 200,
+    settings: forceAtlas2.inferSettings(graph),
+  });
+
+  await wait();
+
+  return graph;
+}
+
 export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
   const largest = largestConnectedComponent(graph);
-  const mainGraph = subgraph(graph, largest);
+  let mainGraph = subgraph(graph, largest);
+
+  // 1. Prepare graph:
 
   // Copy graph attributes
   const graphAttributes = graph.getAttributes();
@@ -39,12 +98,9 @@ export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
 
   await wait();
 
-  // 1. Spatialize "ref" nodes:
-  const refsNodes: string[] = [];
-  const noneRefsNodes: string[] = [];
+  // Handle node sizes:
   mainGraph.forEachNode((node, attributes) => {
     if (attributes.dataType === "refs") {
-      refsNodes.push(node);
       // scale size, if 0 articles use size of 1
       mainGraph.setNodeAttribute(
         node,
@@ -52,7 +108,6 @@ export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
         Math.sqrt((maxNodeSizes.references * (attributes.nbArticles || 1)) / maxNbArticles.references),
       );
     } else {
-      noneRefsNodes.push(node);
       // scale size, if 0 articles use size of 1
       mainGraph.setNodeAttribute(
         node,
@@ -64,56 +119,12 @@ export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
 
   await wait();
 
-  const refsGraph = subgraph(mainGraph, refsNodes);
-  circular.assign(refsGraph);
-  const positions = forceAtlas2(refsGraph, {
-    iterations: 1000,
-    settings: forceAtlas2.inferSettings(refsGraph),
-  });
+  // 2. Handle layout:
+  mainGraph = await handleLayout(mainGraph);
 
   await wait();
 
-  // Apply newly found positions into the *input* graph (and fix those nodes):
-  refsGraph.forEachNode((refNode: string) =>
-    mainGraph.mergeNodeAttributes(refNode, {
-      ...positions[refNode],
-      fixed: true,
-    }),
-  );
-
-  await wait();
-
-  // 2. Put each none-ref node to the barycenter of its neighbors:
-  noneRefsNodes.forEach((noneRefNode, i) => {
-    const neighborsCount = mainGraph.neighbors(noneRefNode).length;
-    let x = 0;
-    let y = 0;
-
-    mainGraph.forEachNeighbor(noneRefNode, (neighbor: string) => {
-      if (!positions[neighbor]) return;
-      x += positions[neighbor].x;
-      y += positions[neighbor].y;
-    });
-
-    // Add some very tiny and unique vector, to prevent nodes to have exactly the same coordinates.
-    // Also, the tiny vector must not be random, so that the layout remains reproducible:
-    mainGraph.mergeNodeAttributes(noneRefNode, {
-      x: x / neighborsCount + Math.cos((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
-      y: y / neighborsCount + Math.sin((Math.PI * 2 * i) / noneRefsNodes.length) / 100,
-    });
-  });
-
-  await wait();
-
-  // 3. Run some FA2 to get a proper layout for none-ref nodes:
-  forceAtlas2.assign(mainGraph, {
-    iterations: 200,
-    settings: forceAtlas2.inferSettings(mainGraph),
-  });
-
-  await wait();
-
-  // 4. Sample refs labels:
+  // 3. Sample refs labels:
   const allRefs = mainGraph
     .filterNodes((_, attributes) => attributes.dataType === "refs")
     .map((node) => {
@@ -133,5 +144,5 @@ export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
     }
   });
 
-  return Promise.resolve(mainGraph);
+  return mainGraph;
 }
