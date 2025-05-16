@@ -26,13 +26,29 @@ const Home: FC<{
       <h1 className="center">
         <span className="hg">Bibliograph</span>
       </h1>
-      <p>BiblioGraph allows turning a query to OpenAlex (or an OpenAlex corpus) into a scientometric landscape, a network composed of:</p>
-        <ol>
-          <li>A base-network of references appearing together in the records of the corpus (co-cited by them)</li>
-          <li>A layer of metadata extracted from the records (authors, sources, subﬁelds...) positioned according to their co-occurrence with the references in the base map</li>
-        </ol>
-      <p>Define your query in the frame below. Set the ﬁlter thresholds in the next page. Explore and export your bibliographic landscape.</p>
-      <p><a href="https://docs.google.com/document/d/1YOcy9B9VeLpCAfG-gDwSoSma8UUCehzokVoJ2wPJKmM/edit?usp=sharing" target="_blank">Read (and cite) the method paper &gt;&gt;</a></p>
+      <p>
+        BiblioGraph allows turning a query to OpenAlex (or an OpenAlex corpus) into a scientometric landscape, a network
+        composed of:
+      </p>
+      <ol>
+        <li>A base-network of references appearing together in the records of the corpus (co-cited by them)</li>
+        <li>
+          A layer of metadata extracted from the records (authors, sources, subﬁelds...) positioned according to their
+          co-occurrence with the references in the base map
+        </li>
+      </ol>
+      <p>
+        Define your query in the frame below. Set the ﬁlter thresholds in the next page. Explore and export your
+        bibliographic landscape.
+      </p>
+      <p>
+        <a
+          href="https://docs.google.com/document/d/1YOcy9B9VeLpCAfG-gDwSoSma8UUCehzokVoJ2wPJKmM/edit?usp=sharing"
+          target="_blank"
+        >
+          Read (and cite) the method paper &gt;&gt;
+        </a>
+      </p>
 
       <br />
 
@@ -96,12 +112,8 @@ const Home: FC<{
       <hr />
       <div className="flex-row center">
         <div className="logos">
-        <a href="https://www.unige.ch/sciences-societe/medialab/">
-            <img
-              className="logo"
-              src={import.meta.env.BASE_URL + "img/logo_medialab_UNIGE.jpg"}
-              alt="Medialab UNIGE"
-            />
+          <a href="https://www.unige.ch/sciences-societe/medialab/">
+            <img className="logo" src={import.meta.env.BASE_URL + "img/logo_medialab_UNIGE.jpg"} alt="Medialab UNIGE" />
           </a>
           <a href="https://cis.cnrs.fr/">
             <img
