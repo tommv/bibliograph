@@ -1,5 +1,5 @@
 import Graph from "graphology";
-import React, { FC, useCallback, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { FaUndo } from "react-icons/fa";
 import { FaSpinner } from "react-icons/fa6";
 import { TbFaceIdError } from "react-icons/tb";
@@ -35,10 +35,10 @@ const App: FC = () => {
   const prepareData = useCallback(
     async (promise: Promise<{ works: RichWork[]; customFields: CustomFieldTypes }>) => {
       setIsLoading(true);
-      setLoaderMessage("Indexing data");
-
       try {
+        setLoaderMessage("Downloading data");
         const { works, customFields } = await promise;
+        setLoaderMessage("Indexing data");
         const indices = await indexWorks(works);
         const aggregations = aggregateFieldIndices(indices, works, customFields);
 
@@ -107,6 +107,7 @@ const App: FC = () => {
         graph={filteredGraph}
         indices={data.indices}
         filters={data.filters}
+        customFields={data.customFields}
         onGoBack={() => {
           setFilteredGraph(null);
         }}
