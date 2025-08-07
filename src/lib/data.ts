@@ -94,7 +94,7 @@ export function inferFieldType(values: string[], itemsCount: number): CustomFiel
   const useSeparator =
     !!separator &&
     uniqValuesCount > 1 &&
-    uniqValuesCount < 50 &&
+    uniqValuesCount < 300 &&
     uniqValuesCount < Math.max(separator ? itemsCount : Math.pow(itemsCount, 0.75), 5);
 
   values.forEach((str) => {
@@ -131,7 +131,6 @@ export function enrichWorks(
 
   // Infer field types:
   const fieldTypes: CustomFieldTypes = mapValues(fields, (values) => inferFieldType(values, works.length));
-
   // Enrich the works, with the proper custom field types:
   return {
     works: works.map((work) => ({
