@@ -1,14 +1,15 @@
 import Graph from "graphology";
 import forceAtlas2 from "graphology-layout-forceatlas2";
 import FA2LayoutSupervisor from "graphology-layout-forceatlas2/worker";
-import React, { Component, RefObject, createRef } from "react";
+import { keys, sortBy } from "lodash";
+import { Component, RefObject, createRef } from "react";
 import { FaDotCircle, FaSearchMinus, FaSearchPlus, FaUndo } from "react-icons/fa";
 import { FaDownload, FaPlay, FaSpinner } from "react-icons/fa6";
 import Sigma from "sigma";
 
 import { DEFAULT_METADATA_COLOR, FIELDS_META } from "../lib/consts";
 import { saveGEXF, saveHeatmap, saveSVG } from "../lib/saveHelpers";
-import { FIELD_IDS, FieldIndices, FiltersType } from "../lib/types";
+import { CustomFieldTypes, FIELD_IDS, FieldIndices, FiltersType } from "../lib/types";
 import { drawNodeHover } from "../lib/utils";
 import "./Viz.css";
 
@@ -16,6 +17,7 @@ interface PropsType {
   graph: Graph;
   indices: FieldIndices;
   filters: FiltersType;
+  customFields: CustomFieldTypes;
   onGoBack: () => void;
 }
 interface StateType {
@@ -115,6 +117,8 @@ class Viz extends Component<PropsType, StateType> {
   }
 
   render(): JSX.Element {
+    const allVisibleFields = this.props.graph.getAttribute("allVisibleFields");
+    console.log(this.props.graph.getAttribute("allVisibleFields"));
     return (
       <section className="Viz">
         <div className="features">
@@ -164,7 +168,7 @@ class Viz extends Component<PropsType, StateType> {
         </div>
 
         <div className="caption">
-          {FIELD_IDS.map((field) => {
+          {FIELD_IDS.filter((field) => allVisibleFields.has(`openAlex::${field}`)).map((field) => {
             const { color, label } = FIELDS_META[field];
             return (
               <span key={field}>
@@ -172,9 +176,18 @@ class Viz extends Component<PropsType, StateType> {
               </span>
             );
           })}
-          <span>
-            <span className="color-disc" style={{ background: DEFAULT_METADATA_COLOR }} /> Custom fields
-          </span>
+          {/* order of custom fields is important for colors that's why we sort */}
+          {sortBy(keys(this.props.customFields)).map((customField, i) => {
+            return allVisibleFields.has(`custom::${customField}`) ? (
+              <span key={customField}>
+                <span
+                  className="color-disc"
+                  style={{ background: i < DEFAULT_METADATA_COLOR.length ? DEFAULT_METADATA_COLOR[i] : "pink" }}
+                />{" "}
+                {customField}
+              </span>
+            ) : null;
+          })}
         </div>
       </section>
     );

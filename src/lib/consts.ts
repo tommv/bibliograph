@@ -152,4 +152,5 @@ export const FIELDS_META: Record<
   },
 };
 
-export const DEFAULT_METADATA_COLOR = "pink";
+// list of extra color to be used for custom fields
+export const DEFAULT_METADATA_COLOR = ["#bda458", "#753ec7", "#70c474", "#a24a42", "#465536", "#51355e"];

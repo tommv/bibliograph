@@ -1,5 +1,5 @@
 import Graph from "graphology";
-import { forEach, mapValues, sortBy, zipObject } from "lodash";
+import { keys, mapValues, sortBy, zipObject } from "lodash";
 import { combinations } from "obliterator";
 
 import { DEFAULT_METADATA_COLOR, FIELDS_META, FieldValue, GetValue, cleanFieldValues } from "./consts";
@@ -69,14 +69,19 @@ export async function getFilteredGraph(
     })),
   ];
 
-  forEach(customFields, (_, field) => {
+  let customFieldIndex = 0;
+  sortBy(keys(customFields)).forEach((field) => {
     allFields.push({
       type: "custom",
       field,
-      color: DEFAULT_METADATA_COLOR,
+      color: customFieldIndex < DEFAULT_METADATA_COLOR.length ? DEFAULT_METADATA_COLOR[customFieldIndex] : "pink",
       getValues: (work) => work.metadata[field],
     });
+    customFieldIndex += 1;
   });
+
+  // prepare a graph attribute to indicate which fields were filtered out to remove them from caption
+  const allVisibleFields = new Set<string>();
 
   for (let workIndex = 0; workIndex < works.length; workIndex++) {
     // Index nodes:
@@ -103,6 +108,7 @@ export async function getFilteredGraph(
           : (v: FieldValue) => isCustomValueOK(field, v.id, indices, filters);
 
       values.filter(isValueOK).forEach(({ id, label }) => {
+        allVisibleFields.add(`${type}::${field}`);
         const [n] = graph.mergeNode(`${field}::${id}`, {
           entityId: id,
           label,
@@ -152,6 +158,7 @@ export async function getFilteredGraph(
 
   // Store some useful metadata:
   graph.setAttribute("entriescount", works.length);
+  graph.setAttribute("allVisibleFields", allVisibleFields);
 
   // Store all labels in the allLabel attribute:
   graph.forEachNode((node, { label }) => graph.setNodeAttribute(node, "allLabel", label));
