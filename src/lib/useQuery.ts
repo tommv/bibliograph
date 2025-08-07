@@ -25,6 +25,7 @@ function useHash(): string {
 export function useQuery() {
   const hash = useHash();
   const urlSearchParams = useMemo(() => new URLSearchParams(hash.replace(/^\?/, "")), [hash]);
+  const query = useMemo(() => fromPairs([...urlSearchParams]), [urlSearchParams]);
 
-  return { query: fromPairs([...urlSearchParams]) };
+  return { query };
 }

@@ -79,10 +79,13 @@ export async function waitAndRetry<T>(
   defaultValue?: T,
 ): Promise<T> {
   try {
-    return await task();
+    const results = await task();
+    // systematic throttle to keep under the 10 requests/s limit
+    await wait(delay);
+    return results;
   } catch (e) {
     if (retryCount > 0) {
-      await wait(delay);
+      console.log("retry");
       return waitAndRetry(task, delay, retryCount - 1, defaultValue);
     } else if (defaultValue) {
       return defaultValue;
@@ -90,4 +93,10 @@ export async function waitAndRetry<T>(
       throw e;
     }
   }
+}
+
+export function compactOpenAlexId(openAlexId: string) {
+  const groups = openAlexId.match(new RegExp("https?://openAlex.org/(.*)", "i"));
+  if (groups !== null) return groups[1];
+  else return openAlexId;
 }

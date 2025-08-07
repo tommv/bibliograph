@@ -8,6 +8,7 @@ import { Coordinates } from "sigma/types";
 import { fetchRefsLabels } from "./api";
 import { sampleKPoints } from "./kMeans";
 import { BiblioGraph } from "./types";
+import { compactOpenAlexId } from "./utils";
 
 const maxNodeSizes = {
   references: 30,
@@ -133,7 +134,8 @@ export async function prepareGraph(graph: BiblioGraph): Promise<BiblioGraph> {
     });
   const refsWithLabels = new Set((allRefs.length > 20 ? sampleKPoints(allRefs, 15, 5) : allRefs).map((p) => p.id));
 
-  const labels = await fetchRefsLabels(allRefs.map((p) => p.id));
+  // use compactOpenAlexId utils to make sure we can use 100-size batches for download by reducing URL size
+  const labels = await fetchRefsLabels(allRefs.map((p) => compactOpenAlexId(p.id)));
   mainGraph.forEachNode((node, attributes) => {
     if (attributes.dataType === "refs") {
       const label = labels[attributes.entityId] || null;

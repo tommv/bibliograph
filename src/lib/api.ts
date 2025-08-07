@@ -4,11 +4,11 @@ import { parse } from "papaparse";
 
 import { enrichWorks } from "./data";
 import { CustomFieldTypes, RichWork, Work } from "./types";
-import { unflattenObject, waitAndRetry } from "./utils";
+import { compactOpenAlexId, unflattenObject, waitAndRetry } from "./utils";
 
 const MAX_RETRIES = 3;
 const THROTTLE_DELAY = 1000;
-const PER_PAGE = 200;
+const PER_PAGE = 100;
 const DEFAULT_MAILTO = "tommaso.venturini@cnrs.fr";
 const WORK_FIELDS = [
   "id",
@@ -91,11 +91,11 @@ export async function fetchQuery(
   };
 }
 
-export async function fetchWorks(
+async function fetchWorks(
   ids: string[],
   {
     maxParallelCalls = 10,
-    batchSize = 50,
+    batchSize = PER_PAGE,
     updateProgress,
     idType = "openalex",
   }: {
@@ -125,7 +125,7 @@ export async function fetchWorks(
     url.searchParams.set("select", WORK_FIELDS.join(","));
     url.searchParams.set("mailto", DEFAULT_MAILTO);
     url.searchParams.set("filter", `${idType}:${ids.join("|")}`);
-    url.searchParams.set("per-page", ids.length + "");
+    url.searchParams.set("per-page", batchSize + "");
     url.searchParams.set("page", "1");
 
     const response = await fetch(url);
@@ -142,7 +142,7 @@ export async function fetchWorks(
 
 export async function fetchRefsLabels(
   ids: string[],
-  { batchSize = 30, maxParallelCalls = 10 }: { batchSize?: number; maxParallelCalls?: number } = {},
+  { batchSize = PER_PAGE, maxParallelCalls = 10 }: { batchSize?: number; maxParallelCalls?: number } = {},
 ): Promise<Record<string, string | undefined>> {
   if (ids.length === 0) return {};
 
@@ -284,13 +284,16 @@ export async function fetchFiles(
             const idField = meta.fields?.at(0);
             if (!idField) throw new Error("Missing ID field.");
 
-            const ids = data.map((row) => row[idField]).filter((str) => !!str);
+            let ids = data.map((row) => row[idField]).filter((str) => !!str);
             const idType: "doi" | "openalex" = ids[0].match(/^https:\/\/openalex\.org/)
               ? "openalex"
               : ids[0].match(/^https:\/\/doi\.org/)
                 ? "doi"
                 : "openalex";
-
+            if (idType === "openalex") {
+              // strip url part of ids to save url character limit
+              ids = ids.map(compactOpenAlexId);
+            }
             const rawWorks = Object.values(await fetchWorks(ids, { idType }));
             const customRows = fromPairs(
               data.map((row) => [row[idField], omit(row, idField) as Record<string, string>]),
