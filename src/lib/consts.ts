@@ -83,9 +83,9 @@ export const FIELDS_META: Record<
     color: "#FF93BD",
     threshold: 25,
     getValues: (work: Work) =>
-      work.grants?.map((grant) => ({
-        id: grant.funder,
-        label: grant.funder_display_name,
+      work.awards?.map((award) => ({
+        id: award.funder_id,
+        label: award.funder_display_name,
       })),
   },
   keywords: {

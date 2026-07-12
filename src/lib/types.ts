@@ -136,6 +136,11 @@ export interface Work {
     raw_affiliation_strings: string[];
     raw_author_name: string;
   }[];
+  awards?: {
+    funder_award_id: string;
+    funder_display_name: string;
+    funder_id: string;
+  }[];
   best_oa_location?: Location;
   biblio?: {
     first_page?: string;
@@ -166,11 +171,6 @@ export interface Work {
   }[];
   created_date?: string;
   doi?: string;
-  grants?: {
-    award_id: string;
-    funder: string;
-    funder_display_name: string;
-  }[];
   has_fulltext?: boolean;
   ids?: {
     crossref?: string;
